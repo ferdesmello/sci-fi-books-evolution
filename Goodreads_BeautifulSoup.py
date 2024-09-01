@@ -1,64 +1,152 @@
+import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import time
 import os
+from requests.exceptions import RequestException
+from urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
+import random
+import logging
+import re
 
-#----------------------------------------------------
-def extract_books_from_file(file_path):
-    # Open and read the saved HTML file
+#----------------------------------------------------------------------------------
+# Set up logging.
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+#----------------------------------------------------------------------------------
+# Function to make session as a browser.
+def get_session():
+    session = requests.Session()
+    retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
+    session.mount('https://', HTTPAdapter(max_retries=retries))
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    })
+    return session
+
+#----------------------------------------------------------------------------------
+# Function to scrape data from the local shelf HTML files.
+def scrape_shelf_from_html(file_path):
+    books = []
     with open(file_path, 'r', encoding='utf-8') as file:
         content = file.read()
-    
-    # Parse the HTML content with BeautifulSoup
-    soup = BeautifulSoup(content, 'html.parser')
-    
-    books = []
-    # Find all book elements on the page
-    book_elements = soup.find_all('div', class_='elementList')
-    
-    for book in book_elements:
-        title_elem = book.find('a', class_='bookTitle')
-        author_elem = book.find('a', class_='authorName')
-        span_element = book.find('span', class_='greyText smallText')  # Find within each book element
+        soup = BeautifulSoup(content, 'html.parser')
 
-        # Extract and clean the book details
-        if title_elem and author_elem and span_element:
-            title = title_elem.text.strip()
-            author = author_elem.text.strip()
-            text_split = span_element.text.split('—')
-            
-            # Handle potential variations in the text structure
-            avg_rating = text_split[0].split()[-1] if len(text_split) > 0 else 'N/A'
-            ratings = text_split[1].split()[0].replace(',', '') if len(text_split) > 1 else 'N/A'
-            year = text_split[2].split()[-1] if len(text_split) > 2 else 'N/A'
+        for book in soup.find_all('div', class_='elementList'):
+            title_elem = book.find('a', class_='bookTitle')
+            author_elem = book.find('a', class_='authorName')
 
-            books.append({
-                'title': title,
-                'author': author,
-                'year': int(year) if year.isdigit() else 'N/A',
-                'avg_rating': float(avg_rating) if avg_rating.replace('.', '', 1).isdigit() else 'N/A',
-                'ratings': int(ratings) if ratings.isdigit() else 'N/A',
-                'url': title_elem['href'],
-            })
-    
+            if title_elem and author_elem:
+                books.append({
+                    'title': title_elem.text.strip(),
+                    'author': author_elem.text.strip(),
+                    'url': title_elem['href']
+                })
+
     return books
 
-#----------------------------------------------------
-# Directory containing the saved HTML files
-directory = './saved_pages'  # Update this path to where your HTML files are stored
+#----------------------------------------------------------------------------------
+# Function to scrape data from book pages.
+def scrape_book_page(session, url):
+    try:
+        response = session.get(url, timeout=10)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, 'html.parser')
 
-all_books = []
+        #-----------------------------------------
+        # Extract year
+        year = None
+        publication_info = soup.find('p', {'data-testid': 'publicationInfo'})
+        if publication_info:
+            year_text = publication_info.get_text()
+            match = re.search(r'(\d{4})', year_text)
+            if match:
+                year = match.group(1)
 
-# Loop through all files in the directory
-for filename in os.listdir(directory):
-    if filename.endswith('.html'):
-        file_path = os.path.join(directory, filename)
-        print(f"Processing file: {file_path}")
-        books = extract_books_from_file(file_path)
-        all_books.extend(books)
+        #-----------------------------------------
+        # Extract genres
+        genres = []
+        genre_elem = soup.find('div', {'data-testid': 'genresList'})
+        if genre_elem:
+            genres = [a.text.strip() for a in genre_elem.find_all('a')]
 
-#----------------------------------------------------
-# Convert the list of books to a DataFrame and save it to a CSV
-df = pd.DataFrame(all_books)
-df.to_csv('sci-fi_books_extracted.csv', index=False, sep=';')
+        #-----------------------------------------
+        # Extract synopsis
+        synopsis = "No synopsis available"
+        description_elem = soup.find('div', {'data-testid': 'description'})
+        if description_elem:
+            synopsis = description_elem.text.strip()
 
-print(f"Extracted data from {len(all_books)} books across all pages.")
+        #-----------------------------------------
+        # Extract mean rate
+        rate = 0
+        rating_div = soup.find('div', class_='RatingStatistics__rating')
+        if rating_div:
+            rate_text = rating_div.text.strip()
+            rate = float(rate_text)
+
+        #-----------------------------------------
+        # Extract number of ratings
+        ratings = 0
+        ratings_elem = soup.find('span', {'data-testid': 'ratingsCount'})
+        if ratings_elem:
+            ratings_text = ratings_elem.text.strip().split()[0].replace(',', '')
+            ratings = int(ratings_text)
+
+        #-----------------------------------------
+        # Book data
+        book_data = {
+            'year': year,
+            'rate': rate,
+            'ratings': ratings,
+            'genres': genres,
+            'synopsis': synopsis,
+        }
+
+        logging.info(f"Successfully scraped book:\n  {url}")
+        logging.debug(f"Book data: {book_data}")
+
+        return book_data
+
+    except Exception as e:
+        logging.error(f"Error scraping\n!!!{url}: {e}")
+        return None
+
+#----------------------------------------------------------------------------------
+# Main scraping function.
+def scrape_goodreads_books_from_files(folder_path):
+    session = get_session()
+    all_books = []
+
+    # Read all HTML files from the folder
+    for file_name in os.listdir(folder_path):
+        if file_name.endswith('.html'):
+            file_path = os.path.join(folder_path, file_name)
+            logging.info(f"Scraping file:-----------------\n  {file_path}")
+            books = scrape_shelf_from_html(file_path)
+            for book in books:
+                book_data = scrape_book_page(session, book['url'])
+                if book_data:
+                    book.update(book_data)
+                    all_books.append(book)
+                else:
+                    logging.warning(f"Failed to scrape book:\n!!!{book['url']}")
+
+            # Implement a random delay between 5 to 15 seconds
+            time.sleep(random.uniform(5, 15))
+
+    return all_books
+
+#----------------------------------------------------------------------------------
+# Main execution function.
+def main():
+    folder_path = './saved_pages'  # Update this path to your local folder containing HTML files
+    books = scrape_goodreads_books_from_files(folder_path)
+    df = pd.DataFrame(books)
+    df.to_csv('sci-fi_books.csv', index=False, sep=';')
+    logging.info(f"\nScraped {len(books)} books.\nData saved to sci-fi_books.csv")
+
+#----------------------------------------------------------------------------------
+if __name__ == "__main__":
+    main()

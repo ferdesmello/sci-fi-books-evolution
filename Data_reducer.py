@@ -1,24 +1,21 @@
 import pandas as pd
 
 #----------------------------------------------------------------------------------
-df = pd.read_csv('sci-fi_books_extracted.csv', sep = ';')
+df = pd.read_csv('sci-fi_books.csv', sep = ';')
 
 df["title"] = df["title"].str.replace(r' \(.*\)', '', regex = True)
 
 # Replacing some missing years
-index_01 = df[df['title'] == "Blindsight"].index
+"""index_01 = df[df['title'] == "Blindsight"].index
 df.loc[index_01, 'year'] = 2006
 
 index_02 = df[df['title'] == "The Ringworld Throne"].index
-df.loc[index_02, 'year'] = 1997
+df.loc[index_02, 'year'] = 1997"""
 
 df.sort_values(by = ['year'], axis = 0, ascending = True, inplace = True)
 
 print(df.info())
-print(df.tail())
-
-#----------------------------------------------------------------------------------
-
+print(df.head())
 
 #----------------------------------------------------------------------------------
 # Create a 'decade' column
@@ -37,7 +34,7 @@ print(books_2000s)
 
 #----------------------------------------------------------------------------------
 
-
+df.to_csv('sci-fi_books_reduced.csv', index=False, sep=';')
 
 
 #----------------------------------------------------------------------------------
