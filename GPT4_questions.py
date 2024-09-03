@@ -1,6 +1,7 @@
 import os
 from openai import OpenAI
 
+#----------------------------------------------------------------------------------
 # Seting the API key
 key_file = open('My OAI API Key.txt', 'r')
 MY_OAI_API_KEY = key_file.readlines()[0]
@@ -73,4 +74,6 @@ synopsis = "Now celebrating the 42nd anniversary of\u00a0 The Hitchhiker\u2019s 
 year = "1982"
 
 #----------------------------------------------------------------------------------
-analyze_book(title, author, year, synopsis)
+answer = analyze_book(title, author, year, synopsis)
+
+print(answer)

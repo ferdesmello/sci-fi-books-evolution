@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 # Function to make session as a browser.
 def get_session():
     session = requests.Session()
-    retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
+    retries = Retry(total=10, backoff_factor=0.2, status_forcelist=[413, 429, 500, 502, 503, 504])
     session.mount('https://', HTTPAdapter(max_retries=retries))
     session.headers.update({
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -129,7 +129,7 @@ def scrape_book_page(session, url):
         return None
 
 #----------------------------------------------------------------------------------
-# Main scraping function.
+# Main scraping function
 def scrape_goodreads_books_from_files(folder_path):
     session = get_session()
     all_books = []
@@ -138,7 +138,7 @@ def scrape_goodreads_books_from_files(folder_path):
     for file_name in os.listdir(folder_path):
         if file_name.endswith('.html'):
             file_path = os.path.join(folder_path, file_name)
-            logging.info(f"Scraping file:-----------------\n  {file_path}")
+            logging.info(f"Scraping file:-----------------\n{file_path}")
             books = scrape_shelf_from_html(file_path)
             for book in books:
                 book_data = scrape_book_page(session, book['url'])
@@ -154,13 +154,13 @@ def scrape_goodreads_books_from_files(folder_path):
     return all_books
 
 #----------------------------------------------------------------------------------
-# Main execution function.
+# Main execution function
 def main():
-    folder_path = './saved_pages'  # Update this path to your local folder containing HTML files
+    folder_path = './saved_pages'
     books = scrape_goodreads_books_from_files(folder_path)
     df = pd.DataFrame(books)
-    df.to_csv('sci-fi_books2.csv', index=False, sep=';')
-    logging.info(f"\nScraped {len(books)} books.\nData saved to sci-fi_books2.csv")
+    df.to_csv('sci-fi_books_shelf.csv', index=False, sep=';')
+    logging.info(f"Scraped {len(books)} books.\nData saved to sci-fi_books_shelf.csv")
 
 #----------------------------------------------------------------------------------
 if __name__ == "__main__":
