@@ -11,7 +11,8 @@ print(df_shelf.info())
 #df = pd.concat(frames)
 
 df = df_shelf
-print(df.info())
+#df = df_lists
+#print(df.info())
 
 #----------------------------------------------------------------------------------
 # Deleting parentheses from titles
@@ -114,10 +115,48 @@ for index, row in df.iterrows():
 # Create the filtered DataFrame using the indices of rows to keep
 df_filtered = df.loc[indices_to_keep_2]
 
-#----------------------------------------------------------------------------------
 print(df_filtered.info())
 #print(df_filtered.head())
 
+#----------------------------------------------------------------------------------
+# Sample of the total for testing
+
+test_books = [
+    "Dune",
+    "The Hitchhiker’s Guide to the Galaxy",
+    "1984",
+    "Brave New World",
+    "The Forever War",
+    "Stranger in a Strange Land",
+    "Childhood’s End",
+    "The Time Machine",
+    "Twenty Thousand Leagues Under the Sea",
+    "The Left Hand of Darkness",
+    "Contact",
+    "Blindness",
+    "Annihilation",
+    "Solaris",
+    "Foundation",
+    "Consider Phlebas",
+    "The Sparrow",
+    "The Player of Games",
+    "Blindsight",
+    "The Fountains of Paradise",
+]
+
+test_books_mask = df_filtered['title'].isin(test_books)
+df_top_books = df_filtered[test_books_mask]
+
+column_order = ['title', 'author', 'year', 'ratings', 'synopsis']
+df_top_books = df_top_books.reindex(columns=column_order)
+
+df_top_books = df_top_books.sort_values(by=['ratings'], axis=0, ascending=False)
+
+df_top_books.to_csv('sci-fi_top_books.csv', index=False, sep=';')
+print(df_top_books)
+
+#----------------------------------------------------------------------------------
 # Save the filtered DataFrame back to a CSV
+
 df_filtered.to_csv('sci-fi_books_filtered.csv', index=False, sep=';')
 print(f"\nData saved to sci-fi_books_filtered.csv")

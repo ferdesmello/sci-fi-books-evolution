@@ -11,11 +11,11 @@ import logging
 import re
 
 #----------------------------------------------------------------------------------
-# Set up logging.
+# Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 #----------------------------------------------------------------------------------
-# Function to make session as a browser.
+# Function to make session as a browser
 def get_session():
     session = requests.Session()
     retries = Retry(total=10, backoff_factor=0.2, status_forcelist=[413, 429, 500, 502, 503, 504])
@@ -26,7 +26,7 @@ def get_session():
     return session
 
 #----------------------------------------------------------------------------------
-# Function to scrape data from the local shelf HTML files.
+# Function to scrape data from the local shelf HTML files
 def scrape_shelf_from_html(file_path):
     books = []
     with open(file_path, 'r', encoding='utf-8') as file:
@@ -159,9 +159,14 @@ def main():
     folder_path = './saved_pages'
     books = scrape_goodreads_books_from_files(folder_path)
     df = pd.DataFrame(books)
+
+    column_order = ['title', 'author', 'year', 'rate', 'ratings', 'genres', 'synopsis', 'url']
+    df = df.reindex(columns=column_order)
+
     df.to_csv('sci-fi_books_shelf.csv', index=False, sep=';')
     logging.info(f"Scraped {len(books)} books.\nData saved to sci-fi_books_shelf.csv")
 
 #----------------------------------------------------------------------------------
+# Execution
 if __name__ == "__main__":
     main()

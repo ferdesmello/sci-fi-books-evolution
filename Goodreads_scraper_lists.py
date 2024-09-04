@@ -4,18 +4,20 @@ import pandas as pd
 import time
 import json
 import os
-from requests.exceptions import RequestException
+from requests.exceptions import RequestException, Timeout
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 import random
 import logging
+from tenacity import retry, stop_after_attempt, wait_exponential
+import re
 
 #----------------------------------------------------------------------------------
-# Set up logging.
+# Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 #----------------------------------------------------------------------------------
-# Function to load progress from the json file
+# Function to load data from json file
 def load_progress():
     if os.path.exists('scraping_progress.json'):
         with open('scraping_progress.json', 'r') as f:
@@ -23,7 +25,7 @@ def load_progress():
     return {'urls': {}}
 
 #----------------------------------------------------------------------------------
-# Function to save progress in the json file
+# Function to dave data in a json file
 def save_progress(progress):
     with open('scraping_progress.json', 'w') as f:
         json.dump(progress, f)
@@ -40,13 +42,43 @@ def get_session():
     return session
 
 #----------------------------------------------------------------------------------
-# Function to scrape data from the online lists
+# Function to retry scraping
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+def make_request(session, url, timeout=30):
+    try:
+        response = session.get(url, timeout=timeout)
+        response.raise_for_status()
+        return response
+    except Timeout:
+        logging.warning(f"Timeout occurred while requesting {url}. Retrying...")
+        raise
+    except RequestException as e:
+        logging.error(f"Error occurred while requesting {url}: {e}")
+        raise
+
+#----------------------------------------------------------------------------------
+# Function to scrape data from the local shelf HTML files
 def scrape_shelf(session, url, page):
     full_url = f"{url}?page={page}"
-    response = session.get(full_url, timeout=10)
-    response.raise_for_status()
+    response = make_request(session, full_url)
     soup = BeautifulSoup(response.content, 'html.parser')
     books = []
+
+    #-----------------------------------------
+    # Approach 1: Extract from shelves using <div> elements with class "elementList"
+    for book in soup.find_all('div', class_='elementList'):
+        title_elem = book.find('a', class_='bookTitle')
+        author_elem = book.find('a', class_='authorName')
+
+        if title_elem and author_elem:
+            books.append({
+                'title': title_elem.text.strip(),
+                'author': author_elem.text.strip(),
+                'url': "https://www.goodreads.com" + title_elem['href']
+            })
+
+    #-----------------------------------------
+    # Approach 2: Extract from lists using <tr> elements with itemtype="http://schema.org/Book"
     for book in soup.find_all('tr', itemtype='http://schema.org/Book'):
         title_elem = book.find('a', class_='bookTitle')
         author_elem = book.find('a', class_='authorName')
@@ -57,67 +89,79 @@ def scrape_shelf(session, url, page):
                 'author': author_elem.find('span', itemprop='name').text.strip(),
                 'url': "https://www.goodreads.com" + title_elem['href']
             })
+
     return books
 
 #----------------------------------------------------------------------------------
-# Function to scrape data from book pages
+# Function to scrape data from book pages.
 def scrape_book_page(session, url):
     try:
         response = session.get(url, timeout=10)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
-        
+
         #-----------------------------------------
         # Extract year
         year = None
-        details_elem = soup.find('div', {'data-testid': 'bookDetails'})
-        if details_elem:
-            year_text = details_elem.find(text=lambda t: t and 'Published' in t)
-            if year_text:
-                year = int(year_text.split()[-1])
-        
+        publication_info = soup.find('p', {'data-testid': 'publicationInfo'})
+        if publication_info:
+            year_text = publication_info.get_text()
+            match = re.search(r'(\d{4})', year_text)
+            if match:
+                year = match.group(1)
+
         #-----------------------------------------
         # Extract genres
         genres = []
         genre_elem = soup.find('div', {'data-testid': 'genresList'})
         if genre_elem:
             genres = [a.text.strip() for a in genre_elem.find_all('a')]
-        
+
         #-----------------------------------------
         # Extract synopsis
         synopsis = "No synopsis available"
         description_elem = soup.find('div', {'data-testid': 'description'})
         if description_elem:
             synopsis = description_elem.text.strip()
-        
+
         #-----------------------------------------
-        # Extract ratings
+        # Extract mean rate
+        rate = 0
+        rating_div = soup.find('div', class_='RatingStatistics__rating')
+        if rating_div:
+            rate_text = rating_div.text.strip()
+            rate = float(rate_text)
+
+        #-----------------------------------------
+        # Extract number of ratings
         ratings = 0
         ratings_elem = soup.find('span', {'data-testid': 'ratingsCount'})
         if ratings_elem:
             ratings_text = ratings_elem.text.strip().split()[0].replace(',', '')
             ratings = int(ratings_text)
-        
+
         #-----------------------------------------
         # Book data
         book_data = {
             'year': year,
+            'rate': rate,
+            'ratings': ratings,
             'genres': genres,
             'synopsis': synopsis,
-            'ratings': ratings,
         }
-        
+
         logging.info(f"Successfully scraped book:\n  {url}")
         logging.debug(f"Book data: {book_data}")
-        
+
         return book_data
+
     except Exception as e:
         logging.error(f"Error scraping\n!!!{url}: {e}")
         return None
 
 #----------------------------------------------------------------------------------
 # Main scraping function
-def scrape_goodreads_lists(urls, max_pages=100):
+def scrape_goodreads_lists(urls, max_pages=20):
     progress = load_progress()
     session = get_session()
     all_books = []
@@ -127,12 +171,12 @@ def scrape_goodreads_lists(urls, max_pages=100):
         last_page = progress['urls'].get(url, {}).get('last_page', 0)
         
         for page in range(last_page + 1, max_pages + 1):
-            logging.info(f"Scraping:-----------------\n{url} - page {page}")
+            logging.info(f"Scraping {url} - page {page}")
             try:
                 page_books = scrape_shelf(session, url, page)
                 
                 if not page_books:
-                    logging.info(f"No more books found on:\n{url} - page {page}.\nMoving to next URL.")
+                    logging.info(f"No more books found on {url} - page {page}. Moving to next URL.")
                     break
                 
                 for book in page_books:
@@ -141,16 +185,17 @@ def scrape_goodreads_lists(urls, max_pages=100):
                         book_data.update(book)
                         books.append(book_data)
                     else:
-                        logging.warning(f"Failed to scrape book:\n!!!{book['url']}")
+                        logging.warning(f"Failed to scrape book: {book['url']}")
+                    
+                    # Implement a random delay between 5 to 15 seconds
+                    time.sleep(random.uniform(5, 15))
                 
                 # Save progress after each page
                 progress['urls'][url] = {'last_page': page, 'books': books}
                 save_progress(progress)
                 
-                # Implement a random delay between 5 to 15 seconds
-                time.sleep(random.uniform(5, 15))
-            except RequestException as e:
-                logging.error(f"Error scraping:\n{url} - page {page}: {e}")
+            except Exception as e:
+                logging.error(f"Error scraping {url} - page {page}: {e}")
                 time.sleep(60)  # Wait a minute before retrying
         
         all_books.extend(books)
@@ -182,11 +227,17 @@ def main():
         "https://www.goodreads.com/list/show/35776.Most_Popular_Science_Fiction_on_Goodreads",
     ]
 
-    books = scrape_goodreads_lists(urls, max_pages=30)
+    books = scrape_goodreads_lists(urls, max_pages=20)
+    
+    # Create DataFrame with specified column order
     df = pd.DataFrame(books)
+    column_order = ['title', 'author', 'year', 'rate', 'ratings', 'genres', 'synopsis', 'url']
+    df = df.reindex(columns=column_order)
+    
     df.to_csv('sci-fi_books_lists.csv', index=False, sep=';')
-    logging.info(f"Scraped {len(books)} books. Data saved to goodreads_books_lists.csv")
+    logging.info(f"Scraped {len(books)} books. Data saved to sci-fi_books_lists.csv")
 
 #----------------------------------------------------------------------------------
+# Execution
 if __name__ == "__main__":
     main()
