@@ -70,6 +70,16 @@ def scrape_book_page(session, url):
         soup = BeautifulSoup(response.content, 'html.parser')
 
         #-----------------------------------------
+        # Extract series
+        series_tag = soup.find('h3', class_='Text Text__title3 Text__italic Text__regular Text__subdued')
+        series = series_tag.text.strip() if series_tag else None
+
+        #-----------------------------------------
+        # Extract pages
+        pages_tag = soup.find('p', attrs={'data-testid': 'pagesFormat'})
+        pages = pages_tag.text.strip() if pages_tag else None
+
+        #-----------------------------------------
         # Extract year
         year = None
         publication_info = soup.find('p', {'data-testid': 'publicationInfo'})
@@ -110,13 +120,25 @@ def scrape_book_page(session, url):
             ratings = int(ratings_text)
 
         #-----------------------------------------
+        # Extract first review
+        review_section = soup.find('section', class_='ReviewText')
+        if review_section:
+            review_tag = review_section.find('span', class_='Formatted')
+            review = review_tag.text.strip() if review_tag else None
+        else:
+            review = None
+
+        #-----------------------------------------
         # Book data
         book_data = {
+            'series': series,
+            'pages': pages,
             'year': year,
             'rate': rate,
             'ratings': ratings,
             'genres': genres,
             'synopsis': synopsis,
+            'review': review,
         }
 
         logging.info(f"Successfully scraped book:\n  {url}")
@@ -145,6 +167,7 @@ def scrape_goodreads_books_from_files(folder_path):
                 if book_data:
                     book.update(book_data)
                     all_books.append(book)
+                    #print(book)
                 else:
                     logging.warning(f"Failed to scrape book:\n!!!{book['url']}")
 
@@ -160,7 +183,17 @@ def main():
     books = scrape_goodreads_books_from_files(folder_path)
     df = pd.DataFrame(books)
 
-    column_order = ['title', 'author', 'year', 'rate', 'ratings', 'genres', 'synopsis', 'url']
+    column_order = ['title', 
+                    'author', 
+                    'year', 
+                    'pages', 
+                    'rate', 
+                    'ratings', 
+                    'series', 
+                    'genres', 
+                    'synopsis',
+                    'review',
+                    'url']
     df = df.reindex(columns=column_order)
 
     df.to_csv('sci-fi_books_shelf.csv', index=False, sep=';')

@@ -23,52 +23,63 @@ client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 )
 
 # Function to analyse every book
-def analyze_book(title, author, year, synopsis):
+def analyze_book(title, author, year, genres, synopsis, review):
     # Create the prompt with the gathered data
     prompt = f"""
-    Based on the following information about the book "{title}" by {author}, published in {year}, answer the following questions using the options provided:
+    Carefully consider the plot of the book "{title}" by {author}, published in {year}.
+    Please, first provide a single paragraph summarizing and highlighting the most famous and iconic elements of the book, such as:
 
+    Key characters who are often referenced or discussed in popular culture;
+    Themes that are central to the story or have a significant impact on the plot;
+    Locations and time settings that are unique or memorable to the book;
+    Notable creatures (aliens, robots/AI, or other) that are central to the story or have a significant impact on the plot;
+    Technologies that are central to the story or have a significant impact on the plot;
+
+    Then, answer the following questions with just the number and one of the alternatives for each question (do not repeat the questions or the alternative's explanations after the colons):
+    
     1. Is the book considered more soft or hard sci-fi?
-        (soft: focuses on character, society, action, or speculation; hard: focuses on scientific accuracy; mixed: elements of both)
+        (soft: scientific accuracy is not central to the plot or the story emphasizes characters, soft sciences like psychology and sociology, or speculative elements; hard: scientific accuracy is central to the plot or the story emphasizes hard sciences like physics, biology, technology, or realistic scenarios; mixed: elements of both)
     2. When does most of the story take place in relation to the year the book was published?
-        (far past: centuries or more before; near past: within a few decades; present; near future: within a few decades; far future: centuries or more ahead; multiple timelines; uncertain)
+        (distant past: millennia or more before; far past: centuries before; near past: within a few decades; present; near future: within a few decades; far future: centuries ahead; distant future: millennia or more ahead; multiple timelines; uncertain)
     3. What is the tone of the book?
         (pessimistic: bleak outlook; optimistic: hopeful; neither)
     4. What is the social and political setting of the book?
         (utopic: ideal society; dystopic: oppressive society; neither)
     5. Is most of the story set on Earth?
         (yes or no)
-    6. Is the story set in a post-apocalyptic world?
-        (yes, no, somewhat)
-    7. Are there any alien life (life which does not originate from Earth) in the story?
+    6. Is the story set in a post-apocalyptic world (after a big civilization-collapsing event)?
+        (yes, no, or somewhat)
+    7. Are there any depictions or mentions of non-terrestrial life forms (aliens, extraterrestrial organisms, creatures not originating from Earth, even if non-sentient) or alien technology in the story? Consider well-known elements of the book, even if not explicitly stated in the synopsis or review.
         (yes or no)
-    8. How are the aliens depicted?
-        (good: friendly; bad: hostile; both/mixed: nuanced; not applicable)
-    9. Are there any robots or artificial intelligences in the story?
+    8. How are the aliens generally depicted in the story?
+        (good: friendly, virtuous, helpful, or heroic; bad: hostile, villainous, antagonistic, or threatening; nuanced: complex or showing both positive and negative traits; irrelevant: minor role, or not significantly affecting the plot; not applicable: no hint of aliens present)
+    9. Are there any depiction or mention of robots or artificial intelligences in the story?
         (yes or no)
-    10. How are the robots or artificial intelligences depicted?
-        (good: friendly; bad: hostile; both/mixed: nuanced; not applicable)
-    11. What is the gender of the protagonist?
-        (male, female, other)
-    12. Can the story be seen as a commentary on social issues of the time of publication?
-        (yes, no, somewhat)
-    13. Is there an environmental message in the book?
-        (yes, no, somewhat)
-
-    Please, answer with only the question number and one of the options for each question. (do not repeat the questions)
-
-    If you know the book well, use your own knowledge first, but also consider this short synopsis: {synopsis}
-"""
+    10. How are the robots or artificial intelligences generally depicted?
+        (good: friendly, benign, virtuous, helpful, or heroic; bad: hostile, malignant, villainous, antagonistic, or threatening; nuanced: complex or showing both positive and negative traits; irrelevant: minor role, or not significantly affecting the plot; not applicable: no hint of robots or artificial intelligences present)
+    11. How is technology and science depicted in the story?
+        (good: a force for the better; bad: ; neutral)
+    12. What is the gender of the protagonist?
+        (male, female, or other)
+    13. Can the story be seen as a commentary on social issues of the time the book was published?
+        (yes, no, or somewhat)
+    14. Is there an environmental message in the book?
+        (yes, no, or somewhat)
+    
+    To help answering the questions, consider the genres the book fits in: {genres}.
+    This short synopsis: {synopsis}
+    And this partial review: {review}
+    """
     
     # Call the OpenAI API with the crafted prompt
     ChatCompletion = client.chat.completions.create(
         messages = [
-            {"role": "system", "content": "You are a helpful assistant and schoolar that analyzes book plots based on provided information and your own knowledge about the books."},
+            {"role": "system", "content": "You are a helpful assistant and scholar of comparative sci-fi literature who analyzes book plots based on your own knowledge and provided information."},
             {"role": "user", "content": prompt}
         ],
         #model = "gpt-4o-mini-2024-07-18",
         model = "gpt-4o",
-        max_tokens = 500,  # Adjust as necessary based on the detail needed
+        max_tokens = 600,  # Adjust as necessary based on the detail needed
         temperature = 0.3  # Adjust for creativity vs. factual response balance
     )
     
@@ -83,6 +94,8 @@ def analyze_book(title, author, year, synopsis):
 # Function to process each book and save progress incrementally
 def ask_to_AI(df):
     # Lists to store the answers for each book
+    paragraph = []
+
     soft_hard = []
     time = []
     tone = []
@@ -93,12 +106,13 @@ def ask_to_AI(df):
     aliens_are = []
     robots_ai = []
     robots_ai_are = []
-    gender = []
+    tech_sci = []
+    protagonist = []
     social = []
     enviromental = []
 
     # Load existing progress if the file exists
-    output_file = 'AI-answers_to_sci-fi_books.csv'
+    output_file = 'AI_answers_to_sci-fi_books.csv'
     if os.path.exists(output_file):
         processed_df = pd.read_csv(output_file, sep=';')
         processed_titles = set(processed_df['title'])
@@ -115,47 +129,56 @@ def ask_to_AI(df):
         title = book['title']
         author = book['author']
         year = book['year']
+        decade = book['decade']
+        genres = book['genres']
         synopsis = book['synopsis']
-        #url = book['url']
+        review = book['review']
+        url = book['url']
 
         try:
             # Get the AI's answers for the book
-            AI_answers = analyze_book(title, author, year, synopsis)
-            
+            AI_answers = analyze_book(title, author, year, genres, synopsis, review)
+
             # Split answers into a list
             answers = []
-            lines = AI_answers.split('\n')
-            for line in lines:
+            lines = AI_answers.split('\n')            
+
+            # Process the first line differently
+            answers.append(lines[0])
+
+            # Process the remaining lines
+            for line in lines[1:]:  # Start from the second line
                 parts = line.split('. ', 1)
                 if len(parts) == 2:
                     answers.append(parts[1].strip())
 
             # Append answers to respective lists
-            if len(answers) == 13:
-                soft_hard.append(answers[0])
-                time.append(answers[1])
-                tone.append(answers[2])
-                setting.append(answers[3])
-                on_earth.append(answers[4])
-                post_apocalyptic.append(answers[5])
-                aliens.append(answers[6])
-                aliens_are.append(answers[7])
-                robots_ai.append(answers[8])
-                robots_ai_are.append(answers[9])
-                gender.append(answers[10])
-                social.append(answers[11])
-                enviromental.append(answers[12])
+            if len(answers) == 15:
+                paragraph.append(answers[0])
+                soft_hard.append(answers[1])
+                time.append(answers[2])
+                tone.append(answers[3])
+                setting.append(answers[4])
+                on_earth.append(answers[5])
+                post_apocalyptic.append(answers[6])
+                aliens.append(answers[7])
+                aliens_are.append(answers[8])
+                robots_ai.append(answers[9])
+                robots_ai_are.append(answers[10])
+                tech_sci.append(answers[11])
+                protagonist.append(answers[12])
+                social.append(answers[13])
+                enviromental.append(answers[14])
             else:
                 logging.warning(f"Unexpected number of answers for book: {title}")
-                soft_hard.extend([None] * 13)
+                paragraph.extend([None] * 15)
 
             # Save progress after each book
             progress_df = pd.DataFrame({
                 'title': [title],
                 'author': [author],
                 'year': [year],
-                'synopsis': [synopsis],
-                #'url': [url],
+                'decade': [decade],
 
                 'soft hard': [soft_hard[-1]],
                 'time': [time[-1]],
@@ -167,9 +190,17 @@ def ask_to_AI(df):
                 'aliens are': [aliens_are[-1]],
                 'robots and AI': [robots_ai[-1]],
                 'robots and AI are': [robots_ai_are[-1]],
-                'gender': [gender[-1]],
+                'tech and science': [tech_sci[-1]],
+                'protagonist': [protagonist[-1]],
                 'social issues': [social[-1]],
-                'enviromental': [enviromental[-1]]
+                'enviromental': [enviromental[-1]],
+
+                'paragraph': [paragraph[-1]],
+
+                'genres': [genres],
+                'synopsis': [synopsis],
+                'review': [review],
+                'url': [url],
             })
             processed_df = pd.concat([processed_df, progress_df], ignore_index=True)
             processed_df.to_csv(output_file, index=False, sep=';')
@@ -182,11 +213,11 @@ def ask_to_AI(df):
 
 #----------------------------------------------------------------------------------
 # Main execution
-df = pd.read_csv("sci-fi_top_books.csv", sep=';')
+df = pd.read_csv("top_books_TEST.csv", sep=';')
 processed_df = ask_to_AI(df)
 
 print(processed_df.info())
-print(processed_df.head())
+#print(processed_df.head())
 
-processed_df.to_csv('AI-answers_to_sci-fi_books_final.csv', index=False, sep=';')
-print(f"Data saved to AI-answers_to_sci-fi_books_final.csv")
+#processed_df.to_csv('AI_answers_to_sci-fi_books_final.csv', index=False, sep=';')
+#print(f"Data saved to AI_answers_to_sci-fi_books_final.csv")

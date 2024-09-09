@@ -101,6 +101,16 @@ def scrape_book_page(session, url):
         soup = BeautifulSoup(response.content, 'html.parser')
 
         #-----------------------------------------
+        # Extract series
+        series_tag = soup.find('h3', class_='Text Text__title3 Text__italic Text__regular Text__subdued')
+        series = series_tag.text.strip() if series_tag else None
+
+        #-----------------------------------------
+        # Extract pages
+        pages_tag = soup.find('p', attrs={'data-testid': 'pagesFormat'})
+        pages = pages_tag.text.strip() if pages_tag else None
+
+        #-----------------------------------------
         # Extract year
         year = None
         publication_info = soup.find('p', {'data-testid': 'publicationInfo'})
@@ -141,13 +151,25 @@ def scrape_book_page(session, url):
             ratings = int(ratings_text)
 
         #-----------------------------------------
+        # Extract first review
+        review_section = soup.find('section', class_='ReviewText')
+        if review_section:
+            review_tag = review_section.find('span', class_='Formatted')
+            review = review_tag.text.strip() if review_tag else None
+        else:
+            review = None
+
+        #-----------------------------------------
         # Book data
         book_data = {
+            'series': series,
+            'pages': pages,
             'year': year,
             'rate': rate,
             'ratings': ratings,
             'genres': genres,
             'synopsis': synopsis,
+            'review': review,
         }
 
         logging.info(f"Successfully scraped book:\n  {url}")
@@ -156,7 +178,7 @@ def scrape_book_page(session, url):
         return book_data
 
     except Exception as e:
-        logging.error(f"Error scraping\n!!!{url}: {e}")
+        logging.error(f"Error scraping:\n!!!{url}: {e}")
         return None
 
 #----------------------------------------------------------------------------------
@@ -171,12 +193,12 @@ def scrape_goodreads_lists(urls, max_pages=20):
         last_page = progress['urls'].get(url, {}).get('last_page', 0)
         
         for page in range(last_page + 1, max_pages + 1):
-            logging.info(f"Scraping {url} - page {page}")
+            logging.info(f"Scraping:\n{url} - page {page}")
             try:
                 page_books = scrape_shelf(session, url, page)
                 
                 if not page_books:
-                    logging.info(f"No more books found on {url} - page {page}. Moving to next URL.")
+                    logging.info(f"No more books found on:\n{url} - page {page}\nMoving to next URL.----------------")
                     break
                 
                 for book in page_books:
@@ -199,7 +221,7 @@ def scrape_goodreads_lists(urls, max_pages=20):
                 time.sleep(60)  # Wait a minute before retrying
         
         all_books.extend(books)
-    
+    #print(books)
     return all_books
 
 #----------------------------------------------------------------------------------
@@ -225,13 +247,34 @@ def main():
         "https://www.goodreads.com/list/show/39287.Popular_Science_Fiction_on_GoodReads_with_between_25000_and_50000_ratings",
         "https://www.goodreads.com/list/show/138257.Popular_Science_Fiction_on_Goodreads_with_between_50000_and_99999_ratings",
         "https://www.goodreads.com/list/show/35776.Most_Popular_Science_Fiction_on_Goodreads",
+        "https://www.goodreads.com/list/show/18864.Genetics_in_Science_Fiction",
+        "https://www.goodreads.com/list/show/549.Most_Under_rated_Science_Fiction",
+        "https://www.goodreads.com/list/show/6228.SF_Masterworks",
+        "https://www.goodreads.com/list/show/6934.Science_Fiction_Books_by_Female_Authors",
+        "https://www.goodreads.com/list/show/9951.best_hard_science_fiction",
+        "https://www.goodreads.com/list/show/17148.Space_Horror",
+        "https://www.goodreads.com/list/show/6032.Best_Aliens",
+        "https://www.goodreads.com/list/show/485.Best_Books_on_Artificial_Intelligence_",
+        "https://www.goodreads.com/list/show/487.Best_of_Cyberpunk",
+        "https://www.goodreads.com/list/show/17324.Transhuman_Science_Fiction_"
     ]
 
     books = scrape_goodreads_lists(urls, max_pages=20)
     
     # Create DataFrame with specified column order
     df = pd.DataFrame(books)
-    column_order = ['title', 'author', 'year', 'rate', 'ratings', 'genres', 'synopsis', 'url']
+
+    column_order = ['title', 
+                    'author', 
+                    'year', 
+                    'pages', 
+                    'rate', 
+                    'ratings', 
+                    'series', 
+                    'genres', 
+                    'synopsis',
+                    'review',
+                    'url']
     df = df.reindex(columns=column_order)
     
     df.to_csv('sci-fi_books_lists.csv', index=False, sep=';')
