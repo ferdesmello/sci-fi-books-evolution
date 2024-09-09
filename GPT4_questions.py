@@ -32,13 +32,14 @@ def analyze_book(title, author, year, genres, synopsis, review):
     Key characters who are often referenced or discussed in popular culture;
     Themes that are central to the story or have a significant impact on the plot;
     Locations and time settings that are unique or memorable to the book;
-    Notable creatures (aliens, robots/AI, or other) that are central to the story or have a significant impact on the plot;
+    Notable creatures (aliens, robots/AI, or others) that are central to the story or have a significant impact on the plot;
     Technologies that are central to the story or have a significant impact on the plot;
 
-    Then, answer the following questions with just the number and one of the alternatives for each question (do not repeat the questions or the alternative's explanations after the colons):
-    
+    Then, answer the following questions followed by a 1 sentence justification explaining why this choice aligns with the summary, provided information, or well-known aspects of the book.
+    For each question, answer exactly in this format: number. alternative: justification
+
     1. Is the book considered more soft or hard sci-fi?
-        (soft: scientific accuracy is not central to the plot or the story emphasizes characters, soft sciences like psychology and sociology, or speculative elements; hard: scientific accuracy is central to the plot or the story emphasizes hard sciences like physics, biology, technology, or realistic scenarios; mixed: elements of both)
+        (soft: scientific accuracy is not central to the plot or the story emphasizes soft sciences like psychology and sociology, or speculative elements; hard: scientific accuracy is central to the plot or the story emphasizes hard sciences like physics, biology, technology, or realistic scenarios; mixed: elements of both)
     2. When does most of the story take place in relation to the year the book was published?
         (distant past: millennia or more before; far past: centuries before; near past: within a few decades; present; near future: within a few decades; far future: centuries ahead; distant future: millennia or more ahead; multiple timelines; uncertain)
     3. What is the tone of the book?
@@ -49,24 +50,24 @@ def analyze_book(title, author, year, genres, synopsis, review):
         (yes or no)
     6. Is the story set in a post-apocalyptic world (after a big civilization-collapsing event)?
         (yes, no, or somewhat)
-    7. Are there any depictions or mentions of non-terrestrial life forms (aliens, extraterrestrial organisms, creatures not originating from Earth, even if non-sentient) or alien technology in the story? Consider well-known elements of the book, even if not explicitly stated in the synopsis or review.
+    7. Are there any depictions or mentions of non-terrestrial life forms (e.g., aliens, extraterrestrial organisms, creatures not originating from Earth, even if non-sentient) or alien technology in the story?
         (yes or no)
-    8. How are the aliens generally depicted in the story?
-        (good: friendly, virtuous, helpful, or heroic; bad: hostile, villainous, antagonistic, or threatening; nuanced: complex or showing both positive and negative traits; irrelevant: minor role, or not significantly affecting the plot; not applicable: no hint of aliens present)
-    9. Are there any depiction or mention of robots or artificial intelligences in the story?
+    8. How are the non-terrestrial life forms generally depicted in the story?
+        (good: friendly, virtuous, helpful, or heroic; bad: hostile, villainous, antagonistic, or threatening; nuanced: complex or showing both positive and negative traits; irrelevant: minor role, or not significantly affecting the plot; not applicable: no non-terrestrial life forms present)
+    9. Are there any depictions or mentions of robots or artificial intelligences in the story?
         (yes or no)
     10. How are the robots or artificial intelligences generally depicted?
-        (good: friendly, benign, virtuous, helpful, or heroic; bad: hostile, malignant, villainous, antagonistic, or threatening; nuanced: complex or showing both positive and negative traits; irrelevant: minor role, or not significantly affecting the plot; not applicable: no hint of robots or artificial intelligences present)
+        (good: friendly, benign, virtuous, helpful, or heroic; bad: hostile, malignant, villainous, antagonistic, or threatening; nuanced: complex or showing both positive and negative traits; irrelevant: minor role, or not significantly affecting the plot; not applicable: no robots or artificial intelligences present)
     11. How is technology and science depicted in the story?
-        (good: a force for the better; bad: ; neutral)
+        (bood: beneficial, advancing society, solving problems, or optimistic; bad: harmful, causing problems, being misused, or pessimistic; mixed: complex, with both benefits and drawbacks; neutral: present but not central to the story's themes or impact)
     12. What is the gender of the protagonist?
         (male, female, or other)
-    13. Can the story be seen as a commentary on social issues of the time the book was published?
+    13. Does the story explicitly address, critique, or reflect specific social issues relevant to the time of publication (e.g., inequality, war, discrimination, political oppression)?
         (yes, no, or somewhat)
-    14. Is there an environmental message in the book?
+    14. Is there an environmental or ecological message in the book?
         (yes, no, or somewhat)
-    
-    To help answering the questions, consider the genres the book fits in: {genres}.
+
+    To help answer the questions, consider the genres the book fits in: {genres}.
     This short synopsis: {synopsis}
     And this partial review: {review}
     """
@@ -94,8 +95,11 @@ def analyze_book(title, author, year, genres, synopsis, review):
 # Function to process each book and save progress incrementally
 def ask_to_AI(df):
     # Lists to store the answers for each book
+
+    # Summarizing paragraph
     paragraph = []
 
+    # Answer to the questions
     soft_hard = []
     time = []
     tone = []
@@ -110,6 +114,22 @@ def ask_to_AI(df):
     protagonist = []
     social = []
     enviromental = []
+    
+    # Justification to the answer
+    soft_hard_just = []
+    time_just = []
+    tone_just = []
+    setting_just = []
+    on_earth_just = []
+    post_apocalyptic_just = []
+    aliens_just = []
+    aliens_are_just = []
+    robots_ai_just = []
+    robots_ai_are_just = []
+    tech_sci_just = []
+    protagonist_just = []
+    social_just = []
+    enviromental_just = []
 
     # Load existing progress if the file exists
     output_file = 'AI_answers_to_sci-fi_books.csv'
@@ -141,37 +161,73 @@ def ask_to_AI(df):
 
             # Split answers into a list
             answers = []
+            justifications = []
             lines = AI_answers.split('\n')            
 
             # Process the first line differently
-            answers.append(lines[0])
+            paragraph_text = lines[0]
 
-            # Process the remaining lines
-            for line in lines[1:]:  # Start from the second line
-                parts = line.split('. ', 1)
-                if len(parts) == 2:
-                    answers.append(parts[1].strip())
+            # Process each line
+            for line in lines[2:]: # Start on the third line (first is paragraph and second is empty)
+                # Split at the first occurrence of ". " to separate the number
+                parts_number_text = line.split('. ', 1)
+                
+                # Further split at the first occurrence of ": " to separate answer and justification
+                parts_answer_just = parts_number_text[1].split(': ', 1)
+                
+                # Check if the split was successful, i.e., there are exactly two parts
+                if len(parts_answer_just) == 2:
+                    answers.append(parts_answer_just[0].strip()) # Append the word after the number and period
+                    justifications.append(parts_answer_just[1].strip()) # Append the text after the colon
 
             # Append answers to respective lists
-            if len(answers) == 15:
-                paragraph.append(answers[0])
-                soft_hard.append(answers[1])
-                time.append(answers[2])
-                tone.append(answers[3])
-                setting.append(answers[4])
-                on_earth.append(answers[5])
-                post_apocalyptic.append(answers[6])
-                aliens.append(answers[7])
-                aliens_are.append(answers[8])
-                robots_ai.append(answers[9])
-                robots_ai_are.append(answers[10])
-                tech_sci.append(answers[11])
-                protagonist.append(answers[12])
-                social.append(answers[13])
-                enviromental.append(answers[14])
+            if (len(answers) == 14) & (len(justifications) == 14):
+                paragraph.append(paragraph_text)
+
+                soft_hard.append(answers[0])
+                soft_hard_just.append(justifications[0])
+
+                time.append(answers[1])
+                time_just.append(justifications[1])
+
+                tone.append(answers[2])
+                tone_just.append(justifications[2])
+
+                setting.append(answers[3])
+                setting_just.append(justifications[3])
+
+                on_earth.append(answers[4])
+                on_earth_just.append(justifications[4])
+
+                post_apocalyptic.append(answers[5])
+                post_apocalyptic_just.append(justifications[5])
+
+                aliens.append(answers[6])
+                aliens_just.append(justifications[6])
+
+                aliens_are.append(answers[7])
+                aliens_are_just.append(justifications[7])
+
+                robots_ai.append(answers[8])
+                robots_ai_just.append(justifications[8])
+
+                robots_ai_are.append(answers[9])
+                robots_ai_are_just.append(justifications[9])
+
+                tech_sci.append(answers[10])
+                tech_sci_just.append(justifications[10])
+
+                protagonist.append(answers[11])
+                protagonist_just.append(justifications[11])
+
+                social.append(answers[12])
+                social_just.append(justifications[12])
+
+                enviromental.append(answers[13])
+                enviromental_just.append(justifications[13])
             else:
                 logging.warning(f"Unexpected number of answers for book: {title}")
-                paragraph.extend([None] * 15)
+                paragraph.extend([None] * 29)
 
             # Save progress after each book
             progress_df = pd.DataFrame({
@@ -181,19 +237,46 @@ def ask_to_AI(df):
                 'decade': [decade],
 
                 'soft hard': [soft_hard[-1]],
+                'justifying soft hard': [soft_hard_just[-1]],
+
                 'time': [time[-1]],
+                'justifying time': [time_just[-1]],
+
                 'tone': [tone[-1]],
+                'justifying tone': [tone_just[-1]],
+
                 'setting': [setting[-1]],
+                'justifying setting': [setting_just[-1]],
+
                 'on Earth': [on_earth[-1]],
+                'justifying on Earth': [on_earth_just[-1]],
+
                 'post apocalyptic': [post_apocalyptic[-1]],
+                'justifying post apocalyptic': [post_apocalyptic_just[-1]],
+
                 'aliens': [aliens[-1]],
+                'justifying aliens': [aliens_just[-1]],
+
                 'aliens are': [aliens_are[-1]],
+                'justifying aliens are': [aliens_are_just[-1]],
+
                 'robots and AI': [robots_ai[-1]],
+                'justifying robots and AI': [robots_ai_just[-1]],
+
                 'robots and AI are': [robots_ai_are[-1]],
+                'justifying robots and AI are': [robots_ai_are_just[-1]],
+
                 'tech and science': [tech_sci[-1]],
+                'justifying tech and science': [tech_sci_just[-1]],
+
                 'protagonist': [protagonist[-1]],
+                'justifying protagonist': [protagonist_just[-1]],
+
                 'social issues': [social[-1]],
+                'justifying social issues': [social_just[-1]],
+
                 'enviromental': [enviromental[-1]],
+                'justifying enviromental': [enviromental_just[-1]],
 
                 'paragraph': [paragraph[-1]],
 
