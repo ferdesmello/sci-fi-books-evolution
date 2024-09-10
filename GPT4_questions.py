@@ -18,8 +18,8 @@ client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 # Function to call OpenAI API with retry logic
 @retry(
     retry=retry_if_exception_type((RequestException, Exception)),  # Retry on API errors or network issues
-    wait=wait_exponential(multiplier=1, min=4, max=60),  # Exponential backoff: starts at 4 seconds, max 60 seconds
-    stop=stop_after_attempt(5)  # Stop after 5 attempts
+    wait=wait_exponential(multiplier=1, min=4, max=600),  # Exponential backoff: starts at 4 seconds, max 600 seconds
+    stop=stop_after_attempt(10)  # Stop after 10 attempts
 )
 
 # Function to analyse every book
@@ -54,12 +54,12 @@ def analyze_book(title, author, year, genres, synopsis, review):
         (yes or no)
     8. How are the non-terrestrial life forms generally depicted in the story?
         (good: friendly, virtuous, helpful, or heroic; bad: hostile, villainous, antagonistic, or threatening; nuanced: complex or showing both positive and negative traits; irrelevant: minor role, or not significantly affecting the plot; not applicable: no non-terrestrial life forms present)
-    9. Are there any depictions or mentions of robots or artificial intelligences in the story?
+    9. Are there any depictions of robots or artificial intelligences in the story?
         (yes or no)
     10. How are the robots or artificial intelligences generally depicted?
         (good: friendly, benign, virtuous, helpful, or heroic; bad: hostile, malignant, villainous, antagonistic, or threatening; nuanced: complex or showing both positive and negative traits; irrelevant: minor role, or not significantly affecting the plot; not applicable: no robots or artificial intelligences present)
     11. How is technology and science depicted in the story?
-        (bood: beneficial, advancing society, solving problems, or optimistic; bad: harmful, causing problems, being misused, or pessimistic; mixed: complex, with both benefits and drawbacks; neutral: present but not central to the story's themes or impact)
+        (good: beneficial, advancing society, solving problems, or optimistic; bad: harmful, causing problems, being misused, or pessimistic; mixed: complex, with both benefits and drawbacks; neutral: present but not central to the story's themes or impact)
     12. What is the gender of the protagonist?
         (male, female, or other)
     13. Does the story explicitly address, critique, or reflect specific social issues relevant to the time of publication (e.g., inequality, war, discrimination, political oppression)?
@@ -150,6 +150,8 @@ def ask_to_AI(df):
         author = book['author']
         year = book['year']
         decade = book['decade']
+        pages = book['pages']
+        series = book['series']
         genres = book['genres']
         synopsis = book['synopsis']
         review = book['review']
@@ -234,52 +236,54 @@ def ask_to_AI(df):
                 'title': [title],
                 'author': [author],
                 'year': [year],
-                'decade': [decade],
-
-                'soft hard': [soft_hard[-1]],
-                'justifying soft hard': [soft_hard_just[-1]],
-
-                'time': [time[-1]],
-                'justifying time': [time_just[-1]],
-
-                'tone': [tone[-1]],
-                'justifying tone': [tone_just[-1]],
-
-                'setting': [setting[-1]],
-                'justifying setting': [setting_just[-1]],
-
-                'on Earth': [on_earth[-1]],
-                'justifying on Earth': [on_earth_just[-1]],
-
-                'post apocalyptic': [post_apocalyptic[-1]],
-                'justifying post apocalyptic': [post_apocalyptic_just[-1]],
-
-                'aliens': [aliens[-1]],
-                'justifying aliens': [aliens_just[-1]],
-
-                'aliens are': [aliens_are[-1]],
-                'justifying aliens are': [aliens_are_just[-1]],
-
-                'robots and AI': [robots_ai[-1]],
-                'justifying robots and AI': [robots_ai_just[-1]],
-
-                'robots and AI are': [robots_ai_are[-1]],
-                'justifying robots and AI are': [robots_ai_are_just[-1]],
-
-                'tech and science': [tech_sci[-1]],
-                'justifying tech and science': [tech_sci_just[-1]],
-
-                'protagonist': [protagonist[-1]],
-                'justifying protagonist': [protagonist_just[-1]],
-
-                'social issues': [social[-1]],
-                'justifying social issues': [social_just[-1]],
-
-                'enviromental': [enviromental[-1]],
-                'justifying enviromental': [enviromental_just[-1]],
 
                 'paragraph': [paragraph[-1]],
 
+                '1 soft hard': [soft_hard[-1]],
+                'justifying soft hard': [soft_hard_just[-1]],
+
+                '2 time': [time[-1]],
+                'justifying time': [time_just[-1]],
+
+                '3 tone': [tone[-1]],
+                'justifying tone': [tone_just[-1]],
+
+                '4 setting': [setting[-1]],
+                'justifying setting': [setting_just[-1]],
+
+                '5 on Earth': [on_earth[-1]],
+                'justifying on Earth': [on_earth_just[-1]],
+
+                '6 post apocalyptic': [post_apocalyptic[-1]],
+                'justifying post apocalyptic': [post_apocalyptic_just[-1]],
+
+                '7 aliens': [aliens[-1]],
+                'justifying aliens': [aliens_just[-1]],
+
+                '8 aliens are': [aliens_are[-1]],
+                'justifying aliens are': [aliens_are_just[-1]],
+
+                '9 robots and AI': [robots_ai[-1]],
+                'justifying robots and AI': [robots_ai_just[-1]],
+
+                '10 robots and AI are': [robots_ai_are[-1]],
+                'justifying robots and AI are': [robots_ai_are_just[-1]],
+
+                '11 tech and science': [tech_sci[-1]],
+                'justifying tech and science': [tech_sci_just[-1]],
+
+                '12 protagonist': [protagonist[-1]],
+                'justifying protagonist': [protagonist_just[-1]],
+
+                '13 social issues': [social[-1]],
+                'justifying social issues': [social_just[-1]],
+
+                '14 enviromental': [enviromental[-1]],
+                'justifying enviromental': [enviromental_just[-1]],
+
+                'decade': [decade],
+                'pages': [pages],
+                'series': [series],
                 'genres': [genres],
                 'synopsis': [synopsis],
                 'review': [review],
@@ -302,5 +306,5 @@ processed_df = ask_to_AI(df)
 print(processed_df.info())
 #print(processed_df.head())
 
-#processed_df.to_csv('AI_answers_to_sci-fi_books_final.csv', index=False, sep=';')
-#print(f"Data saved to AI_answers_to_sci-fi_books_final.csv")
+processed_df.to_csv('AI_ANSWERS_TO_sci-fi_books.csv', index=False, sep=';')
+print(f"Data saved to AI_ANSWERS_TO_sci-fi_books.csv")

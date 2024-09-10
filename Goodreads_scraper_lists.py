@@ -259,8 +259,8 @@ def main():
         "https://www.goodreads.com/list/show/17324.Transhuman_Science_Fiction_"
     ]
 
-    books = scrape_goodreads_lists(urls, max_pages=20)
-    
+    books = scrape_goodreads_lists(urls, max_pages=30)
+
     # Create DataFrame with specified column order
     df = pd.DataFrame(books)
 
@@ -277,10 +277,54 @@ def main():
                     'url']
     df = df.reindex(columns=column_order)
     
-    df.to_csv('sci-fi_books_lists.csv', index=False, sep=';')
-    logging.info(f"Scraped {len(books)} books. Data saved to sci-fi_books_lists.csv")
-
+    df.to_csv('PARTIAL_sci-fi_books_LISTS.csv', index=False, sep=';')
+    
+    logging.info(f"Scraped {len(books)} books. Data saved to PARTIAL_sci-fi_books_LISTS.csv")
+    
 #----------------------------------------------------------------------------------
 # Execution
 if __name__ == "__main__":
     main()
+    
+    #--------------------------------------------
+    # Reading the complete json file and saving it as a csv file.
+
+    # Step 1: Load the JSON file into a Python object
+    with open('scraping_progress.json', 'r') as f:
+        data = json.load(f)  # Load JSON into a dictionary
+
+    # Step 2: Extract the "books" data from within the "urls" layer
+    books_data = []
+
+    # Navigate through the URLs dictionary and extract the "books" lists
+    for url_key, url_content in data['urls'].items():
+        # Check if "books" is present and is a list
+        if 'books' in url_content and isinstance(url_content['books'], list):
+            books_data.extend(url_content['books'])  # Add the list of books to books_data
+
+    # Step 3: Flatten the books data into a DataFrame
+    # Each element in books_data is a book's details
+    df_books = pd.json_normalize(books_data)
+    
+    # Inspect the DataFrame structure
+    print(df_books.head())  # View the first few rows to understand the layout
+    
+    # Chose the right columns and their order
+    column_order = ['title', 
+                    'author', 
+                    'year', 
+                    'pages', 
+                    'rate', 
+                    'ratings', 
+                    'series', 
+                    'genres', 
+                    'synopsis',
+                    'review',
+                    'url']
+    
+    df_books = df_books.reindex(columns=column_order)
+
+    # Save the flattened DataFrame to a CSV file
+    df_books.to_csv('sci-fi_books_LISTS.csv', index=False, sep=';')
+
+    logging.info(f"Data saved to sci-fi_books_LISTS.csv")
