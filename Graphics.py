@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 #----------------------------------------------------------------------------------
 # reading the data
-df = pd.read_csv("sci-fi_books_filtered.csv", sep=";")
+df = pd.read_csv("./Data/sci-fi_books_FILTERED.csv", sep=";")
 
 print(df.info())
 print(df.head())

@@ -19,15 +19,15 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 #----------------------------------------------------------------------------------
 # Function to load data from json file
 def load_progress():
-    if os.path.exists('scraping_progress.json'):
-        with open('scraping_progress.json', 'r') as f:
+    if os.path.exists('./Data/scraping_progress.json'):
+        with open('./Data/scraping_progress.json', 'r') as f:
             return json.load(f)
     return {'urls': {}}
 
 #----------------------------------------------------------------------------------
 # Function to dave data in a json file
 def save_progress(progress):
-    with open('scraping_progress.json', 'w') as f:
+    with open('./Data/scraping_progress.json', 'w') as f:
         json.dump(progress, f)
 
 #----------------------------------------------------------------------------------
@@ -277,9 +277,9 @@ def main():
                     'url']
     df = df.reindex(columns=column_order)
     
-    df.to_csv('PARTIAL_sci-fi_books_LISTS.csv', index=False, sep=';')
+    df.to_csv('./Data/PARTIAL_sci-fi_books_LISTS.csv', index=False, sep=';')
     
-    logging.info(f"Scraped {len(books)} books. Data saved to PARTIAL_sci-fi_books_LISTS.csv")
+    logging.info(f"Scraped {len(books)} books. Data saved to ./Data/PARTIAL_sci-fi_books_LISTS.csv")
     
 #----------------------------------------------------------------------------------
 # Execution
@@ -290,7 +290,7 @@ if __name__ == "__main__":
     # Reading the complete json file and saving it as a csv file.
 
     # Step 1: Load the JSON file into a Python object
-    with open('scraping_progress.json', 'r') as f:
+    with open('./Data/scraping_progress.json', 'r') as f:
         data = json.load(f)  # Load JSON into a dictionary
 
     # Step 2: Extract the "books" data from within the "urls" layer
@@ -325,6 +325,6 @@ if __name__ == "__main__":
     df_books = df_books.reindex(columns=column_order)
 
     # Save the flattened DataFrame to a CSV file
-    df_books.to_csv('sci-fi_books_LISTS.csv', index=False, sep=';')
+    df_books.to_csv('./Data/sci-fi_books_LISTS.csv', index=False, sep=';')
 
-    logging.info(f"Data saved to sci-fi_books_LISTS.csv")
+    logging.info(f"Data saved to ./Data/sci-fi_books_LISTS.csv")

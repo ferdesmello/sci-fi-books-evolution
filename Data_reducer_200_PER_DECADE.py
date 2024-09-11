@@ -1,7 +1,7 @@
 import pandas as pd
 
 #----------------------------------------------------------------------------------
-df_filtered = pd.read_csv('sci-fi_books_FILTERED.csv', sep = ';')
+df_filtered = pd.read_csv('./Data/sci-fi_books_FILTERED.csv', sep = ';')
 
 #----------------------------------------------------------------------------------
 # Top 200 rating books for every decade
@@ -41,7 +41,7 @@ df_top_books = df_top_books.reindex(columns=column_order)
 
 #----------------------------------------------------------------------------------
 
-df_top_books.to_csv('top_sci-fi_books_200_PER_DECADE.csv', index=False, sep=';')
+df_top_books.to_csv('./Data/top_sci-fi_books_200_PER_DECADE.csv', index=False, sep=';')
 
 print("\nTOP 200 BOOKS PER DECADE Dataframe")
 print(df_top_books.info())
@@ -79,4 +79,4 @@ df_test_books = df_filtered[test_books_mask]
 df_test_books = df_test_books.reindex(columns=column_order)
 df_test_books = df_test_books.sort_values(by=['ratings'], axis=0, ascending=False)
 
-df_test_books.to_csv('top_books_TEST.csv', index=False, sep=';')
+df_test_books.to_csv('./Data/top_books_TEST.csv', index=False, sep=';')

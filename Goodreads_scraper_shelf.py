@@ -179,7 +179,7 @@ def scrape_goodreads_books_from_files(folder_path):
 #----------------------------------------------------------------------------------
 # Main execution function
 def main():
-    folder_path = './saved_pages'
+    folder_path = './Saved_pages'
     books = scrape_goodreads_books_from_files(folder_path)
     df = pd.DataFrame(books)
 
@@ -196,8 +196,8 @@ def main():
                     'url']
     df = df.reindex(columns=column_order)
 
-    df.to_csv('sci-fi_books_SHELF.csv', index=False, sep=';')
-    logging.info(f"Scraped {len(books)} books.\nData saved to sci-fi_books_SHELF.csv")
+    df.to_csv('./Data/sci-fi_books_SHELF.csv', index=False, sep=';')
+    logging.info(f"Scraped {len(books)} books.\nData saved to ./Data/sci-fi_books_SHELF.csv")
 
 #----------------------------------------------------------------------------------
 # Execution

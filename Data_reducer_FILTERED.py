@@ -1,12 +1,12 @@
 import pandas as pd
 
 #----------------------------------------------------------------------------------
-df_shelf = pd.read_csv('sci-fi_books_SHELF.csv', sep = ';')
-df_lists = pd.read_csv('sci-fi_books_LISTS.csv', sep = ';')
+df_shelf = pd.read_csv('./Data/sci-fi_books_SHELF.csv', sep = ';')
+df_lists = pd.read_csv('./Data/sci-fi_books_LISTS.csv', sep = ';')
 
 frames = [df_shelf, df_lists]
 df = pd.concat(frames, ignore_index=True)
-df.to_csv('sci-fi_books_BRUTE.csv', index=False, sep=';')
+df.to_csv('./Data/sci-fi_books_BRUTE.csv', index=False, sep=';')
 
 #df = df_shelf
 print("\nBRUTE Dataframe")
@@ -14,7 +14,7 @@ print(df.info())
 
 #----------------------------------------------------------------------------------
 # Excluding series of books (eg. trilogies together in one volume)
-# (must be before excluding parentheses, as this info is in the parentheses)
+# (must be done before excluding parentheses, as this info is in the parentheses)
 
 # Regex pattern for exclusion ("#1-3" for books of a series together)
 pattern = r"#1-\d"
@@ -32,12 +32,13 @@ df = df[~mask_series]
 
 #----------------------------------------------------------------------------------
 # Deleting parentheses from titles
-# (must be after excluding series together in a volume, as some info is in the parentheses)
+# (must be done after excluding series together in a volume, as some info is in the parentheses)
+
 df.loc[:, "title"] = df["title"].str.replace(r' \(.*\)', '', regex=True)
 
 #----------------------------------------------------------------------------------
 # Excluding colections of books (eg. many books together in one volume)
-# (must be after excluding parentheses, as some series have " / " in the parentheses)
+# (must be done after excluding parentheses, as some series have " / " in the parentheses)
 
 # Regex pattern for exclusion (" / " for many books in one volume)
 pattern = r" / "
@@ -175,5 +176,5 @@ df_filtered = df.loc[indices_to_keep_2]
 print("\nFILTERED Dataframe")
 print(df_filtered.info())
 
-df_filtered.to_csv('sci-fi_books_FILTERED.csv', index=False, sep=';')
-print(f"\nData saved to sci-fi_books_FILTERED.csv")
+df_filtered.to_csv('./Data/sci-fi_books_FILTERED.csv', index=False, sep=';')
+print(f"\nData saved to ./Data/sci-fi_books_FILTERED.csv")
