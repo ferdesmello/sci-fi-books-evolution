@@ -31,7 +31,7 @@ def analyze_book(title, author, year, genres, synopsis, review):
 
     Key characters who are often referenced or discussed in popular culture;
     Themes that are central to the story or have a significant impact on the plot;
-    Locations and time settings that are unique or memorable to the book;
+    Locations and time settings that are unique or memorable to the story;
     Notable creatures (aliens, robots/AI, or others) that are central to the story or have a significant impact on the plot;
     Technologies that are central to the story or have a significant impact on the plot;
 
@@ -42,9 +42,9 @@ def analyze_book(title, author, year, genres, synopsis, review):
         (soft: scientific accuracy is not central to the plot or the story emphasizes soft sciences like psychology and sociology, or speculative elements; hard: scientific accuracy is central to the plot or the story emphasizes hard sciences like physics, biology, technology, or realistic scenarios; mixed: elements of both)
     2. When does most of the story take place in relation to the year the book was published?
         (distant past: millennia or more before; far past: centuries before; near past: within a few decades; present; near future: within a few decades; far future: centuries ahead; distant future: millennia or more ahead; multiple timelines; uncertain)
-    3. What is the tone of the book?
+    3. What is the tone of the story?
         (pessimistic: bleak outlook; optimistic: hopeful; neither)
-    4. What is the social and political setting of the book?
+    4. What is the social and political setting of the story?
         (utopic: ideal society; dystopic: oppressive society; neither)
     5. Is most of the story set on Earth?
         (yes or no)
@@ -64,7 +64,7 @@ def analyze_book(title, author, year, genres, synopsis, review):
         (male, female, or other)
     13. Does the story explicitly address, critique, or reflect specific social issues relevant to the time of publication (e.g., inequality, war, discrimination, political oppression)?
         (yes, no, or somewhat)
-    14. Is there an environmental or ecological message in the book?
+    14. Is there an environmental or ecological message in the story?
         (yes, no, or somewhat)
 
     To help answer the questions, consider the genres the book fits in: {genres}.
@@ -80,7 +80,7 @@ def analyze_book(title, author, year, genres, synopsis, review):
         ],
         #model = "gpt-4o-mini-2024-07-18",
         model = "gpt-4o",
-        max_tokens = 600,  # Adjust as necessary based on the detail needed
+        max_tokens = 600,  # Adjust based on the detail needed
         temperature = 0.3  # Adjust for creativity vs. factual response balance
     )
     
@@ -115,7 +115,7 @@ def ask_to_AI(df):
     social = []
     enviromental = []
     
-    # Justification to the answer
+    # Justification to the answers given
     soft_hard_just = []
     time_just = []
     tone_just = []
@@ -300,11 +300,12 @@ def ask_to_AI(df):
 
 #----------------------------------------------------------------------------------
 # Main execution
-df = pd.read_csv("top_books_TEST.csv", sep=';')
+#df = pd.read_csv("./Data/top_sci-fi_books_200_PER_DECADE.csv", sep=';')
+df = pd.read_csv("./Data/top_books_TEST.csv", sep=';')
 processed_df = ask_to_AI(df)
 
 print(processed_df.info())
 #print(processed_df.head())
 
-processed_df.to_csv('AI_ANSWERS_TO_sci-fi_books.csv', index=False, sep=';')
-print(f"Data saved to AI_ANSWERS_TO_sci-fi_books.csv")
+processed_df.to_csv('./Data/AI_ANSWERS_TO_sci-fi_books.csv', index=False, sep=';', encoding='utf-8-sig')
+print(f"Data saved to ./Data/AI_ANSWERS_TO_sci-fi_books.csv")

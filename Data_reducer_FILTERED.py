@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 
 #----------------------------------------------------------------------------------
 df_shelf = pd.read_csv('./Data/sci-fi_books_SHELF.csv', sep = ';')
@@ -6,7 +7,7 @@ df_lists = pd.read_csv('./Data/sci-fi_books_LISTS.csv', sep = ';')
 
 frames = [df_shelf, df_lists]
 df = pd.concat(frames, ignore_index=True)
-df.to_csv('./Data/sci-fi_books_BRUTE.csv', index=False, sep=';')
+df.to_csv('./Data/sci-fi_books_BRUTE.csv', index=False, sep=';', encoding='utf-8-sig')
 
 #df = df_shelf
 print("\nBRUTE Dataframe")
@@ -34,18 +35,68 @@ df = df[~mask_series]
 # Deleting parentheses from titles
 # (must be done after excluding series together in a volume, as some info is in the parentheses)
 
+# Deletes open and closed parentheses
 df.loc[:, "title"] = df["title"].str.replace(r' \(.*\)', '', regex=True)
+
+# Deletes special case of digit error with only open parenthesis
+df.loc[:, "title"] = df["title"].str.replace(r' \(.*', '', regex=True)
+
+# Including series value in the case of square brackes in title (2 cases)
+
+def update_series(row):
+    # Check for existing content
+    existing_value = row['series']
+    
+    # Search for the pattern and capture only the content inside the square brackets
+    match = re.search(r'\[(.*?)\]', row['title']) # Captures content inside square brackets
+    
+    # Update only if a match is found and existing_value is None (or any placeholder you use)
+    if match and pd.isna(existing_value):
+        #print(match.group(1))
+        return match.group(1) # Return only the content inside the brackets
+    else:
+        return existing_value # Keep the existing value unchanged
+
+# Apply the function to update the 'bracket_content' column
+df['series'] = df.apply(update_series, axis=1)
+
+# Deletes special case of square brackets
+df.loc[:, "title"] = df["title"].str.replace(r' \[.*', '', regex=True)
 
 #----------------------------------------------------------------------------------
 # Excluding colections of books (eg. many books together in one volume)
+# Some collections have just "/" separating titles, but some titles use "/" right and I want to keep those
 # (must be done after excluding parentheses, as some series have " / " in the parentheses)
 
-# Regex pattern for exclusion (" / " for many books in one volume)
-pattern = r" / "
+def filter_bar(title):
+    # Regex pattern for exclusion ("/" for many books in one volume)
+    pattern = "/"
+    # Exceptions for exclusion (some books use "/" properly)
+    # Use a set for faster lookups
+    exceptions = {"11/22/63", 
+                  "The After/Life",
+                  "The Mighty Thor, Vol. 3: The Asgard/Shi'ar War",
+                  "The 7 1/2 Deaths of Evelyn Hardcastle"} 
 
-# Exclude rows where the 'title' column matches the pattern
-mask = df['title'].str.contains(pattern, regex=True, na=False)
-df = df[~mask]
+    # Normalize title by stripping extra spaces
+    title = title.strip()
+
+    # Check if the title is in exceptions
+    if title in exceptions:
+        #print(f"Included as exception: {title}")
+        return True
+
+    # Check for unwanted slashes
+    if re.search(pattern, title):
+        #print(f"Excluded due to slash: {title}")
+        return False
+
+    # Include titles without slashes
+    return True
+
+# Apply the filter to exclude undesired titles
+mask = df['title'].apply(filter_bar)
+df = df[mask]
 
 #----------------------------------------------------------------------------------
 # Coding the series field
@@ -61,7 +112,16 @@ df['pages'] = df['pages'].str.extract(r'(\d+)', expand=False)
 df['pages'] = df['pages'].fillna(0).astype(int)
 
 #----------------------------------------------------------------------------------
-# Excluding duplicates (some duplicates differ just by capitalization of titles)
+# Excluding duplicates (some duplicates differ just by capitalization or apostrophe type: ’ or ')
+
+# Function to normalize titles by replacing typographic quotes with standard ones
+def normalize_apostrophe(title):
+    # Replace right single quotation mark with a straight apostrophe
+    normalized_title = title.replace('’', "'")
+    return normalized_title
+
+# Apply the normalization function to the title column
+df['title'] = df['title'].apply(normalize_apostrophe)
 
 # Create temporary lowercase columns for comparison
 df['title_lower'] = df['title'].str.lower()
@@ -72,6 +132,54 @@ df = df.drop_duplicates(subset=['title_lower', 'author_lower'], keep='first')
 
 # Drop the temporary lowercase columns
 df = df.drop(columns=['title_lower', 'author_lower'])
+
+#----------------------------------------------------------------------------------
+# Deleting some left over duplicates, unwanted non-fiction, and collections
+
+def delete_books(row):
+
+    # Titles to be deleted
+    titles_to_del = ["Feersum Endjinn",
+                     "Frankenstein: The 1818 Text",
+                     "Hard to Be a God",
+                     "R.U.R.: Rossum's Universal Robots",
+                     "Rama Revealed: The Ultimate Encounter",
+                     "Simulacron 3",
+                     "Simulacron Three",
+                     "Fiction 2000: Cyberpunk and the Future of Narrative",
+                     "GURPS Reign of Steel: The War Is Over, The Robots Won",
+                     "The Third Time Travel MEGAPACK ®: 18 Classic Trips Through Time",
+                     "The Zombie Survival Guide: Complete Protection from the Living Dead",
+                     "Mickey 7"]
+    
+    # Authors to be deleted
+    authors_to_del = ["Iain M. Banks",
+                     "Mary Wollstonecraft Shelley",
+                     "Arkadi Strugatski",
+                     "Josef/Karel Capek",
+                     "Arthur C. Clarke",
+                     "Daniel F. Galouye",
+                     "George Edgar Slusser",
+                     "David L. Pulver",
+                     "Philip K. Dick",
+                     "Max Brooks",
+                     "Edward Ashton"]
+    
+    # Extract title and author from the row
+    title = row['title']
+    author = row['author']
+
+    # Check if both title and author match those in the deletion lists
+    if (title in titles_to_del) & (author in authors_to_del):
+        #print(f"Excluded: {title} by {author}")
+        return False
+
+    else:
+        return True
+
+# Apply the filter function to each row using axis=1 to access row data
+mask = df.apply(delete_books, axis=1)
+df = df[mask]
 
 #----------------------------------------------------------------------------------
 # Filtering out synopses too short and books without publishing year
@@ -141,7 +249,11 @@ unwanted_genres = ['Graphic Novels',
                    'Collections', 
                    'Nonfiction', 
                    'Art', 
-                   'Reference']
+                   'Reference'
+                   'Literary Criticism', 
+                   'Essays', 
+                   'Criticism',
+                   "Role Playing Games"]
 
 unwanted_genres = [genre.lower() for genre in unwanted_genres]
 
@@ -176,5 +288,5 @@ df_filtered = df.loc[indices_to_keep_2]
 print("\nFILTERED Dataframe")
 print(df_filtered.info())
 
-df_filtered.to_csv('./Data/sci-fi_books_FILTERED.csv', index=False, sep=';')
+df_filtered.to_csv('./Data/sci-fi_books_FILTERED.csv', index=False, sep=';', encoding='utf-8-sig')
 print(f"\nData saved to ./Data/sci-fi_books_FILTERED.csv")

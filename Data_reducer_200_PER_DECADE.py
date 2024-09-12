@@ -41,7 +41,7 @@ df_top_books = df_top_books.reindex(columns=column_order)
 
 #----------------------------------------------------------------------------------
 
-df_top_books.to_csv('./Data/top_sci-fi_books_200_PER_DECADE.csv', index=False, sep=';')
+df_top_books.to_csv('./Data/top_sci-fi_books_200_PER_DECADE.csv', index=False, sep=';', encoding='utf-8-sig')
 
 print("\nTOP 200 BOOKS PER DECADE Dataframe")
 print(df_top_books.info())
@@ -79,4 +79,4 @@ df_test_books = df_filtered[test_books_mask]
 df_test_books = df_test_books.reindex(columns=column_order)
 df_test_books = df_test_books.sort_values(by=['ratings'], axis=0, ascending=False)
 
-df_test_books.to_csv('./Data/top_books_TEST.csv', index=False, sep=';')
+df_test_books.to_csv('./Data/top_books_TEST.csv', index=False, sep=';', encoding='utf-8-sig')

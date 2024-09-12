@@ -196,7 +196,7 @@ def main():
                     'url']
     df = df.reindex(columns=column_order)
 
-    df.to_csv('./Data/sci-fi_books_SHELF.csv', index=False, sep=';')
+    df.to_csv('./Data/sci-fi_books_SHELF.csv', index=False, sep=';', encoding='utf-8-sig')
     logging.info(f"Scraped {len(books)} books.\nData saved to ./Data/sci-fi_books_SHELF.csv")
 
 #----------------------------------------------------------------------------------

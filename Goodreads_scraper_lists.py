@@ -277,7 +277,7 @@ def main():
                     'url']
     df = df.reindex(columns=column_order)
     
-    df.to_csv('./Data/PARTIAL_sci-fi_books_LISTS.csv', index=False, sep=';')
+    df.to_csv('./Data/PARTIAL_sci-fi_books_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
     
     logging.info(f"Scraped {len(books)} books. Data saved to ./Data/PARTIAL_sci-fi_books_LISTS.csv")
     
@@ -325,6 +325,6 @@ if __name__ == "__main__":
     df_books = df_books.reindex(columns=column_order)
 
     # Save the flattened DataFrame to a CSV file
-    df_books.to_csv('./Data/sci-fi_books_LISTS.csv', index=False, sep=';')
+    df_books.to_csv('./Data/sci-fi_books_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
 
     logging.info(f"Data saved to ./Data/sci-fi_books_LISTS.csv")
