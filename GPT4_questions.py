@@ -27,7 +27,7 @@ def analyze_book(title, author, year, genres, synopsis, review):
     # Create the prompt with the gathered data
     prompt = f"""
     Carefully consider the plot of the book "{title}" by {author}, published in {year}.
-    Please, first provide a single paragraph summarizing and highlighting the most famous and iconic elements of the book, such as:
+    Please, first provide a single paragraph summarizing and highlighting the most famous and iconic elements of this specific book, such as:
 
     Key characters who are often referenced or discussed in popular culture;
     Themes that are central to the story or have a significant impact on the plot;
@@ -61,7 +61,7 @@ def analyze_book(title, author, year, genres, synopsis, review):
     11. How is technology and science depicted in the story?
         (good: beneficial, advancing society, solving problems, or optimistic; bad: harmful, causing problems, being misused, or pessimistic; mixed: complex, with both benefits and drawbacks; neutral: present but not central to the story's themes or impact)
     12. What is the gender of the protagonist?
-        (male, female, or other)
+        (male, female, more than one protagonist, or other)
     13. Does the story explicitly address, critique, or reflect specific social issues relevant to the time of publication (e.g., inequality, war, discrimination, political oppression)?
         (yes, no, or somewhat)
     14. Is there an environmental or ecological message in the story?
@@ -79,7 +79,8 @@ def analyze_book(title, author, year, genres, synopsis, review):
             {"role": "user", "content": prompt}
         ],
         #model = "gpt-4o-mini-2024-07-18",
-        model = "gpt-4o",
+        model = "gpt-4o-2024-08-06",
+        #model = "gpt-4o",
         max_tokens = 600,  # Adjust based on the detail needed
         temperature = 0.3  # Adjust for creativity vs. factual response balance
     )
@@ -150,7 +151,7 @@ def ask_to_AI(df):
         author = book['author']
         year = book['year']
         decade = book['decade']
-        pages = book['pages']
+        #pages = book['pages']
         series = book['series']
         genres = book['genres']
         synopsis = book['synopsis']
@@ -282,7 +283,7 @@ def ask_to_AI(df):
                 'justifying enviromental': [enviromental_just[-1]],
 
                 'decade': [decade],
-                'pages': [pages],
+                #'pages': [pages],
                 'series': [series],
                 'genres': [genres],
                 'synopsis': [synopsis],
@@ -300,8 +301,8 @@ def ask_to_AI(df):
 
 #----------------------------------------------------------------------------------
 # Main execution
-#df = pd.read_csv("./Data/top_sci-fi_books_200_PER_DECADE.csv", sep=';')
-df = pd.read_csv("./Data/top_books_TEST.csv", sep=';')
+df = pd.read_csv("./Data/top_sci-fi_books_200_PER_DECADE.csv", sep=';')
+#df = pd.read_csv("./Data/top_books_TEST.csv", sep=';')
 processed_df = ask_to_AI(df)
 
 print(processed_df.info())

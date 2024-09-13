@@ -151,13 +151,23 @@ def scrape_book_page(session, url):
             ratings = int(ratings_text)
 
         #-----------------------------------------
-        # Extract first review
-        review_section = soup.find('section', class_='ReviewText')
-        if review_section:
-            review_tag = review_section.find('span', class_='Formatted')
-            review = review_tag.text.strip() if review_tag else None
+        # Find all review sections
+        review_sections = soup.find_all('section', class_='ReviewText')
+
+        # Extract first and second reviews if they exist
+        review_1 = review_sections[0].find('span', class_='Formatted').text.strip() if len(review_sections) > 0 else "0"
+        review_2 = review_sections[1].find('span', class_='Formatted').text.strip() if len(review_sections) > 1 else "0"
+
+        # Get the longer review
+        if len(review_2) > len(review_1):
+            review = review_2
         else:
-            review = None
+            review = review_1
+
+        # Display the extracted reviews
+        #print(f"\nFirst review: {review_1}")
+        #print(f"\nSecond review: {review_2}")
+        #print(f"\nChosen review: {review}")
 
         #-----------------------------------------
         # Book data
@@ -183,7 +193,7 @@ def scrape_book_page(session, url):
 
 #----------------------------------------------------------------------------------
 # Main scraping function
-def scrape_goodreads_lists(urls, max_pages=20):
+def scrape_goodreads_lists(urls, max_pages=30):
     progress = load_progress()
     session = get_session()
     all_books = []
@@ -207,17 +217,17 @@ def scrape_goodreads_lists(urls, max_pages=20):
                         book_data.update(book)
                         books.append(book_data)
                     else:
-                        logging.warning(f"Failed to scrape book: {book['url']}")
+                        logging.warning(f"Failed to scrape book:\n!!!{book['url']}")
                     
-                    # Implement a random delay between 5 to 15 seconds
-                    time.sleep(random.uniform(5, 15))
+                # Implement a random delay between 5 to 15 seconds after every page (not book)
+                time.sleep(random.uniform(5, 15))
                 
                 # Save progress after each page
                 progress['urls'][url] = {'last_page': page, 'books': books}
                 save_progress(progress)
                 
             except Exception as e:
-                logging.error(f"Error scraping {url} - page {page}: {e}")
+                logging.error(f"Error scraping:\n!!!{url} - page {page}: {e}")
                 time.sleep(60)  # Wait a minute before retrying
         
         all_books.extend(books)
@@ -247,6 +257,7 @@ def main():
         "https://www.goodreads.com/list/show/39287.Popular_Science_Fiction_on_GoodReads_with_between_25000_and_50000_ratings",
         "https://www.goodreads.com/list/show/138257.Popular_Science_Fiction_on_Goodreads_with_between_50000_and_99999_ratings",
         "https://www.goodreads.com/list/show/35776.Most_Popular_Science_Fiction_on_Goodreads",
+        "https://www.goodreads.com/list/show/115331.Nineteenth_Century_Science_Fiction",
         "https://www.goodreads.com/list/show/18864.Genetics_in_Science_Fiction",
         "https://www.goodreads.com/list/show/549.Most_Under_rated_Science_Fiction",
         "https://www.goodreads.com/list/show/6228.SF_Masterworks",
@@ -277,9 +288,9 @@ def main():
                     'url']
     df = df.reindex(columns=column_order)
     
-    df.to_csv('./Data/PARTIAL_sci-fi_books_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
+    df.to_csv('./Data/sci-fi_books_PARTIAL_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
     
-    logging.info(f"Scraped {len(books)} books. Data saved to ./Data/PARTIAL_sci-fi_books_LISTS.csv")
+    logging.info(f"Scraped {len(books)} books. Data saved to ./Data/sci-fi_books_PARTIAL_LISTS.csv")
     
 #----------------------------------------------------------------------------------
 # Execution

@@ -42,7 +42,7 @@ df.loc[:, "title"] = df["title"].str.replace(r' \(.*\)', '', regex=True)
 df.loc[:, "title"] = df["title"].str.replace(r' \(.*', '', regex=True)
 
 # Including series value in the case of square brackes in title (2 cases)
-
+#-------------------------------------------
 def update_series(row):
     # Check for existing content
     existing_value = row['series']
@@ -56,7 +56,8 @@ def update_series(row):
         return match.group(1) # Return only the content inside the brackets
     else:
         return existing_value # Keep the existing value unchanged
-
+    
+#-------------------------------------------
 # Apply the function to update the 'bracket_content' column
 df['series'] = df.apply(update_series, axis=1)
 
@@ -112,6 +113,20 @@ df['pages'] = df['pages'].str.extract(r'(\d+)', expand=False)
 df['pages'] = df['pages'].fillna(0).astype(int)
 
 #----------------------------------------------------------------------------------
+# Fixing the many spaces in some author names
+
+# Function to normalize whitespace in the author names
+def clean_whitespace(text):
+    if isinstance(text, str):
+        # Split the string into words and join with a single space
+        author_clean = ' '.join(text.split())
+        return author_clean # Returns the name cleaned
+    return text # Or returns the orignal value if not a string
+
+# Apply the cleaning function to the 'author' column
+df['author'] = df['author'].apply(clean_whitespace)
+
+#----------------------------------------------------------------------------------
 # Excluding duplicates (some duplicates differ just by capitalization or apostrophe type: ’ or ')
 
 # Function to normalize titles by replacing typographic quotes with standard ones
@@ -122,6 +137,11 @@ def normalize_apostrophe(title):
 
 # Apply the normalization function to the title column
 df['title'] = df['title'].apply(normalize_apostrophe)
+
+#-------------------------------------------
+# Deleting spaces using strip
+df['title'] = df['title'].apply(lambda x: x.strip())
+df['author'] = df['author'].apply(lambda x: x.strip())
 
 # Create temporary lowercase columns for comparison
 df['title_lower'] = df['title'].str.lower()
@@ -137,7 +157,6 @@ df = df.drop(columns=['title_lower', 'author_lower'])
 # Deleting some left over duplicates, unwanted non-fiction, and collections
 
 def delete_books(row):
-
     # Titles to be deleted
     titles_to_del = ["Feersum Endjinn",
                      "Frankenstein: The 1818 Text",
@@ -150,7 +169,9 @@ def delete_books(row):
                      "GURPS Reign of Steel: The War Is Over, The Robots Won",
                      "The Third Time Travel MEGAPACK ®: 18 Classic Trips Through Time",
                      "The Zombie Survival Guide: Complete Protection from the Living Dead",
-                     "Mickey 7"]
+                     "Mickey 7",
+                     "From the Earth to the Moon and 'Round the Moon",
+                     "Shards of Honour"]
     
     # Authors to be deleted
     authors_to_del = ["Iain M. Banks",
@@ -163,7 +184,9 @@ def delete_books(row):
                      "David L. Pulver",
                      "Philip K. Dick",
                      "Max Brooks",
-                     "Edward Ashton"]
+                     "Edward Ashton",
+                     "Jules Verne",
+                     "Lois McMaster Bujold"]
     
     # Extract title and author from the row
     title = row['title']
@@ -182,19 +205,31 @@ mask = df.apply(delete_books, axis=1)
 df = df[mask]
 
 #----------------------------------------------------------------------------------
-# Filtering out synopses too short and books without publishing year
+# Filtering out synopses too short, books without publishing year, and without many ratings
 
 # Minimum character length for the synopsis
-N = 100
+N_c = 100
 
-# dropping nulls NaN so it can compare lengths
+# Dropping nulls NaN so it can compare lengths
 df = df.dropna(axis=0, subset=['synopsis'])
 
 # Filter out rows where the length of the synopsis is shorter than N characters
-synopsis_mask = df['synopsis'].str.len().fillna(0) >= N
+synopsis_mask = df['synopsis'].str.len().fillna(0) >= N_c
 df = df[synopsis_mask]
 
+#-----------------------------------------
+# Dropping books without publishing year
 df = df.dropna(axis=0, subset=['year'])
+
+#-----------------------------------------
+# Dropping books with fewer than N_r ratings
+
+# Minimum number of ratings
+N_r = 10
+
+# Filter out rows where the number of ratings is less than N_r
+ratings_mask = df['ratings'] >= N_r
+df = df[ratings_mask]
 
 #----------------------------------------------------------------------------------
 # Converting the genres' column to actual lists
@@ -235,7 +270,7 @@ for index, row in df.iterrows():
     indices_to_keep_1.append(index)
 
 # Create the filtered DataFrame using the indices of rows to keep
-df = df.loc[indices_to_keep_1]
+#df = df.loc[indices_to_keep_1] # Uncomment this line to exclude books with 'fantasy' as first genre
 
 #-----------------------------------------
 # Define unwanted and required genres
@@ -253,7 +288,12 @@ unwanted_genres = ['Graphic Novels',
                    'Literary Criticism', 
                    'Essays', 
                    'Criticism',
-                   "Role Playing Games"]
+                   "Role Playing Games",
+                   'High Fantasy',
+                   'Epic Fantasy',
+                   'Magic',
+                   'Angels',
+                   ]
 
 unwanted_genres = [genre.lower() for genre in unwanted_genres]
 

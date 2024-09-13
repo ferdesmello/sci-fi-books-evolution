@@ -120,13 +120,23 @@ def scrape_book_page(session, url):
             ratings = int(ratings_text)
 
         #-----------------------------------------
-        # Extract first review
-        review_section = soup.find('section', class_='ReviewText')
-        if review_section:
-            review_tag = review_section.find('span', class_='Formatted')
-            review = review_tag.text.strip() if review_tag else None
+        # Find all review sections
+        review_sections = soup.find_all('section', class_='ReviewText')
+
+        # Extract first and second reviews if they exist
+        review_1 = review_sections[0].find('span', class_='Formatted').text.strip() if len(review_sections) > 0 else "0"
+        review_2 = review_sections[1].find('span', class_='Formatted').text.strip() if len(review_sections) > 1 else "0"
+
+        # Get the longer review
+        if len(review_2) > len(review_1):
+            review = review_2
         else:
-            review = None
+            review = review_1
+
+        # Display the extracted reviews
+        #print(f"\nFirst review: {review_1}")
+        #print(f"\nSecond review: {review_2}")
+        #print(f"\nChosen review: {review}")
 
         #-----------------------------------------
         # Book data
@@ -171,7 +181,7 @@ def scrape_goodreads_books_from_files(folder_path):
                 else:
                     logging.warning(f"Failed to scrape book:\n!!!{book['url']}")
 
-            # Implement a random delay between 5 to 15 seconds
+            # Implement a random delay between 5 to 15 seconds after every page (not book)
             time.sleep(random.uniform(5, 15))
 
     return all_books
