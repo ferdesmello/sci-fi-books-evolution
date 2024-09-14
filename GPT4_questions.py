@@ -23,23 +23,28 @@ client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 )
 
 # Function to analyse every book
-def analyze_book(title, author, year, genres, synopsis, review):
+def analyze_book(title, author, year, synopsis, review, genres):
     # Create the prompt with the gathered data
     prompt = f"""
-    Carefully consider the plot of the book "{title}" by {author}, published in {year}.
-    Please, first provide a single paragraph summarizing and highlighting the most famous and iconic elements of this specific book, such as:
+    Carefully consider the plot of the book "{title}" by {author}, published in {year}, focusing on key elements that will help answer the following questions. 
+    Please, first provide a concise paragraph summarizing and highlighting the most famous and iconic elements of this specific book, including:
 
-    Key characters who are often referenced or discussed in popular culture;
-    Themes that are central to the story or have a significant impact on the plot;
-    Locations and time settings that are unique or memorable to the story;
-    Notable creatures (aliens, robots/AI, or others) that are central to the story or have a significant impact on the plot;
-    Technologies that are central to the story or have a significant impact on the plot;
+    - Key characters who are often referenced or discussed in popular culture;
+    - Themes that are central to the story or have a significant impact on the plot;
+    - Locations and time settings that are unique or memorable to the story;
+    - Notable creatures (aliens, robots/AI, or others) that are central to the story or have a significant impact on the plot;
+    - Technologies that are central to the story or have a significant impact on the plot.
 
-    Then, answer the following questions followed by a 1 sentence justification explaining why this choice aligns with the summary, provided information, or well-known aspects of the book.
-    For each question, answer exactly in this format: number. alternative: justification
+    **Output Formatting Instructions**:
+    Follow this exact format for each question answer: 
+    - Question number, followed by a period, then the selected alternative, followed by a colon, and then the justification in a single sentence (no line breaks, extra spaces, or symbols).
+    - Do not add extra spaces, symbols, or empty lines between the questions or the answers.
+    For example:
+    1. hard: The story focuses on scientific accuracy.
 
+    **Questions**:
     1. Is the book considered more soft or hard sci-fi?
-        (soft: scientific accuracy is not central to the plot or the story emphasizes soft sciences like psychology and sociology, or speculative elements; hard: scientific accuracy is central to the plot or the story emphasizes hard sciences like physics, biology, technology, or realistic scenarios; mixed: elements of both)
+        (soft: scientific accuracy is not crucial, focusing on soft sciences like psychology or sociology, or speculative elements; hard: scientific accuracy is crucial, focusing on hard sciences like physics, biology, or technology, or realistic scenarios; mixed: elements of both)
     2. When does most of the story take place in relation to the year the book was published?
         (distant past: millennia or more before; far past: centuries before; near past: within a few decades; present; near future: within a few decades; far future: centuries ahead; distant future: millennia or more ahead; multiple timelines; uncertain)
     3. What is the tone of the story?
@@ -60,16 +65,18 @@ def analyze_book(title, author, year, genres, synopsis, review):
         (good: friendly, benign, virtuous, helpful, or heroic; bad: hostile, malignant, villainous, antagonistic, or threatening; nuanced: complex or showing both positive and negative traits; irrelevant: minor role, or not significantly affecting the plot; not applicable: no robots or artificial intelligences present)
     11. How is technology and science depicted in the story?
         (good: beneficial, advancing society, solving problems, or optimistic; bad: harmful, causing problems, being misused, or pessimistic; mixed: complex, with both benefits and drawbacks; neutral: present but not central to the story's themes or impact)
-    12. What is the gender of the protagonist?
-        (male, female, more than one protagonist, or other)
+    12. What is the gender of the protagonist or main character?
+        (male: the central character is male; female: the central character is female; other: the central character is non-human, the gender is ambiguous, fluid, or no single clear protagonist)
     13. Does the story explicitly address, critique, or reflect specific social issues relevant to the time of publication (e.g., inequality, war, discrimination, political oppression)?
         (yes, no, or somewhat)
     14. Is there an environmental or ecological message in the story?
         (yes, no, or somewhat)
 
-    To help answer the questions, consider the genres the book fits in: {genres}.
-    This short synopsis: {synopsis}
-    And this partial review: {review}
+    When answering, consider how the following synopsis, review, and genres may provide relevant context for each question.
+
+    Book synopsis: {synopsis}
+    Partial review: {review}
+    Genres the book fits in: {genres}
     """
     
     # Call the OpenAI API with the crafted prompt
@@ -81,8 +88,8 @@ def analyze_book(title, author, year, genres, synopsis, review):
         #model = "gpt-4o-mini-2024-07-18",
         model = "gpt-4o-2024-08-06",
         #model = "gpt-4o",
-        max_tokens = 600,  # Adjust based on the detail needed
-        temperature = 0.3  # Adjust for creativity vs. factual response balance
+        max_tokens = 700,  # Adjust based on the detail needed
+        temperature = 0.3  # Adjust for factual response vs. creativity balance
     )
     
     # Extract and print the response
@@ -95,12 +102,15 @@ def analyze_book(title, author, year, genres, synopsis, review):
 #----------------------------------------------------------------------------------
 # Function to process each book and save progress incrementally
 def ask_to_AI(df):
-    # Lists to store the answers for each book
+    # Lists to store the complete answer the AI gave and its parts for each book
+
+    # Complete AI answer
+    complete_answer = []
 
     # Summarizing paragraph
     paragraph = []
 
-    # Answer to the questions
+    # Answers to the questions
     soft_hard = []
     time = []
     tone = []
@@ -116,7 +126,7 @@ def ask_to_AI(df):
     social = []
     enviromental = []
     
-    # Justification to the answers given
+    # Justifications to the answers given
     soft_hard_just = []
     time_just = []
     tone_just = []
@@ -133,17 +143,16 @@ def ask_to_AI(df):
     enviromental_just = []
 
     # Load existing progress if the file exists
-    output_file = 'AI_answers_to_sci-fi_books.csv'
+    output_file = './Data/AI_answers_to_sci-fi_books.csv'
     if os.path.exists(output_file):
         processed_df = pd.read_csv(output_file, sep=';')
-        processed_titles = set(processed_df['title'])
+        processed_books = set(processed_df['url'])
     else:
         processed_df = pd.DataFrame()
-        processed_titles = set()
-
+        processed_books = set()
     for _, book in df.iterrows():
         # Skip already processed books
-        if book['title'] in processed_titles:
+        if book['url'] in processed_books:
             continue
 
         # Extract book details
@@ -160,7 +169,8 @@ def ask_to_AI(df):
 
         try:
             # Get the AI's answers for the book
-            AI_answers = analyze_book(title, author, year, genres, synopsis, review)
+            AI_answers = analyze_book(title, author, year, synopsis, review, genres)
+            #print("\n",AI_answers)
 
             # Split answers into a list
             answers = []
@@ -184,7 +194,10 @@ def ask_to_AI(df):
                     justifications.append(parts_answer_just[1].strip()) # Append the text after the colon
 
             # Append answers to respective lists
+            complete_answer.append(AI_answers)
+
             if (len(answers) == 14) & (len(justifications) == 14):
+                
                 paragraph.append(paragraph_text)
 
                 soft_hard.append(answers[0])
@@ -282,13 +295,15 @@ def ask_to_AI(df):
                 '14 enviromental': [enviromental[-1]],
                 'justifying enviromental': [enviromental_just[-1]],
 
+                'complete_answer': [complete_answer[-1]],
+
                 'decade': [decade],
                 #'pages': [pages],
                 'series': [series],
                 'genres': [genres],
                 'synopsis': [synopsis],
                 'review': [review],
-                'url': [url],
+                'url': [url]
             })
             processed_df = pd.concat([processed_df, progress_df], ignore_index=True)
             processed_df.to_csv(output_file, index=False, sep=';')
@@ -305,7 +320,7 @@ df = pd.read_csv("./Data/top_sci-fi_books_200_PER_DECADE.csv", sep=';')
 #df = pd.read_csv("./Data/top_books_TEST.csv", sep=';')
 processed_df = ask_to_AI(df)
 
-print(processed_df.info())
+print('\n',processed_df.info())
 #print(processed_df.head())
 
 processed_df.to_csv('./Data/AI_ANSWERS_TO_sci-fi_books.csv', index=False, sep=';', encoding='utf-8-sig')

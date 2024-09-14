@@ -155,8 +155,8 @@ def scrape_book_page(session, url):
         review_sections = soup.find_all('section', class_='ReviewText')
 
         # Extract first and second reviews if they exist
-        review_1 = review_sections[0].find('span', class_='Formatted').text.strip() if len(review_sections) > 0 else "0"
-        review_2 = review_sections[1].find('span', class_='Formatted').text.strip() if len(review_sections) > 1 else "0"
+        review_1 = review_sections[0].find('span', class_='Formatted').text.strip() if len(review_sections) > 0 else "No review available"
+        review_2 = review_sections[1].find('span', class_='Formatted').text.strip() if len(review_sections) > 1 else "No review available"
 
         # Get the longer review
         if len(review_2) > len(review_1):

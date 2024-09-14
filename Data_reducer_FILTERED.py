@@ -205,17 +205,39 @@ mask = df.apply(delete_books, axis=1)
 df = df[mask]
 
 #----------------------------------------------------------------------------------
-# Filtering out synopses too short, books without publishing year, and without many ratings
+# Filtering out books without both synopses and reviews, books without publishing year, and without many ratings
 
-# Minimum character length for the synopsis
+# Cleaning null synopsis and review fields
+#-------------------------------------------
+def clean_synopsis(row):
+
+    if pd.isna(row):
+        return "No synopsis available"
+    else:
+        return row
+    
+#-------------------------------------------
+def clean_review(row):
+
+    if pd.isna(row):
+        return "No review available"
+    else:
+        return row
+   
+#-------------------------------------------
+# Apply the function to update the 'bracket_content' column
+df['synopsis'] = df['synopsis'].apply(clean_synopsis)
+df['review'] = df['review'].apply(clean_review)
+
+#-------------------------------------------
+# Minimum character length for synopses or reviews
 N_c = 100
 
-# Dropping nulls NaN so it can compare lengths
-df = df.dropna(axis=0, subset=['synopsis'])
-
-# Filter out rows where the length of the synopsis is shorter than N characters
+# Filter out rows where the length of synopses or reviews is shorter than N_c characters
 synopsis_mask = df['synopsis'].str.len().fillna(0) >= N_c
-df = df[synopsis_mask]
+review_mask = df['review'].str.len().fillna(0) >= N_c
+
+df = df[synopsis_mask | review_mask]
 
 #-----------------------------------------
 # Dropping books without publishing year
@@ -230,6 +252,10 @@ N_r = 10
 # Filter out rows where the number of ratings is less than N_r
 ratings_mask = df['ratings'] >= N_r
 df = df[ratings_mask]
+
+#----------------------------------------------------------------------------------
+# Cleaning urls
+df['url'] = df['url'].str.strip()
 
 #----------------------------------------------------------------------------------
 # Converting the genres' column to actual lists
