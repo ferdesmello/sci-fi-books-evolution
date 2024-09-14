@@ -29,7 +29,7 @@ def get_session():
 # Function to scrape data from the local shelf HTML files
 def scrape_shelf_from_html(file_path):
     books = []
-    with open(file_path, 'r', encoding='utf-8') as file:
+    with open(file_path, 'r', encoding='utf-8-sig') as file:
         content = file.read()
         soup = BeautifulSoup(content, 'html.parser')
 

@@ -1,7 +1,7 @@
 import pandas as pd
 
 #----------------------------------------------------------------------------------
-df_filtered = pd.read_csv('./Data/sci-fi_books_FILTERED.csv', sep = ';')
+df_filtered = pd.read_csv('./Data/sci-fi_books_FILTERED.csv', sep = ';', encoding="utf-8")
 
 #----------------------------------------------------------------------------------
 # Top 200 rating books for every decade

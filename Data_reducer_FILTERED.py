@@ -2,8 +2,8 @@ import pandas as pd
 import re
 
 #----------------------------------------------------------------------------------
-df_shelf = pd.read_csv('./Data/sci-fi_books_SHELF.csv', sep = ';')
-df_lists = pd.read_csv('./Data/sci-fi_books_LISTS.csv', sep = ';')
+df_shelf = pd.read_csv('./Data/sci-fi_books_SHELF.csv', sep = ';', encoding='utf-8-sig')
+df_lists = pd.read_csv('./Data/sci-fi_books_LISTS.csv', sep = ';', encoding='utf-8-sig')
 
 frames = [df_shelf, df_lists]
 df = pd.concat(frames, ignore_index=True)
@@ -149,6 +149,7 @@ df['author_lower'] = df['author'].str.lower()
 
 # Drop duplicates based on the lowercase columns
 df = df.drop_duplicates(subset=['title_lower', 'author_lower'], keep='first')
+df = df.drop_duplicates(subset=['url'], keep='first')
 
 # Drop the temporary lowercase columns
 df = df.drop(columns=['title_lower', 'author_lower'])
@@ -210,7 +211,6 @@ df = df[mask]
 # Cleaning null synopsis and review fields
 #-------------------------------------------
 def clean_synopsis(row):
-
     if pd.isna(row):
         return "No synopsis available"
     else:
@@ -218,7 +218,6 @@ def clean_synopsis(row):
     
 #-------------------------------------------
 def clean_review(row):
-
     if pd.isna(row):
         return "No review available"
     else:
