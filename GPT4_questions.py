@@ -61,13 +61,13 @@ def analyze_book(title, author, year, synopsis, review, genres):
     7. Are there any depictions or mentions of non-terrestrial life forms (e.g., aliens, extraterrestrial organisms, creatures not originating from Earth, even if non-sentient) or alien technology in the story?
         (yes or no)
     8. How are the non-terrestrial life forms generally depicted in the story?
-        (good: friendly, virtuous, helpful, or heroic; bad: hostile, villainous, antagonistic, or threatening; nuanced: complex or showing both positive and negative traits; irrelevant: minor role, or not significantly affecting the plot; not applicable: no non-terrestrial life forms present)
+        (good: friendly, virtuous, helpful, or heroic; bad: hostile, villainous, antagonistic, or threatening; mixed: complex, nuanced, or showing both positive and negative traits; irrelevant: minor role, or not significantly affecting the plot; not applicable: no non-terrestrial life forms present)
     9. Are there any depictions of robots or artificial intelligences in the story?
         (yes or no)
     10. How are the robots or artificial intelligences generally depicted?
-        (good: friendly, benign, virtuous, helpful, or heroic; bad: hostile, malignant, villainous, antagonistic, or threatening; nuanced: complex or showing both positive and negative traits; irrelevant: minor role, or not significantly affecting the plot; not applicable: no robots or artificial intelligences present)
-    11. How is technology and science depicted in the story?
-        (good: beneficial, advancing society, solving problems, or optimistic; bad: harmful, causing problems, being misused, or pessimistic; mixed: complex, with both benefits and drawbacks; neutral: present but not central to the story's themes or impact)
+        (good: friendly, benign, virtuous, helpful, or heroic; bad: hostile, malignant, villainous, antagonistic, or threatening; mixed: complex, nuanced or showing both positive and negative traits; irrelevant: minor role, or not significantly affecting the plot; not applicable: no robots or artificial intelligences present)
+    11. How are technology and science depicted in the story?
+        (good: beneficial, advancing society, solving problems, or optimistic; bad: harmful, causing problems, being misused, or pessimistic; mixed: complex, nuanced, or showing both benefits and drawbacks; neutral: present but not central to the story's themes or impact)
     12. What is the gender of the protagonist or main character?
         (male: the central character is male; female: the central character is female; other: the central character is non-human, the gender is ambiguous, fluid, or no single clear protagonist)
     13. Does the story explicitly address, critique, or reflect specific social issues relevant to the time of publication (e.g., inequality, war, discrimination, political oppression)?
