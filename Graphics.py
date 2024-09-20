@@ -5,6 +5,8 @@ import seaborn as sns
 #----------------------------------------------------------------------------------
 # reading the data
 df_filtered = pd.read_csv("./Data/sci-fi_books_FILTERED.csv", sep=";")
+df_filtered_ss = pd.read_csv("./Data/sci-fi_books_FILTERED_SS.csv", sep=";")
+
 df_200 = pd.read_csv("./Data/top_sci-fi_books_200_PER_DECADE.csv", sep=";")
 df_200_AI = pd.read_csv("./Data/AI_answers_to_sci-fi_books.csv", sep=";")
 
@@ -12,9 +14,19 @@ df_200_AI = pd.read_csv("./Data/AI_answers_to_sci-fi_books.csv", sep=";")
 #print(df.head())
 
 #----------------------------------------------------------------------------------
+# for the boxplots
+
+# Add a column to each DataFrame to label the dataset
+df_filtered['dataset'] = 'All sample'
+df_200['dataset'] = 'Top 200'
+
+# Concatenate dataframes
+df_filtered_200 = pd.concat([df_filtered, df_200])
+
+#----------------------------------------------------------------------------------
 # General information of the FILTERED sample of books
 #'title', 'author', 'year', 'decade', 'rate', 'ratings', 'genres', 'synopsis', 'review', 'url'
-#print("\nFILTERED books.")
+print("\nFILTERED books.")
 
 book_per_decade = df_filtered['decade'].value_counts()
 mean_per_decade = df_filtered.groupby('decade')[['rate', 'ratings']].mean()
@@ -40,13 +52,36 @@ df_all = (df_all
 #print(df_all)
 
 #----------------------------------------------------------------------------------
+# General information of the FILTERED_SS sample of books
+
+book_per_decade_ss = df_filtered_ss['decade'].value_counts()
+mean_per_decade_ss = df_filtered_ss.groupby('decade')[['rate', 'ratings']].mean()
+sdv_per_decade_ss = df_filtered_ss.groupby('decade')[['rate', 'ratings']].std()
+
+# Creating a dictionary by passing Series objects as values
+frame_1_ss = {'quantity': book_per_decade_ss,
+              'avr rate': mean_per_decade_ss['rate'],
+              'std rate': sdv_per_decade_ss['rate'],
+              'avr ratings': mean_per_decade_ss['ratings'],
+              'std ratings': sdv_per_decade_ss['ratings']}
+ 
+# Creating DataFrame by passing Dictionary
+df_all_ss = pd.DataFrame(frame_1_ss)
+df_all_ss = (df_all_ss
+             .reset_index(drop = False)
+             .sort_values(by = ['decade'], ascending = True)
+             .reset_index(drop = True))
+
+#----------------------------------------------------------------------------------
 # General information of the 200 PER DECADE sample of books
 #'title', 'author', 'year', 'decade', 'rate', 'ratings', 'genres', 'synopsis', 'review', 'url'
-#print("\n200 PER DECADE books.")
+print("\n200 PER DECADE books.")
 
 book_per_decade_200 = df_200['decade'].value_counts()
 mean_per_decade_200 = df_200.groupby('decade')[['rate', 'ratings']].mean()
 sdv_per_decade_200 = df_200.groupby('decade')[['rate', 'ratings']].std()
+
+print(book_per_decade_200.sort_index(ascending = False))
 
 # Creating a dictionary by passing Series objects as values
 frame_2 = {'quantity': book_per_decade_200,
@@ -176,7 +211,7 @@ gs = figure_c1.add_gridspec(ncols = 1, nrows = 1)
 # Create the main plot
 ax1 = figure_c1.add_subplot(gs[0])
 
-# Bar plot
+# Bar plot all sample
 ax1.bar(x = df_all['decade'],
         height = df_all['quantity'], 
         width = 9, 
@@ -184,14 +219,14 @@ ax1.bar(x = df_all['decade'],
         align = 'center', 
         #data = None,
         color = "royalblue",
-        hatch = '\\',
-        alpha = 0.5,
+        #hatch = '\\',
+        alpha = 1.0,
         edgecolor = custom_dark_gray,
         linewidth = 0.0,
         # #tick_label = 0,
         label = "All sample")
 
-# Bar plot
+# Bar plot top 200
 ax1.bar(x = df_all_200['decade'],
         height = df_all_200['quantity'], 
         width = 9, 
@@ -199,12 +234,27 @@ ax1.bar(x = df_all_200['decade'],
         align = 'center', 
         #data = None,
         color = "firebrick",
-        hatch = '/',
-        alpha = 0.5,
+        #hatch = '/',
+        alpha = 1.0,
         edgecolor = custom_dark_gray,
         linewidth = 0.0,
         # #tick_label = 0,
         label = "Top 200")
+
+# Bar plot short stories and anthologies
+"""ax1.bar(x = df_all_ss['decade'],
+        height = df_all_ss['quantity'], 
+        width = 9, 
+        #bottom = None, 
+        align = 'center', 
+        #data = None,
+        color = "green",
+        hatch = '+',
+        alpha = 0.5,
+        edgecolor = custom_dark_gray,
+        linewidth = 0.0,
+        # #tick_label = 0,
+        label = "Short stories and anthologies")"""
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -268,6 +318,7 @@ category_percent_series.plot(kind = 'bar',
                              ax = ax1,
                              color = custom_colors_series,
                              width = 1.0,
+                             alpha = 0.9,
                              label = "series")
 
 # Design-------------------------------------------
@@ -315,13 +366,127 @@ plt.savefig("./Figures/Series.png", bbox_inches = 'tight')
 #----------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------
 # Figure 3, Quantities
-print("  Making figure 3...")
+print("  Making rate and ratings...")
 
-# Creates a figure object with size 12x6 inches
-figure_c3 = plt.figure(3, figsize = (14, 6))
-gs = figure_c3.add_gridspec(ncols = 3, nrows = 1)
+# Creates a figure object with size 14x8 inches
+figure_c3 = plt.figure(3, figsize = (14, 8))
+gs = figure_c3.add_gridspec(ncols = 2, nrows = 1)
+
+#figure_c3.subplots_adjust(hspace = 0.5)
 
 #-----------------------------------------
+# Create the main plot
+ax1 = figure_c3.add_subplot(gs[0])
+
+# Specify custom colors for each dataset
+custom_palette = {'All sample': 'royalblue',
+                  'Top 200': 'firebrick'}
+
+# Create the boxplot with hue
+sns.boxplot(x = 'decade', 
+            y = 'rate', 
+            hue = 'dataset', 
+            data = df_filtered_200, 
+            palette = custom_palette,
+            #width = 0.8,
+            #gap = 0.3,
+            fliersize = 2.0,
+            fill = True,
+            linecolor = custom_dark_gray)
+
+# Design-------------------------------------------
+ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
+ax1.set_ylabel("Average rate", fontsize = 12, color = custom_dark_gray)
+ax1.set_title("Distribution of Average Rate per Decade", fontsize = 14, pad = 5, color = custom_dark_gray)
+#ax1.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
+ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 0.5)
+
+# Legend-------------------------------------------
+ax1.legend(frameon = False, 
+           #labelspacing = 10.0,
+           loc = 'upper left')
+
+# Axes-------------------------------------------
+for tick in ax1.get_xticklabels():
+    tick.set_rotation(90)
+
+ax1.minorticks_on()
+ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
+ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
+ax1.tick_params(which = "both", bottom = True, top = False, left = False, right = False, color = custom_dark_gray)
+ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
+ax1.tick_params(axis = 'both', colors = custom_dark_gray)
+
+ax1.spines['right'].set_visible(False)
+ax1.spines['top'].set_visible(False)
+ax1.spines['left'].set_visible(False)
+#ax1.spines['top'].set_visible(False)
+#ax1.spines['right'].set_color(custom_dark_gray)
+#ax1.spines['left'].set_color(custom_dark_gray)
+ax1.spines['bottom'].set_color(custom_dark_gray)
+
+#----------------------------------------------------------------------------------
+# Create the main plot
+ax2 = figure_c3.add_subplot(gs[1])
+
+# Specify custom colors for each dataset
+custom_palette = {'All sample': 'royalblue',
+                  'Top 200': 'firebrick'}
+
+# Create the boxplot with hue
+sns.boxplot(x = 'decade', 
+            y = 'ratings', 
+            hue = 'dataset', 
+            data = df_filtered_200, 
+            palette = custom_palette,
+            #width = 0.8,
+            #gap = 0.3,
+            fliersize = 2.0,
+            fill = True,
+            linecolor = custom_dark_gray,
+            log_scale = True)
+
+# Design-------------------------------------------
+ax2.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
+ax2.set_ylabel("Number of ratings", fontsize = 12, color = custom_dark_gray)
+ax2.set_title("Distribution of Number of Ratings per Decade", fontsize = 14, pad = 5, color = custom_dark_gray)
+#ax2.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
+ax2.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 0.5)
+
+# Legend-------------------------------------------
+ax2.legend(frameon = False, 
+           #labelspacing = 10.0,
+           loc = 'upper left')
+
+# Axes-------------------------------------------
+for tick in ax2.get_xticklabels():
+    tick.set_rotation(90)
+
+#ax2.set_yscale('log')
+
+ax2.minorticks_on()
+ax2.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
+ax2.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
+ax2.tick_params(which = "both", bottom = True, top = False, left = False, right = False, color = custom_dark_gray)
+ax2.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
+ax2.tick_params(axis = 'both', colors = custom_dark_gray)
+
+ax2.spines['right'].set_visible(False)
+ax2.spines['top'].set_visible(False)
+ax2.spines['left'].set_visible(False)
+#ax2.spines['top'].set_visible(False)
+#ax2.spines['right'].set_color(custom_dark_gray)
+#ax2.spines['left'].set_color(custom_dark_gray)
+ax2.spines['bottom'].set_color(custom_dark_gray)
+
+# Saving image-------------------------------------------
+plt.savefig("./Figures/Rates_and_Ratings.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/Rates_and_Ratings.eps", transparent = True, bbox_inches = 'tight')
+# Transparence will be lost in .eps, save in .svg for transparences
+#plt.savefig("./Figures/Rates_and_Ratings.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+
+#----------------------------------------------------------------------------------
+"""#-----------------------------------------
 # Create the main plot
 ax1 = figure_c3.add_subplot(gs[0])
 
@@ -401,13 +566,13 @@ plt.savefig("./Figures/Average_rates_test.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/Average_rates_test.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
 #plt.savefig("./Figures/Average_rates_test.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
+"""
 #----------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------
 # figures for the questions/answers
 #----------------------------------------------------------------------------------
 # Figure 4 - 1 soft hard
-print("  Making 1 soft hard...")
+"""print("  Making 1 soft hard...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
@@ -437,6 +602,7 @@ category_percent_1.plot(kind = 'bar',
                         ax = ax1,
                         color = custom_colors_1,
                         width = 1.0,
+                        alpha = 0.9,
                         label = "1 soft hard")
 
 # Design-------------------------------------------
@@ -444,7 +610,7 @@ ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
 #ax1.set_title("Is the book considered more soft or hard sci-fi?", fontsize = 14, pad = 5, color = custom_dark_gray)
 ax1.set_title("Is the book considered more soft or hard sci-fi?", fontsize = 14, color = custom_dark_gray)
-##ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
+#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Legend-------------------------------------------
 # Get handles and labels
@@ -471,8 +637,8 @@ ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelrig
 ax1.tick_params(axis = 'both', colors = custom_dark_gray)
 
 ax1.spines['right'].set_visible(False)
-#ax1.spines['top'].set_visible(False)
-ax1.spines['top'].set_color(custom_dark_gray)
+ax1.spines['top'].set_visible(False)
+#ax1.spines['top'].set_color(custom_dark_gray)
 #ax1.spines['left'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
@@ -515,12 +681,12 @@ category_percent_2 = category_percent_2[category_order_2]
 custom_colors_2 = ['skyblue',       # distant past
                    'cornflowerblue',# far past
                    'royalblue',     # near past
-                   "rebeccapurple",        # present
+                   "rebeccapurple",    # present
                    'firebrick',     # near future
                    'indianred',     # far future
                    'lightcoral',    # distant future
 
-                   'turquoise',     # multiple timelines
+                   'green',         # multiple timelines
                    'lightgrey']     # uncertain
 
 # Bar plot-------------------------------------------
@@ -529,13 +695,14 @@ category_percent_2.plot(kind = 'bar',
                         ax = ax1,
                         color = custom_colors_2,
                         width = 1.0,
+                        alpha = 0.9,
                         label = "2 time")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
 ax1.set_title("When does most of the story take place in relation to the year the book was published?", fontsize = 14, pad = 5, color = custom_dark_gray)
-##ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
+#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Legend-------------------------------------------
 # Get handles and labels
@@ -605,6 +772,7 @@ category_percent_3.plot(kind = 'bar',
                         ax = ax1,
                         color = custom_colors_3,
                         width = 1.0,
+                        alpha = 0.9,
                         label = "3 tone")
 
 # Design-------------------------------------------
@@ -681,6 +849,7 @@ category_percent_4.plot(kind = 'bar',
                         ax = ax1,
                         color = custom_colors_4,
                         width = 1.0,
+                        alpha = 0.9,
                         label = "4 setting")
 
 # Design-------------------------------------------
@@ -755,6 +924,7 @@ category_percent_5.plot(kind = 'bar',
                         ax = ax1,
                         color = custom_colors_5,
                         width = 1.0,
+                        alpha = 0.9,
                         label = "5 on Earth")
 
 # Design-------------------------------------------
@@ -831,6 +1001,7 @@ category_percent_6.plot(kind = 'bar',
                         ax = ax1,
                         color = custom_colors_6,
                         width = 1.0,
+                        alpha = 0.9,
                         label = "6 post apocalyptic")
 
 # Design-------------------------------------------
@@ -905,6 +1076,7 @@ category_percent_7.plot(kind = 'bar',
                         ax = ax1,
                         color = custom_colors_7,
                         width = 1.0,
+                        alpha = 0.9,
                         label = "7 aliens")
 
 # Design-------------------------------------------
@@ -975,7 +1147,7 @@ category_percent_8 = category_percent_8[category_order_8]
 custom_colors_8 = ['royalblue',
                    "rebeccapurple", 
                    'firebrick',
-                   'turquoise',
+                   'green',
                    'lightgrey']
 
 # Bar plot-------------------------------------------
@@ -984,6 +1156,7 @@ category_percent_8.plot(kind = 'bar',
                         ax = ax1,
                         color = custom_colors_8,
                         width = 1.0,
+                        alpha = 0.9,
                         label = "8 aliens are")
 
 # Legend-------------------------------------------
@@ -1058,6 +1231,7 @@ category_percent_9.plot(kind = 'bar',
                         ax = ax1,
                         color = custom_colors_9,
                         width = 1.0,
+                        alpha = 0.9,
                         label = "9 robots and AI")
 
 # Design-------------------------------------------
@@ -1130,7 +1304,7 @@ category_percent_10 = category_percent_10[category_order_10]
 custom_colors_10 = ['royalblue',
                     "rebeccapurple",
                     'firebrick',
-                    'turquoise',
+                    'green',
                     'lightgrey']
 
 # Bar plot-------------------------------------------
@@ -1139,6 +1313,7 @@ category_percent_10.plot(kind = 'bar',
                          ax = ax1,
                          color = custom_colors_10,
                          width = 1.0,
+                        alpha = 0.9,
                          label = "10 robots and AI are")
 
 # Design-------------------------------------------
@@ -1216,6 +1391,7 @@ category_percent_11.plot(kind = 'bar',
                          ax = ax1,
                          color = custom_colors_11,
                          width = 1.0,
+                        alpha = 0.9,
                          label = "11 tech and science")
 
 # Design-------------------------------------------
@@ -1291,6 +1467,7 @@ category_percent_12.plot(kind = 'bar',
                          ax = ax1,
                          color = custom_colors_12,
                          width = 1.0,
+                        alpha = 0.9,
                          label = "12 protagonist")
 
 # Design-------------------------------------------
@@ -1367,6 +1544,7 @@ category_percent_13.plot(kind = 'bar',
                          ax = ax1,
                          color = custom_colors_13,
                          width = 1.0,
+                        alpha = 0.9,
                          label = "13 social issues")
 
 # Design-------------------------------------------
@@ -1443,6 +1621,7 @@ category_percent_14.plot(kind = 'bar',
                          ax = ax1,
                          color = custom_colors_14,
                          width = 1.0,
+                        alpha = 0.9,
                          label = "14 enviromental")
 
 # Design-------------------------------------------
@@ -1486,7 +1665,7 @@ plt.savefig("./Figures/14 enviromental.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/14 enviromental.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
 #plt.savefig("./Figures/14 enviromental.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
+"""
 #----------------------------------------------------------------------------------
 print("All done.")
 

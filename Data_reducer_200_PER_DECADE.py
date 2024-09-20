@@ -1,25 +1,16 @@
 import pandas as pd
 
 #----------------------------------------------------------------------------------
-df_filtered = pd.read_csv('./Data/sci-fi_books_FILTERED.csv', sep = ';', encoding="utf-8")
+df_filtered = pd.read_csv('./Data/sci-fi_books_FILTERED.csv', sep = ';', encoding="utf-8-sig")
+df_filtered['decade_gb'] = df_filtered['decade'] # To use in the groupby below and keep the original decade
 
 #----------------------------------------------------------------------------------
 # Top 200 rating books for every decade
 
-# Group by 'decade', sort by 'ratings' in descending order, and select the top 200 per group
-df_top_books = (df_filtered.groupby('decade', group_keys=False)
+# Group by 'decade_gb', sort by 'ratings' in descending order, and select the top 200 per group
+df_top_books = (df_filtered.groupby('decade_gb', group_keys=False)
                 .apply((lambda x: x.sort_values('ratings', ascending=False).head(200)), 
                        include_groups=False))
-
-#----------------------------------------------------------------------------------
-# Decade has been lost in the grupby above, so reintroducing it below
-decade_index = []
-
-for index, _ in df_top_books.iterrows():
-    decade_index.append(index)
-
-df_top_books['decade'] = df_filtered['decade'].loc[decade_index]
-df_top_books = df_top_books.reset_index(drop=True)
 
 #----------------------------------------------------------------------------------
 # Reordering columns
@@ -38,6 +29,7 @@ column_order = ['title',
                 'url']
 
 df_top_books = df_top_books.reindex(columns=column_order)
+df_top_books = df_top_books.sort_values(by=['decade', 'year', 'author', 'title'], ascending=True)
 
 #----------------------------------------------------------------------------------
 
@@ -51,32 +43,45 @@ print(df_top_books.info())
 
 test_books = [
     "Dune",
-    "The Hitchhiker’s Guide to the Galaxy",
+    "The Hitchhiker's Guide to the Galaxy",
     "1984",
     "Brave New World",
     "The Forever War",
     "Stranger in a Strange Land",
-    "Childhood’s End",
+    "Childhood's End",
+    "Foundation and Empire",
     "The Time Machine",
     "Twenty Thousand Leagues Under the Sea",
     "The Left Hand of Darkness",
     "Contact",
     "Blindness",
     "Annihilation",
+    "Last and First Men",
     "Solaris",
     "Foundation",
-    "Last and First Men",
+    "Star Maker",
     "The Sparrow",
+    "Sirius",
+    "Consider Phlebas",
     "The Player of Games",
     "Blindsight",
     "The Fountains of Paradise",
-    "Sirius"
+    "Odd John",
+    "The Martian",
+    "Mission of Gravity",
+    "Jurassic Park",
+    "Flatland: A Romance of Many Dimensions",
+    "The Hunger Games",
+    "Neuromancer",
+    "Ready Player One",
+    "The Three-Body Problem"
 ]
 
 test_books_mask = df_filtered['title'].isin(test_books)
 df_test_books = df_filtered[test_books_mask]
 
 df_test_books = df_test_books.reindex(columns=column_order)
-df_test_books = df_test_books.sort_values(by=['ratings'], axis=0, ascending=False)
+#df_test_books = df_test_books.sort_values(by=['ratings'], axis=0, ascending=False)
+df_test_books = df_test_books.sort_values(by=['decade', 'year', 'author', 'title'], axis=0, ascending=True)
 
 df_test_books.to_csv('./Data/top_books_TEST.csv', index=False, sep=';', encoding='utf-8-sig')

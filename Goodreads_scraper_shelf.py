@@ -104,7 +104,7 @@ def scrape_book_page(session, url):
             synopsis = description_elem.text.strip()
 
         #-----------------------------------------
-        # Extract mean rate
+        # Extract average rate
         rate = 0
         rating_div = soup.find('div', class_='RatingStatistics__rating')
         if rating_div:
@@ -139,7 +139,7 @@ def scrape_book_page(session, url):
         #print(f"\nChosen review: {review}")
 
         #-----------------------------------------
-        # Book data
+        # Book data extracted
         book_data = {
             'series': series,
             'pages': pages,
@@ -193,6 +193,8 @@ def main():
     books = scrape_goodreads_books_from_files(folder_path)
     df = pd.DataFrame(books)
 
+    #--------------------------------------------
+    # Chose the right columns and their order
     column_order = ['title', 
                     'author', 
                     'year', 
@@ -204,9 +206,13 @@ def main():
                     'synopsis',
                     'review',
                     'url']
+    
     df = df.reindex(columns=column_order)
 
+    #--------------------------------------------
+    # Save the DataFrame to a CSV file
     df.to_csv('./Data/sci-fi_books_SHELF.csv', index=False, sep=';', encoding='utf-8-sig')
+
     logging.info(f"Scraped {len(books)} books.\nData saved to ./Data/sci-fi_books_SHELF.csv")
 
 #----------------------------------------------------------------------------------

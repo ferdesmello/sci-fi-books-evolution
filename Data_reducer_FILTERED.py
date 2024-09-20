@@ -14,6 +14,57 @@ print("\nBRUTE Dataframe")
 print(df.info())
 
 #----------------------------------------------------------------------------------
+# Filtering out books without both synopses and reviews, books without publishing year, and without many ratings
+
+# Cleaning null synopsis and review fields
+#-------------------------------------------
+def clean_synopsis(row):
+    if pd.isna(row):
+        return "No synopsis available"
+    else:
+        return row
+    
+#-------------------------------------------
+def clean_review(row):
+    if pd.isna(row):
+        return "No review available"
+    else:
+        return row
+   
+#-------------------------------------------
+# Apply the function to update the 'bracket_content' column
+df['synopsis'] = df['synopsis'].apply(clean_synopsis)
+df['review'] = df['review'].apply(clean_review)
+
+#-------------------------------------------
+# Minimum character length for synopses or reviews
+N_c = 100
+
+# Filter out rows where the length of synopses or reviews is shorter than N_c characters
+synopsis_mask = df['synopsis'].str.len().fillna(0) >= N_c
+review_mask = df['review'].str.len().fillna(0) >= N_c
+
+df = df[synopsis_mask | review_mask]
+
+#-----------------------------------------
+# Dropping books without publishing year
+df = df.dropna(axis=0, subset=['year'])
+
+#-----------------------------------------
+# Dropping books with fewer than N_r ratings
+
+# Minimum number of ratings
+N_r = 10
+
+# Filter out rows where the number of ratings is less than N_r
+ratings_mask = df['ratings'] >= N_r
+df = df[ratings_mask]
+
+#----------------------------------------------------------------------------------
+# Cleaning urls
+df['url'] = df['url'].str.strip()
+
+#----------------------------------------------------------------------------------
 # Excluding series of books (eg. trilogies together in one volume)
 # (must be done before excluding parentheses, as this info is in the parentheses)
 
@@ -70,8 +121,6 @@ df.loc[:, "title"] = df["title"].str.replace(r' \[.*', '', regex=True)
 # (must be done after excluding parentheses, as some series have " / " in the parentheses)
 
 def filter_bar(title):
-    # Regex pattern for exclusion ("/" for many books in one volume)
-    pattern = "/"
     # Exceptions for exclusion (some books use "/" properly)
     # Use a set for faster lookups
     exceptions = {"11/22/63", 
@@ -88,7 +137,12 @@ def filter_bar(title):
         return True
 
     # Check for unwanted slashes
-    if re.search(pattern, title):
+    if re.search("/", title):
+        #print(f"Excluded due to slash: {title}")
+        return False
+    
+    # Check for unwanted anti-slashes
+    if re.search(r'\\', title):
         #print(f"Excluded due to slash: {title}")
         return False
 
@@ -172,22 +226,70 @@ def delete_books(row):
                      "The Zombie Survival Guide: Complete Protection from the Living Dead",
                      "Mickey 7",
                      "From the Earth to the Moon and 'Round the Moon",
-                     "Shards of Honour"]
+                     "Shards of Honour",
+                     "The Men From P.I.G. And R.O.B.O.T.",
+                     "H.G. Wells: Seven Novels",
+                     "A Handful of Darkness",
+                     "Time Patrolman",
+                     "Apocalypses",
+                     "The Island of Doctor Moreau",
+                     "Future Bright, Future Grimm: Transhumanist Tales for Mother Nature's Offspring",
+                     "Diaspora: The dark, post-apocalyptic thriller perfect for fans of BLACK MIRROR and Philip K. Dick",
+                     "Fahrenheit 451; The Illustrated Man; Dandelion Wine; The Golden Apples of the Sun; The Martian Chronicles",
+                     r"Vorkosigan's Game: The Vor Game \ Borders of Infinity",
+                     "Miles Errant",
+                     "Miles in Love",
+                     "Miles, Mutants, and Microbes",
+                     "Miles, Mystery & Mayhem",
+                     "Miles, Mystery, and Mayhem",
+                     "A City in the North: reconsidered",
+                     "Second Stage Lesmam",
+                     "This Star Shall Abide: aka Heritage of the Star",
+                     "Fairyland",
+                     "Gunner Cade & Takeoff",
+                     "Null States: Book Two of the Centenal Cycle",
+                     "Omnitopia: Dawn",
+                     "Time and Mr. Bass: A Mushroom Planet Book",
+                     "Wool Omnibus",
+                     "Alliance Space",
+                     "A World Divided",
+                     "The Forbidden Circle",
+                     "To Save a World",]
     
     # Authors to be deleted
     authors_to_del = ["Iain M. Banks",
-                     "Mary Wollstonecraft Shelley",
-                     "Arkadi Strugatski",
-                     "Josef/Karel Capek",
-                     "Arthur C. Clarke",
-                     "Daniel F. Galouye",
-                     "George Edgar Slusser",
-                     "David L. Pulver",
-                     "Philip K. Dick",
-                     "Max Brooks",
-                     "Edward Ashton",
-                     "Jules Verne",
-                     "Lois McMaster Bujold"]
+                      "Mary Wollstonecraft Shelley",
+                      "Arkadi Strugatski",
+                      "Josef/Karel Capek",
+                      "Arthur C. Clarke",
+                      "Daniel F. Galouye",
+                      "George Edgar Slusser",
+                      "David L. Pulver",
+                      "Philip K. Dick",
+                      "Max Brooks",
+                      "Edward Ashton",
+                      "Jules Verne",
+                      "Lois McMaster Bujold",
+                      "Harry Harrison",
+                      "H.G. Wells",
+                      "Philip K. Dick",
+                      "Poul Anderson",
+                      "R.A. Lafferty",
+                      "D.J. MacLennan",
+                      "Greg Egan",
+                      "Ray Bradbury",
+                      "Lois McMaster Bujold",
+                      "Marta Randall",
+                      'E.E. "Doc" Smith',
+                      "Star	Sylvia Engdahl",
+                      "Paul McAuley",
+                      "Cyril Judd",
+                      "Malka Ann Older",
+                      "Diane Duane",
+                      "Eleanor Cameron",
+                      "Hugh Howey",
+                      "C.J. Cherryh",
+                      "Marion Zimmer Bradley"]
     
     # Extract title and author from the row
     title = row['title']
@@ -197,64 +299,12 @@ def delete_books(row):
     if (title in titles_to_del) & (author in authors_to_del):
         #print(f"Excluded: {title} by {author}")
         return False
-
     else:
         return True
 
 # Apply the filter function to each row using axis=1 to access row data
 mask = df.apply(delete_books, axis=1)
 df = df[mask]
-
-#----------------------------------------------------------------------------------
-# Filtering out books without both synopses and reviews, books without publishing year, and without many ratings
-
-# Cleaning null synopsis and review fields
-#-------------------------------------------
-def clean_synopsis(row):
-    if pd.isna(row):
-        return "No synopsis available"
-    else:
-        return row
-    
-#-------------------------------------------
-def clean_review(row):
-    if pd.isna(row):
-        return "No review available"
-    else:
-        return row
-   
-#-------------------------------------------
-# Apply the function to update the 'bracket_content' column
-df['synopsis'] = df['synopsis'].apply(clean_synopsis)
-df['review'] = df['review'].apply(clean_review)
-
-#-------------------------------------------
-# Minimum character length for synopses or reviews
-N_c = 100
-
-# Filter out rows where the length of synopses or reviews is shorter than N_c characters
-synopsis_mask = df['synopsis'].str.len().fillna(0) >= N_c
-review_mask = df['review'].str.len().fillna(0) >= N_c
-
-df = df[synopsis_mask | review_mask]
-
-#-----------------------------------------
-# Dropping books without publishing year
-df = df.dropna(axis=0, subset=['year'])
-
-#-----------------------------------------
-# Dropping books with fewer than N_r ratings
-
-# Minimum number of ratings
-N_r = 10
-
-# Filter out rows where the number of ratings is less than N_r
-ratings_mask = df['ratings'] >= N_r
-df = df[ratings_mask]
-
-#----------------------------------------------------------------------------------
-# Cleaning urls
-df['url'] = df['url'].str.strip()
 
 #----------------------------------------------------------------------------------
 # Converting the genres' column to actual lists
@@ -306,10 +356,9 @@ unwanted_genres = ['Graphic Novels',
                    'Manga', 
                    'Short Stories', 
                    'Anthologies', 
-                   'Collections', 
                    'Nonfiction', 
                    'Art', 
-                   'Reference'
+                   'Reference',
                    'Literary Criticism', 
                    'Essays', 
                    'Criticism',
@@ -317,10 +366,11 @@ unwanted_genres = ['Graphic Novels',
                    'High Fantasy',
                    'Epic Fantasy',
                    'Magic',
-                   'Angels',
-                   ]
-
+                   'Angels']
 unwanted_genres = [genre.lower() for genre in unwanted_genres]
+
+#required_genres = ['Short Stories', 'Anthologies']
+#required_genres = [genre.lower() for genre in required_genres]
 
 required_genre = 'science fiction'
 
@@ -336,16 +386,21 @@ for index, row in df.iterrows():
 
     # Check if the row should be kept:
     # 1. The list of genres must not contain any unwanted genres
-    # 2. The list must contain the required genre
-    has_unwanted_genre = any(genre in unwanted_genres for genre in processed_genres)
+    # 2. The list must contain any of the required genres (if applicable)
+    # 3. The list must contain the required genre
+    has_unwanted_genres = any(genre in unwanted_genres for genre in processed_genres)
+    #has_required_genres = any(genre in required_genres for genre in processed_genres)
     has_required_genre = required_genre in processed_genres
 
     # Add the index if the row does not have any unwanted genres and has the required genre
-    if not has_unwanted_genre and has_required_genre:
+    #if not has_unwanted_genres and (has_required_genre & has_required_genres):
+    if not has_unwanted_genres and has_required_genre:
         indices_to_keep_2.append(index)
 
 # Create the filtered DataFrame using the indices of rows to keep
 df_filtered = df.loc[indices_to_keep_2]
+
+df_filtered = df_filtered.sort_values(by=['decade', 'year', 'author', 'title'], axis=0, ascending=True)
 
 #----------------------------------------------------------------------------------
 # Save the filtered DataFrame back to a CSV

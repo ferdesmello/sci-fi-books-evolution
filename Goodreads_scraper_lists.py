@@ -17,7 +17,7 @@ import re
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 #----------------------------------------------------------------------------------
-# Function to load data from json file
+# Function to load data from the JSON file
 def load_progress():
     if os.path.exists('./Data/scraping_progress.json'):
         with open('./Data/scraping_progress.json', 'r') as f:
@@ -25,7 +25,7 @@ def load_progress():
     return {'urls': {}}
 
 #----------------------------------------------------------------------------------
-# Function to dave data in a json file
+# Function to dump data in the JSON file
 def save_progress(progress):
     with open('./Data/scraping_progress.json', 'w') as f:
         json.dump(progress, f)
@@ -57,7 +57,7 @@ def make_request(session, url, timeout=30):
         raise
 
 #----------------------------------------------------------------------------------
-# Function to scrape data from the local shelf HTML files
+# Function to scrape data from the lists
 def scrape_shelf(session, url, page):
     full_url = f"{url}?page={page}"
     response = make_request(session, full_url)
@@ -65,7 +65,7 @@ def scrape_shelf(session, url, page):
     books = []
 
     #-----------------------------------------
-    # Approach 1: Extract from shelves using <div> elements with class "elementList"
+    # Approach 1: Extract using <div> elements with class "elementList"
     for book in soup.find_all('div', class_='elementList'):
         title_elem = book.find('a', class_='bookTitle')
         author_elem = book.find('a', class_='authorName')
@@ -78,7 +78,7 @@ def scrape_shelf(session, url, page):
             })
 
     #-----------------------------------------
-    # Approach 2: Extract from lists using <tr> elements with itemtype="http://schema.org/Book"
+    # Approach 2: Extract using <tr> elements with itemtype="http://schema.org/Book"
     for book in soup.find_all('tr', itemtype='http://schema.org/Book'):
         title_elem = book.find('a', class_='bookTitle')
         author_elem = book.find('a', class_='authorName')
@@ -93,7 +93,7 @@ def scrape_shelf(session, url, page):
     return books
 
 #----------------------------------------------------------------------------------
-# Function to scrape data from book pages.
+# Function to scrape data from book pages
 def scrape_book_page(session, url):
     try:
         response = session.get(url, timeout=10)
@@ -170,7 +170,7 @@ def scrape_book_page(session, url):
         #print(f"\nChosen review: {review}")
 
         #-----------------------------------------
-        # Book data
+        # Book data extracted
         book_data = {
             'series': series,
             'pages': pages,
@@ -219,7 +219,7 @@ def scrape_goodreads_lists(urls, max_pages=30):
                     else:
                         logging.warning(f"Failed to scrape book:\n!!!{book['url']}")
                     
-                # Implement a random delay between 5 to 15 seconds after every page (not book)
+                # Implement a random delay between 5 to 15 seconds after every page (not at every book)
                 time.sleep(random.uniform(5, 15))
                 
                 # Save progress after each page
@@ -228,7 +228,7 @@ def scrape_goodreads_lists(urls, max_pages=30):
                 
             except Exception as e:
                 logging.error(f"Error scraping:\n!!!{url} - page {page}: {e}")
-                time.sleep(60)  # Wait a minute before retrying
+                time.sleep(60) # Wait a minute before retrying
         
         all_books.extend(books)
     #print(books)
@@ -291,18 +291,13 @@ def main():
     df.to_csv('./Data/sci-fi_books_PARTIAL_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
     
     logging.info(f"Scraped {len(books)} books. Data saved to ./Data/sci-fi_books_PARTIAL_LISTS.csv")
-    
-#----------------------------------------------------------------------------------
-# Execution
-if __name__ == "__main__":
-    main()
-    
-    #--------------------------------------------
-    # Reading the complete json file and saving it as a csv file.
+
+    #----------------------------------------------------------------------------------
+    # Reading the complete json file and saving it as a CSV file
 
     # Step 1: Load the JSON file into a Python object
     with open('./Data/scraping_progress.json', 'r') as f:
-        data = json.load(f)  # Load JSON into a dictionary
+        data = json.load(f) # Load JSON into a dictionary
 
     # Step 2: Extract the "books" data from within the "urls" layer
     books_data = []
@@ -311,31 +306,26 @@ if __name__ == "__main__":
     for url_key, url_content in data['urls'].items():
         # Check if "books" is present and is a list
         if 'books' in url_content and isinstance(url_content['books'], list):
-            books_data.extend(url_content['books'])  # Add the list of books to books_data
+            books_data.extend(url_content['books']) # Add the list of books to books_data
 
     # Step 3: Flatten the books data into a DataFrame
     # Each element in books_data is a book's details
     df_books = pd.json_normalize(books_data)
     
     # Inspect the DataFrame structure
-    print(df_books.head())  # View the first few rows to understand the layout
+    print("\n",df_books.head()) # View the first few rows to understand the layout
     
+    #--------------------------------------------
     # Chose the right columns and their order
-    column_order = ['title', 
-                    'author', 
-                    'year', 
-                    'pages', 
-                    'rate', 
-                    'ratings', 
-                    'series', 
-                    'genres', 
-                    'synopsis',
-                    'review',
-                    'url']
-    
     df_books = df_books.reindex(columns=column_order)
 
+    #--------------------------------------------
     # Save the flattened DataFrame to a CSV file
     df_books.to_csv('./Data/sci-fi_books_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
 
     logging.info(f"Data saved to ./Data/sci-fi_books_LISTS.csv")
+
+#----------------------------------------------------------------------------------
+# Execution
+if __name__ == "__main__":
+    main()
