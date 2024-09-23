@@ -107,95 +107,101 @@ category_counts_1 = pd.crosstab(df_200_AI['decade'], df_200_AI['1 soft hard'])
 # Normalize the counts to get percentages
 category_percent_1 = category_counts_1.div(category_counts_1.sum(axis = 1), axis = 0) * 100
 
-# 2 time------------------------------------------
+# 2 light heavy------------------------------------------
 # Count the occurrences of each category per decade
-category_counts_2 = pd.crosstab(df_200_AI['decade'], df_200_AI['2 time'])
+category_counts_2 = pd.crosstab(df_200_AI['decade'], df_200_AI['2 light heavy'])
 # Normalize the counts to get percentages
 category_percent_2 = category_counts_2.div(category_counts_2.sum(axis = 1), axis = 0) * 100
 
-# 3 tone------------------------------------------
+# 3 time------------------------------------------
 # Count the occurrences of each category per decade
-category_counts_3 = pd.crosstab(df_200_AI['decade'], df_200_AI['3 tone'])
+category_counts_3 = pd.crosstab(df_200_AI['decade'], df_200_AI['3 time'])
 # Normalize the counts to get percentages
 category_percent_3 = category_counts_3.div(category_counts_3.sum(axis = 1), axis = 0) * 100
 
-# 4 setting------------------------------------------
+# 4 tone------------------------------------------
 # Count the occurrences of each category per decade
-category_counts_4 = pd.crosstab(df_200_AI['decade'], df_200_AI['4 setting'])
+category_counts_4 = pd.crosstab(df_200_AI['decade'], df_200_AI['4 mood'])
 # Normalize the counts to get percentages
 category_percent_4 = category_counts_4.div(category_counts_4.sum(axis = 1), axis = 0) * 100
 
-# 5 on Earth------------------------------------------
+# 5 setting------------------------------------------
 # Count the occurrences of each category per decade
-category_counts_5 = pd.crosstab(df_200_AI['decade'], df_200_AI['5 on Earth'])
+category_counts_5 = pd.crosstab(df_200_AI['decade'], df_200_AI['5 setting'])
 # Normalize the counts to get percentages
 category_percent_5 = category_counts_5.div(category_counts_5.sum(axis = 1), axis = 0) * 100
 
-# 6 post apocalyptic------------------------------------------
+# 6 on Earth------------------------------------------
 # Count the occurrences of each category per decade
-category_counts_6 = pd.crosstab(df_200_AI['decade'], df_200_AI['6 post apocalyptic'])
+category_counts_6 = pd.crosstab(df_200_AI['decade'], df_200_AI['6 on Earth'])
 # Normalize the counts to get percentages
 category_percent_6 = category_counts_6.div(category_counts_6.sum(axis = 1), axis = 0) * 100
 
-# 7 aliens------------------------------------------
+# 7 post apocalyptic------------------------------------------
 # Count the occurrences of each category per decade
-category_counts_7 = pd.crosstab(df_200_AI['decade'], df_200_AI['7 aliens'])
+category_counts_7 = pd.crosstab(df_200_AI['decade'], df_200_AI['7 post apocalyptic'])
 # Normalize the counts to get percentages
 category_percent_7 = category_counts_7.div(category_counts_7.sum(axis = 1), axis = 0) * 100
 
-# 8 aliens are------------------------------------------
+# 8 aliens------------------------------------------
 # Count the occurrences of each category per decade
-category_counts_8 = pd.crosstab(df_200_AI['decade'], df_200_AI['8 aliens are'])
+category_counts_8 = pd.crosstab(df_200_AI['decade'], df_200_AI['8 aliens'])
 # Normalize the counts to get percentages
 category_percent_8 = category_counts_8.div(category_counts_8.sum(axis = 1), axis = 0) * 100
 
-# 9 robots and AI------------------------------------------
+# 9 aliens are------------------------------------------
 # Count the occurrences of each category per decade
-category_counts_9 = pd.crosstab(df_200_AI['decade'], df_200_AI['9 robots and AI'])
+category_counts_9 = pd.crosstab(df_200_AI['decade'], df_200_AI['9 aliens are'])
 # Normalize the counts to get percentages
 category_percent_9 = category_counts_9.div(category_counts_9.sum(axis = 1), axis = 0) * 100
 
-# 10 robots and AI are------------------------------------------
+# 10 robots and AI------------------------------------------
 # Count the occurrences of each category per decade
-category_counts_10 = pd.crosstab(df_200_AI['decade'], df_200_AI['10 robots and AI are'])
+category_counts_10 = pd.crosstab(df_200_AI['decade'], df_200_AI['10 robots and AI'])
 # Normalize the counts to get percentages
 category_percent_10 = category_counts_10.div(category_counts_10.sum(axis = 1), axis = 0) * 100
 
-# 11 protagonist------------------------------------------
+# 11 robots and AI are------------------------------------------
 # Count the occurrences of each category per decade
-category_counts_11 = pd.crosstab(df_200_AI['decade'], df_200_AI['11 protagonist'])
+category_counts_11 = pd.crosstab(df_200_AI['decade'], df_200_AI['11 robots and AI are'])
 # Normalize the counts to get percentages
 category_percent_11 = category_counts_11.div(category_counts_11.sum(axis = 1), axis = 0) * 100
 
-# 12 protagonist is------------------------------------------
+# 12 protagonist------------------------------------------
 # Count the occurrences of each category per decade
-category_counts_12 = pd.crosstab(df_200_AI['decade'], df_200_AI['12 protagonist is'])
+category_counts_12 = pd.crosstab(df_200_AI['decade'], df_200_AI['12 protagonist'])
 # Normalize the counts to get percentages
 category_percent_12 = category_counts_12.div(category_counts_12.sum(axis = 1), axis = 0) * 100
 
-# 13 tech and science------------------------------------------
+# 13 protagonist is------------------------------------------
 # Count the occurrences of each category per decade
-category_counts_13 = pd.crosstab(df_200_AI['decade'], df_200_AI['13 tech and science'])
+category_counts_13 = pd.crosstab(df_200_AI['decade'], df_200_AI['13 protagonist is'])
 # Normalize the counts to get percentages
 category_percent_13 = category_counts_13.div(category_counts_13.sum(axis = 1), axis = 0) * 100
 
-# 14 virtual------------------------------------------
+# 15 virtual------------------------------------------
 # Count the occurrences of each category per decade
 category_counts_14 = pd.crosstab(df_200_AI['decade'], df_200_AI['14 virtual'])
 # Normalize the counts to get percentages
 category_percent_14 = category_counts_14.div(category_counts_14.sum(axis = 1), axis = 0) * 100
 
-# 15 social issues------------------------------------------
+# 14 tech and science------------------------------------------
 # Count the occurrences of each category per decade
-category_counts_15 = pd.crosstab(df_200_AI['decade'], df_200_AI['15 social issues'])
+category_counts_15 = pd.crosstab(df_200_AI['decade'], df_200_AI['15 tech and science'])
 # Normalize the counts to get percentages
 category_percent_15 = category_counts_15.div(category_counts_15.sum(axis = 1), axis = 0) * 100
 
-# 16 enviromental------------------------------------------
+# 16 social issues------------------------------------------
 # Count the occurrences of each category per decade
-category_counts_16 = pd.crosstab(df_200_AI['decade'], df_200_AI['16 enviromental'])
+category_counts_16 = pd.crosstab(df_200_AI['decade'], df_200_AI['16 social issues'])
 # Normalize the counts to get percentages
 category_percent_16 = category_counts_16.div(category_counts_16.sum(axis = 1), axis = 0) * 100
+
+# 17 enviromental------------------------------------------
+# Count the occurrences of each category per decade
+category_counts_17 = pd.crosstab(df_200_AI['decade'], df_200_AI['17 enviromental'])
+# Normalize the counts to get percentages
+category_percent_17 = category_counts_17.div(category_counts_17.sum(axis = 1), axis = 0) * 100
 
 #----------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------
@@ -565,8 +571,8 @@ plt.savefig("./Figures/1 soft hard.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/1 soft hard.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 5 - 2 time
-print("  Making 2 time...")
+# Figure 5 - 1 light heavy
+print("  Making 2 light heavy...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
@@ -578,7 +584,91 @@ ax1 = figure2.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_2 = ['Distant past',
+category_order_2 = ['Very light',
+                    'Light',
+                    'Balanced', 
+                    'Heavy',
+                    'Very heavy']
+# Reorder the columns in the DataFrame according to the desired category order
+category_percent_2 = category_percent_2[category_order_2]
+
+# Define custom colors for each category
+custom_colors_2 = ['#385AC2',
+                   '#5580D0',
+                   '#8B3FCF',
+                   '#CF5D5F',
+                   '#AE305D']
+
+# Bar plot-------------------------------------------
+category_percent_2.plot(kind = 'bar',
+                        stacked = True,
+                        ax = ax1,
+                        color = custom_colors_2,
+                        width = 1.0,
+                        alpha = 1.0,
+                        label = "2 light heavy")
+
+# Design-------------------------------------------
+ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
+#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
+ax1.set_title("Is the book considered more of a light or heavy reading experience?", fontsize = 14, color = custom_dark_gray)
+#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
+
+# Format the y-axis to show percentages
+ax1.yaxis.set_major_formatter(PercentFormatter())
+
+# Legend-------------------------------------------
+# Get handles and labels
+handles, labels = ax1.get_legend_handles_labels()
+
+# Reverse the order
+handles.reverse()
+labels.reverse()
+
+# Pass the reversed handles and labels to the legend
+ax1.legend(handles, 
+           labels, 
+           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
+           frameon = False, 
+           labelspacing = 5.0,
+           loc = 'center left')
+
+# Axes-------------------------------------------
+ax1.minorticks_on()
+ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
+ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
+ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
+ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
+ax1.tick_params(axis = 'both', colors = custom_dark_gray)
+
+ax1.spines['right'].set_visible(False)
+ax1.spines['top'].set_visible(False)
+#ax1.spines['top'].set_color(custom_dark_gray)
+#ax1.spines['left'].set_visible(False)
+ax1.spines['left'].set_color(custom_dark_gray)
+ax1.spines['bottom'].set_color(custom_dark_gray)
+
+# Saving image-------------------------------------------
+plt.savefig("./Figures/2 light heavy.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/2 light heavy.eps", transparent = True, bbox_inches = 'tight')
+# Transparence will be lost in .eps, save in .svg for transparences
+#plt.savefig("./Figures/2 light heavy.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+
+#----------------------------------------------------------------------------------
+# Figure 6 - 3 time
+print("  Making 3 time...")
+
+#-------------------------------------------
+# Creates a figure object with size 12x6 inches
+figure3 = plt.figure(6, figsize = (12, 6))
+gs = figure3.add_gridspec(ncols = 1, nrows = 1)
+
+# Create the main plot
+ax1 = figure3.add_subplot(gs[0])
+
+#-------------------------------------------
+# Define the desired order of the categories
+category_order_3 = ['Distant past',
                     'Far past',
                     'Near past',
                     'Present',
@@ -590,10 +680,10 @@ category_order_2 = ['Distant past',
                     'Uncertain']
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_2 = category_percent_2[category_order_2]
+category_percent_3 = category_percent_3[category_order_3]
 
 # Define custom colors for each category
-custom_colors_2 = ['#AE305D', # Distant past
+custom_colors_3 = ['#AE305D', # Distant past
                    '#CF5D5F',
                    '#E3937B',
                    '#8B3FCF',
@@ -605,13 +695,13 @@ custom_colors_2 = ['#AE305D', # Distant past
                    'lightgrey'] # Uncertain
 
 # Bar plot-------------------------------------------
-category_percent_2.plot(kind = 'bar',
+category_percent_3.plot(kind = 'bar',
                         stacked = True,
                         ax = ax1,
-                        color = custom_colors_2,
+                        color = custom_colors_3,
                         width = 1.0,
                         alpha = 1.0,
-                        label = "2 time")
+                        label = "3 time")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -653,54 +743,54 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/2 time.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/2 time.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/3 time.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/3 time.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/2 time.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/3 time.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 6 - 3 tone
-print("  Making 3 tone...")
+# Figure 7 - 4 mood
+print("  Making 4 mood...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure3 = plt.figure(6, figsize = (12, 6))
-gs = figure3.add_gridspec(ncols = 1, nrows = 1)
+figure4 = plt.figure(7, figsize = (12, 6))
+gs = figure4.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure3.add_subplot(gs[0])
+ax1 = figure4.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_3 = ['Very pessimistic',
+category_order_4 = ['Very pessimistic',
                     'Pessimistic',
                     'Balanced',
                     'Optimistic',
                     'Very optimistic']
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_3 = category_percent_3[category_order_3]
+category_percent_4 = category_percent_4[category_order_4]
 
 # Define custom colors for each category
-custom_colors_3 = ['#AE305D',
+custom_colors_4 = ['#AE305D',
                    '#CF5D5F',
                    '#8B3FCF',
                    '#5580D0',
                    '#385AC2']
 
 # Bar plot-------------------------------------------
-category_percent_3.plot(kind = 'bar',
+category_percent_4.plot(kind = 'bar',
                         stacked = True,
                         ax = ax1,
-                        color = custom_colors_3,
+                        color = custom_colors_4,
                         width = 1.0,
                         alpha = 1.0,
-                        label = "3 tone")
+                        label = "4 mood")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("What is the tone of the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("What is the mood of the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -737,26 +827,26 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/3 tone.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/3 tone.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/4 mood.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/4 mood.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/3 tone.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/4 mood.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 7 - 4 setting
-print("  Making 4 setting...")
+# Figure 8 - 5 setting
+print("  Making 5 setting...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure4 = plt.figure(7, figsize = (12, 6))
-gs = figure4.add_gridspec(ncols = 1, nrows = 1)
+figure5 = plt.figure(8, figsize = (12, 6))
+gs = figure5.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure4.add_subplot(gs[0])
+ax1 = figure5.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_4 = ['Dystopic',
+category_order_5 = ['Dystopic',
                     'Leaning dystopic',
                     'Balanced',
                     'Leaning utopic',
@@ -765,10 +855,10 @@ category_order_4 = ['Dystopic',
                     'Uncertain']
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_4 = category_percent_4[category_order_4]
+category_percent_5 = category_percent_5[category_order_5]
 
 # Define custom colors for each category
-custom_colors_4 = ['#AE305D',
+custom_colors_5 = ['#AE305D',
                    '#CF5D5F',
                    '#8B3FCF',
                    '#5580D0',
@@ -777,18 +867,18 @@ custom_colors_4 = ['#AE305D',
                    'lightgrey']
 
 # Bar plot-------------------------------------------
-category_percent_4.plot(kind = 'bar',
+category_percent_5.plot(kind = 'bar',
                         stacked = True,
                         ax = ax1,
-                        color = custom_colors_4,
+                        color = custom_colors_5,
                         width = 1.0,
                         alpha = 1.0,
-                        label = "4 setting")
+                        label = "5 setting")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("How is the social and political setting depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("What is the social and political scenario depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -825,43 +915,43 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/4 setting.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/4 setting.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/5 setting.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/5 setting.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/4 setting.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/5 setting.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 8 - 5 on Earth
-print("  Making 5 on Earth...")
+# Figure 9 - 6 on Earth
+print("  Making 6 on Earth...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure5 = plt.figure(8, figsize = (12, 6))
-gs = figure5.add_gridspec(ncols = 1, nrows = 1)
+figure6 = plt.figure(9, figsize = (12, 6))
+gs = figure6.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure5.add_subplot(gs[0])
+ax1 = figure6.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_5 = ['Yes',
+category_order_6 = ['Yes',
                     'No']
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_5 = category_percent_5[category_order_5]
+category_percent_6 = category_percent_6[category_order_6]
 
 # Define custom colors for each category
-custom_colors_5 = ['#AE305D',
+custom_colors_6 = ['#AE305D',
                    '#385AC2']
 
 # Bar plot-------------------------------------------
-category_percent_5.plot(kind = 'bar',
+category_percent_6.plot(kind = 'bar',
                         stacked = True,
                         ax = ax1,
-                        color = custom_colors_5,
+                        color = custom_colors_6,
                         width = 1.0,
                         alpha = 1.0,
-                        label = "5 on Earth")
+                        label = "6 on Earth")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -903,50 +993,50 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/5 on Earth.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/5 on Earth.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/6 on Earth.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/6 on Earth.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/5 on Earth.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/6 on Earth.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 9 - 6 post apocalyptic
-print("  Making 6 post apocalyptic...")
+# Figure 10 - 7 post apocalyptic
+print("  Making 7 post apocalyptic...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure6 = plt.figure(9, figsize = (12, 6))
-gs = figure6.add_gridspec(ncols = 1, nrows = 1)
+figure7 = plt.figure(10, figsize = (12, 6))
+gs = figure7.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure6.add_subplot(gs[0])
+ax1 = figure7.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_6 = ['Yes',
+category_order_7 = ['Yes',
                     'Somewhat',
                     'No']
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_6 = category_percent_6[category_order_6]
+category_percent_7 = category_percent_7[category_order_7]
 
 # Define custom colors for each category
-custom_colors_6 = ['#AE305D',
+custom_colors_7 = ['#AE305D',
                    '#8B3FCF',
                    '#385AC2']
 
 # Bar plot-------------------------------------------
-category_percent_6.plot(kind = 'bar',
+category_percent_7.plot(kind = 'bar',
                         stacked = True,
                         ax = ax1,
-                        color = custom_colors_6,
+                        color = custom_colors_7,
                         width = 1.0,
                         alpha = 1.0,
-                        label = "6 post apocalyptic")
+                        label = "7 post apocalyptic")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Is the story set in a post-apocalyptic world (following a major civilization-collapse event)?", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("Is the story set in a post-apocalyptic world (after a civilization-collapsing event)?", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -983,43 +1073,43 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/6 post apocalyptic.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/6 post apocalyptic.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/7 post apocalyptic.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/7 post apocalyptic.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/6 post apocalyptic.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/7 post apocalyptic.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 10 - 7 aliens
-print("  Making 7 aliens...")
+# Figure 11 - 8 aliens
+print("  Making 8 aliens...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure7 = plt.figure(10, figsize = (12, 6))
-gs = figure7.add_gridspec(ncols = 1, nrows = 1)
+figure8 = plt.figure(11, figsize = (12, 6))
+gs = figure8.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure7.add_subplot(gs[0])
+ax1 = figure8.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_7 = ['Yes',
+category_order_8 = ['Yes',
                     'No']
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_7 = category_percent_7[category_order_7]
+category_percent_8 = category_percent_8[category_order_8]
 
 # Define custom colors for each category
-custom_colors_7 = ['#AE305D',
+custom_colors_8 = ['#AE305D',
                    '#385AC2']
 
 # Bar plot-------------------------------------------
-category_percent_7.plot(kind = 'bar',
+category_percent_8.plot(kind = 'bar',
                         stacked = True,
                         ax = ax1,
-                        color = custom_colors_7,
+                        color = custom_colors_8,
                         width = 1.0,
                         alpha = 1.0,
-                        label = "7 aliens")
+                        label = "8 aliens")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -1061,25 +1151,25 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/7 aliens.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/7 aliens.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/8 aliens.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/8 aliens.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/7 aliens.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/8 aliens.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 11 - 8 aliens are
-print("  Making 8 aliens are...")
+# Figure 12 - 9 aliens are
+print("  Making 9 aliens are...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure8 = plt.figure(11, figsize = (12, 6))
-gs = figure8.add_gridspec(ncols = 1, nrows = 1)
+figure9 = plt.figure(12, figsize = (12, 6))
+gs = figure9.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure8.add_subplot(gs[0])
+ax1 = figure9.add_subplot(gs[0])
 
 # Define the desired order of the categories
-category_order_8 = ['Bad', 
+category_order_9 = ['Bad', 
                     'Leaning bad',
                     'Ambivalent', 
                     'Leaning good',
@@ -1089,10 +1179,10 @@ category_order_8 = ['Bad',
                     'Not applicable']
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_8 = category_percent_8[category_order_8]
+category_percent_9 = category_percent_9[category_order_9]
 
 # Define custom colors for each category
-custom_colors_8 = ['#AE305D',
+custom_colors_9 = ['#AE305D',
                    '#CF5D5F',
                    '#8B3FCF',
                    '#5580D0',
@@ -1102,13 +1192,13 @@ custom_colors_8 = ['#AE305D',
                    'lightgrey']
 
 # Bar plot-------------------------------------------
-category_percent_8.plot(kind = 'bar',
+category_percent_9.plot(kind = 'bar',
                         stacked = True,
                         ax = ax1,
-                        color = custom_colors_8,
+                        color = custom_colors_9,
                         width = 1.0,
                         alpha = 1.0,
-                        label = "8 aliens are")
+                        label = "9 aliens are")
 
 # Legend-------------------------------------------
 # Get handles and labels
@@ -1150,48 +1240,48 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/8 aliens are.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/8 aliens are.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/9 aliens are.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/9 aliens are.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/8 aliens are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/9 aliens are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 12 - 9 robots and AI
-print("  Making 9 robots and AI...")
+# Figure 13 - 10 robots and AI
+print("  Making 10 robots and AI...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure9 = plt.figure(12, figsize = (12, 6))
-gs = figure9.add_gridspec(ncols = 1, nrows = 1)
+figure10 = plt.figure(13, figsize = (12, 6))
+gs = figure10.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure9.add_subplot(gs[0])
+ax1 = figure10.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_9 = ['Yes', 
-                    'No']
+category_order_10 = ['Yes',
+                     'No']
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_9 = category_percent_9[category_order_9]
+category_percent_10 = category_percent_10[category_order_10]
 
 # Define custom colors for each category
-custom_colors_9 = ['#AE305D',
-                   '#385AC2']
+custom_colors_10 = ['#AE305D',
+                    '#385AC2']
 
 # Bar plot-------------------------------------------
-category_percent_9.plot(kind = 'bar',
-                        stacked = True,
-                        ax = ax1,
-                        color = custom_colors_9,
-                        width = 1.0,
-                        alpha = 1.0,
-                        label = "9 robots and AI")
+category_percent_10.plot(kind = 'bar',
+                         stacked = True,
+                         ax = ax1,
+                         color = custom_colors_10,
+                         width = 1.0,
+                         alpha = 1.0,
+                         label = "10 robots and AI")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Are there any depictions of robots or artificial intelligences in the story? \n(just automatic systems or programs do not count)", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("Are there any depictions of robots or artificial intelligences in the story? \n(just automatic systems, advanced technology, or programs do not count)", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -1228,27 +1318,27 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/9 robots and AI.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/9 robots and AI.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/10 robots and AI.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/10 robots and AI.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/9 robots and AI.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/10 robots and AI.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 13 - 10 robots and AI are
-print("  Making 10 robots and AI are...")
+# Figure 14 - 11 robots and AI are
+print("  Making 11 robots and AI are...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure10 = plt.figure(13, figsize = (12, 6))
-gs = figure10.add_gridspec(ncols = 1, nrows = 1)
+figure11 = plt.figure(14, figsize = (12, 6))
+gs = figure11.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure10.add_subplot(gs[0])
-# Figure 12 - 10 robots and AI are
+ax1 = figure11.add_subplot(gs[0])
+# Figure 12 - 11 robots and AI are
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_10 = ['Bad', 
+category_order_11 = ['Bad', 
                      'Leaning bad', 
                      'Ambivalent', 
                      'Leaning good',
@@ -1258,10 +1348,10 @@ category_order_10 = ['Bad',
                      'Not applicable']
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_10 = category_percent_10[category_order_10]
+category_percent_11 = category_percent_11[category_order_11]
 
 # Define custom colors for each category
-custom_colors_10 = ['#AE305D',
+custom_colors_11 = ['#AE305D',
                     '#CF5D5F',
                     '#8B3FCF',
                     '#5580D0',
@@ -1271,18 +1361,18 @@ custom_colors_10 = ['#AE305D',
                     'lightgrey']
 
 # Bar plot-------------------------------------------
-category_percent_10.plot(kind = 'bar',
+category_percent_11.plot(kind = 'bar',
                          stacked = True,
                          ax = ax1,
-                         color = custom_colors_10,
+                         color = custom_colors_11,
                          width = 1.0,
                          alpha = 1.0,
-                         label = "10 robots and AI are")
+                         label = "11 robots and AI are")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("How are the robots or artificial intelligences generally depicted?", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("How are the robots or artificial intelligences generally depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -1319,42 +1409,42 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/10 robots and AI are.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/10 robots and AI are.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/11 robots and AI are.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/11 robots and AI are.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/10 robots and AI are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/11 robots and AI are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 14 - 11 protagonist
-print("  Making 11 protagonist...")
+# Figure 15 - 12 protagonist
+print("  Making 12 protagonist...")
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure11 = plt.figure(14, figsize = (12, 6))
-gs = figure11.add_gridspec(ncols = 1, nrows = 1)
+figure12 = plt.figure(15, figsize = (12, 6))
+gs = figure12.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure11.add_subplot(gs[0])
+ax1 = figure12.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_11 = ['Yes', 
+category_order_12 = ['Yes', 
                      'No']
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_11 = category_percent_11[category_order_11]
+category_percent_12 = category_percent_12[category_order_12]
 
 # Define custom colors for each category
-custom_colors_11 = ['#AE305D',
+custom_colors_12 = ['#AE305D',
                     '#385AC2']
 
 # Bar plot-------------------------------------------
-category_percent_11.plot(kind = 'bar',
+category_percent_12.plot(kind = 'bar',
                          stacked = True,
                          ax = ax1,
-                         color = custom_colors_11,
+                         color = custom_colors_12,
                          width = 1.0,
                          alpha = 1.0,
-                         label = "11 protagonist")
+                         label = "12 protagonist")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -1396,25 +1486,25 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/11 protagonist.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/11 protagonist.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/12 protagonist.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/12 protagonist.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/11 protagonist.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/12 protagonist.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 15 - 12 protagonist is
-print("  Making 12 protagonist is...")
+# Figure 16 - 13 protagonist is
+print("  Making 13 protagonist is...")
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure12 = plt.figure(15, figsize = (12, 6))
-gs = figure12.add_gridspec(ncols = 1, nrows = 1)
+figure13 = plt.figure(16, figsize = (12, 6))
+gs = figure13.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure12.add_subplot(gs[0])
+ax1 = figure13.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_12 = ['Male', 
+category_order_13 = ['Male', 
                      'Female',
 
                      'Other',
@@ -1423,10 +1513,10 @@ category_order_12 = ['Male',
                      'Not applicable']
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_12 = category_percent_12[category_order_12]
+category_percent_13 = category_percent_13[category_order_13]
 
 # Define custom colors for each category
-custom_colors_12 = ['#385AC2',
+custom_colors_13 = ['#385AC2',
                     '#AE305D',
 
                     '#8B3FCF',
@@ -1435,13 +1525,13 @@ custom_colors_12 = ['#385AC2',
                     'lightgrey']
 
 # Bar plot-------------------------------------------
-category_percent_12.plot(kind = 'bar',
+category_percent_13.plot(kind = 'bar',
                          stacked = True,
                          ax = ax1,
-                         color = custom_colors_12,
+                         color = custom_colors_13,
                          width = 1.0,
                          alpha = 1.0,
-                         label = "12 protagonist is")
+                         label = "13 protagonist is")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -1483,97 +1573,10 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/12 protagonist is.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/12 protagonist is.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/13 protagonist is.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/13 protagonist is.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/12 protagonist is.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 16 - 13 tech and science
-print("  Making 13 tech and science...")
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure13 = plt.figure(16, figsize = (12, 6))
-gs = figure13.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure13.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_13 = ['Bad', 
-                     'Leaning bad', 
-                     'Ambivalent', 
-                     'Leaning good',
-                     'Good',
-
-                     'Uncertain']
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_13 = category_percent_13[category_order_13]
-
-# Define custom colors for each category
-custom_colors_13 = ['#AE305D',
-                    '#CF5D5F',
-                    '#8B3FCF',
-                    '#5580D0',
-                    '#385AC2',
-
-                    'lightgrey']
-
-# Bar plot-------------------------------------------
-category_percent_13.plot(kind = 'bar',
-                         stacked = True,
-                         ax = ax1,
-                         color = custom_colors_13,
-                         width = 1.0,
-                         alpha = 1.0,
-                         label = "13 tech and science")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("How are technology and science depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 4.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Saving image-------------------------------------------
-plt.savefig("./Figures/13 tech and science.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/13 tech and science.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/13 tech and science.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/13 protagonist is.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 # Figure 17 - 14 virtual
@@ -1612,7 +1615,7 @@ category_percent_14.plot(kind = 'bar',
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Is virtual reality or immersive digital environments \n(e.g., simulations, augmented reality) present in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("Are there any depictions of virtual reality or immersive digital environments \n(e.g., simulations, augmented reality) in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -1655,9 +1658,8 @@ plt.savefig("./Figures/14 virtual.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/14 virtual.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 18 - 15 social issues
-print("  Making 15 social issues...")
-
+# Figure 18 - 15 tech and science
+print("  Making 15 tech and science...")
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
 figure15 = plt.figure(18, figsize = (12, 6))
@@ -1668,21 +1670,25 @@ ax1 = figure15.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_15 = ['Core', 
-                     'Major',
-                     'Minor',
+category_order_15 = ['Bad', 
+                     'Leaning bad', 
+                     'Ambivalent', 
+                     'Leaning good',
+                     'Good',
 
-                     'Absent']
+                     'Uncertain']
 
 # Reorder the columns in the DataFrame according to the desired category order
 category_percent_15 = category_percent_15[category_order_15]
 
 # Define custom colors for each category
-custom_colors_15 = ['#385AC2',
+custom_colors_15 = ['#AE305D',
+                    '#CF5D5F',
+                    '#8B3FCF',
                     '#5580D0',
-                    '#6CACEB',
+                    '#385AC2',
 
-                    '#AE305D']
+                    'lightgrey']
 
 # Bar plot-------------------------------------------
 category_percent_15.plot(kind = 'bar',
@@ -1691,7 +1697,91 @@ category_percent_15.plot(kind = 'bar',
                          color = custom_colors_15,
                          width = 1.0,
                          alpha = 1.0,
-                         label = "13 social issues")
+                         label = "15 tech and science")
+
+# Design-------------------------------------------
+ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
+#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
+ax1.set_title("How are technology and science depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
+#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
+
+# Format the y-axis to show percentages
+ax1.yaxis.set_major_formatter(PercentFormatter())
+
+# Legend-------------------------------------------
+# Get handles and labels
+handles, labels = ax1.get_legend_handles_labels()
+
+# Reverse the order
+handles.reverse()
+labels.reverse()
+
+# Pass the reversed handles and labels to the legend
+ax1.legend(handles, 
+           labels, 
+           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
+           frameon = False, 
+           labelspacing = 4.0,
+           loc = 'center left')
+
+# Axes-------------------------------------------
+ax1.minorticks_on()
+ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
+ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
+ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
+ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
+ax1.tick_params(axis = 'both', colors = custom_dark_gray)
+
+ax1.spines['right'].set_visible(False)
+ax1.spines['top'].set_visible(False)
+#ax1.spines['left'].set_visible(False)
+ax1.spines['left'].set_color(custom_dark_gray)
+ax1.spines['bottom'].set_color(custom_dark_gray)
+
+# Saving image-------------------------------------------
+plt.savefig("./Figures/15 tech and science.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/15 tech and science.eps", transparent = True, bbox_inches = 'tight')
+# Transparence will be lost in .eps, save in .svg for transparences
+#plt.savefig("./Figures/15 tech and science.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+
+#----------------------------------------------------------------------------------
+# Figure 19 - 16 social issues
+print("  Making 16 social issues...")
+
+#-------------------------------------------
+# Creates a figure object with size 12x6 inches
+figure16 = plt.figure(19, figsize = (12, 6))
+gs = figure16.add_gridspec(ncols = 1, nrows = 1)
+
+# Create the main plot
+ax1 = figure16.add_subplot(gs[0])
+
+#-------------------------------------------
+# Define the desired order of the categories
+category_order_16 = ['Core', 
+                     'Major',
+                     'Minor',
+
+                     'Absent']
+
+# Reorder the columns in the DataFrame according to the desired category order
+category_percent_16 = category_percent_16[category_order_16]
+
+# Define custom colors for each category
+custom_colors_16 = ['#385AC2',
+                    '#5580D0',
+                    '#6CACEB',
+
+                    '#AE305D']
+
+# Bar plot-------------------------------------------
+category_percent_16.plot(kind = 'bar',
+                         stacked = True,
+                         ax = ax1,
+                         color = custom_colors_16,
+                         width = 1.0,
+                         alpha = 1.0,
+                         label = "16 social issues")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -1733,49 +1823,49 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/15 social issues.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/15 social issues.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/16 social issues.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/16 social issues.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/15 social issues.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/16 social issues.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 19 - 16 enviromental
-print("  Making 16 enviromental...")
+# Figure 20 - 17 enviromental
+print("  Making 17 enviromental...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure16 = plt.figure(19, figsize = (12, 6))
-gs = figure16.add_gridspec(ncols = 1, nrows = 1)
+figure17 = plt.figure(20, figsize = (12, 6))
+gs = figure17.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure16.add_subplot(gs[0])
+ax1 = figure17.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_16 = ['Core', 
+category_order_17 = ['Core', 
                      'Major',
                      'Minor',
 
                      'Absent']
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_16 = category_percent_16[category_order_16]
+category_percent_17 = category_percent_17[category_order_17]
 
 # Define custom colors for each category
-custom_colors_16 = ['#385AC2',
+custom_colors_17 = ['#385AC2',
                     '#5580D0',
                     '#6CACEB',
 
                     '#AE305D']
 
 # Bar plot-------------------------------------------
-category_percent_16.plot(kind = 'bar',
+category_percent_17.plot(kind = 'bar',
                          stacked = True,
                          ax = ax1,
-                         color = custom_colors_16,
+                         color = custom_colors_17,
                          width = 1.0,
                          alpha = 1.0,
-                         label = "16 enviromental")
+                         label = "17 enviromental")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -1817,10 +1907,10 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/16 enviromental.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/16 enviromental.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/17 enviromental.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/17 enviromental.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/16 enviromental.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/17 enviromental.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 print("All done.")

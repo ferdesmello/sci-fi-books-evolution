@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from openai import OpenAI
 from dotenv import load_dotenv
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type, wait_fixed
 from requests.exceptions import RequestException
 import logging
 
@@ -18,12 +18,10 @@ client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 # Function to call OpenAI API with retry logic
 @retry(
     retry=retry_if_exception_type((RequestException, Exception)), # Retry on API errors or network issues
-    wait=wait_exponential(multiplier=1, min=4, max=600), # Exponential backoff: starts at 4 seconds, max 600 seconds
+    wait=wait_exponential(multiplier=1, min=4, max=60), # Exponential backoff: starts at 4 seconds, max 60 seconds
     stop=stop_after_attempt(10) # Stop after 10 attempts
 )
-
-# Function to analyse every book
-def analyze_book(title, author, year, synopsis, review, genres):
+def analyze_book(title, author, year, synopsis, review, genres): # Function to analyse every book
     # Create the prompt with the gathered data
     prompt = f"""
     Carefully consider the plot of the book "{title}" by {author}, published in {year}, focusing on key elements that will help answer the following questions. 
@@ -106,7 +104,7 @@ def analyze_book(title, author, year, synopsis, review, genres):
     10. Are there any depictions of robots or artificial intelligences in the story? (just automatic systems, advanced technology, or programs do not count)
         Yes;
         No.
-    11. How are the robots or artificial intelligences generally depicted?
+    11. How are the robots or artificial intelligences generally depicted in the story?
         Not applicable: no robots or artificial intelligences present;
         Good: friendly, virtuous, helpful, or heroic; 
         Leaning good: generally positive or benign but with flaws or minor conflicts; 
@@ -227,7 +225,7 @@ def ask_to_AI(df):
     #output_file = './Data/AI_answers_to_sci-fi_books_test.csv'
     output_file = './Data/AI_ANSWERS_TO_sci-fi_books.csv'
     if os.path.exists(output_file):
-        df_processed = pd.read_csv(output_file, sep=';', encoding="utf-8-sig")
+        df_processed = pd.read_csv(output_file, sep=';', encoding='utf-8-sig')
 
         processed_books = set(df_processed['url'])
     else:
@@ -253,6 +251,7 @@ def ask_to_AI(df):
         url = book['url']
 
         #----------------------------------------
+        #@retry(stop=stop_after_attempt(3), wait=wait_fixed(5))
         try:
             # Get the AI's answers for the book
             AI_answers = analyze_book(title, author, year, synopsis, review, genres)
@@ -496,7 +495,7 @@ def ask_to_AI(df):
             logging.info(f"Progress saved for book: {title}")
 
         except Exception as e:
-            logging.error(f"Failed to analyze book: {title}. Error: {e}\nPlease, try again later.")
+            logging.error(f"Failed to analyze book {title} after 3 attempts. \nError: {e}\nPlease, try again later.")
 
     return df_processed
 
