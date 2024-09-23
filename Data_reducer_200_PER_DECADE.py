@@ -74,7 +74,10 @@ test_books = [
     "The Hunger Games",
     "Neuromancer",
     "Ready Player One",
-    "The Three-Body Problem"
+    "The Three-Body Problem",
+    "The War of the Worlds",
+    "R.U.R.",
+    "Rendezvous with Rama"
 ]
 
 test_books_mask = df_filtered['title'].isin(test_books)
