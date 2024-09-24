@@ -278,10 +278,10 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/Quantities.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/Quantity_all.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/Sample Quantities.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/Sample Quantities.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/Quantity_all.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/Sample Quantities.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------
@@ -356,10 +356,10 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/Series.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/Series.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/00 series.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/00 series.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/Series.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/00 series.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------
@@ -478,10 +478,10 @@ ax2.spines['left'].set_visible(False)
 ax2.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/Rates_and_Ratings.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/Rates_and_Ratings.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/Sample Rates_and_Ratings.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/Sample Rates_and_Ratings.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/Rates_and_Ratings.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/Sample Rates_and_Ratings.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------
@@ -565,10 +565,10 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/1 soft hard.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/1 soft hard.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/01 soft hard.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/01 soft hard.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/1 soft hard.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/01 soft hard.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 # Figure 5 - 1 light heavy
@@ -649,10 +649,10 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/2 light heavy.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/2 light heavy.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/02 light heavy.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/02 light heavy.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/2 light heavy.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/02 light heavy.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 # Figure 6 - 3 time
@@ -743,10 +743,10 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/3 time.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/3 time.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/03 time.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/03 time.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/3 time.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/03 time.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 # Figure 7 - 4 mood
@@ -827,10 +827,10 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/4 mood.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/4 mood.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/04 mood.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/04 mood.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/4 mood.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/04 mood.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 # Figure 8 - 5 setting
@@ -915,10 +915,10 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/5 setting.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/5 setting.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/05 setting.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/05 setting.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/5 setting.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/05 setting.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 # Figure 9 - 6 on Earth
@@ -993,10 +993,10 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/6 on Earth.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/6 on Earth.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/06 on Earth.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/06 on Earth.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/6 on Earth.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/06 on Earth.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 # Figure 10 - 7 post apocalyptic
@@ -1073,10 +1073,10 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/7 post apocalyptic.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/7 post apocalyptic.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/07 post apocalyptic.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/07 post apocalyptic.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/7 post apocalyptic.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/07 post apocalyptic.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 # Figure 11 - 8 aliens
@@ -1151,10 +1151,10 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/8 aliens.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/8 aliens.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/08 aliens.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/08 aliens.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/8 aliens.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/08 aliens.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 # Figure 12 - 9 aliens are
@@ -1240,10 +1240,10 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/9 aliens are.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/9 aliens are.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/09 aliens are.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/09 aliens are.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/9 aliens are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/09 aliens are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 # Figure 13 - 10 robots and AI
