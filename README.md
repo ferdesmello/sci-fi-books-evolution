@@ -26,4 +26,4 @@ The data recovered is, initially, stored in the **Data** folder as JSON files bu
 
 **Plots.py** reads the **AI_ANSWERS_TO_sci-fi_books.csv** file and makes plot figures from it, saving all of them in the **Figures** folder.
 
-![An final plot as an example.](./Figures/3%20time.png "3. When does most of the story take place in relation to the year the book was published? Distant past: millennia or more before; Far past: centuries before; Near past: within a few decades before; Present: within a few years; Near future: within a few decades ahead; Far future: centuries ahead; Distant future: millennia or more ahead; Multiple timelines; Uncertain.")
+![An final plot as an example.](./Figures/03%20time.png "When does most of the story take place in relation to the year the book was published? Distant past: millennia or more before; Far past: centuries before; Near past: within a few decades before; Present: within a few years; Near future: within a few decades ahead; Far future: centuries ahead; Distant future: millennia or more ahead; Multiple timelines; Uncertain.")
