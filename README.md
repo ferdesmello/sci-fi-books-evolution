@@ -25,7 +25,7 @@ All data recovered and processed is stored in the **Data** folder.
 
 ### 3. Using the AI
 
-**GPT4o_questions.py** reads the **top_sci-fi_books_200_PER_DECADE.csv** file (or **top_books_TEST.csv**) and, for every book in the file, sends the prompt with the book's data and receives a text answer, parses it and saves it in the **AI_ANSWERS_TO_sci-fi_books.csv** file.
+**GPT4o_questions.py** reads the **top_sci-fi_books_200_PER_DECADE.csv** file (or **top_books_TEST.csv**) and, for every book in the file, sends the prompt with the book's data to OpenAI's API for GPT4o and receives a text answer, parses it and saves it in the **AI_ANSWERS_TO_sci-fi_books.csv** file.
 
 ### 4. Plotting the results
 
