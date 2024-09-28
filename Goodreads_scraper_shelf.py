@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import time
 import os
-from requests.exceptions import RequestException
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 import random
@@ -62,7 +61,7 @@ def scrape_shelf_from_html(file_path):
     return books
 
 #----------------------------------------------------------------------------------
-# Function to scrape data from book pages.
+# Function to scrape data from book pages
 def scrape_book_page(session, url):
     try:
         response = session.get(url, timeout=10)
@@ -210,7 +209,7 @@ def main():
     df = df.reindex(columns=column_order)
 
     #--------------------------------------------
-    # Save the DataFrame to a CSV file
+    # Save the final DataFrame to a CSV file
     df.to_csv('./Data/sci-fi_books_SHELF.csv', index=False, sep=';', encoding='utf-8-sig')
 
     logging.info(f"Scraped {len(books)} books.\nData saved to ./Data/sci-fi_books_SHELF.csv")

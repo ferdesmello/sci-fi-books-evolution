@@ -239,36 +239,34 @@ def scrape_goodreads_lists(urls, max_pages=30):
 def main():
 
     # Webpages to start the scraping
-    urls = [
-        "https://www.goodreads.com/list/show/43374.Classic_Science_Fiction_1930_1939",
-        "https://www.goodreads.com/list/show/40744.Classic_Science_Fiction_1940_1949",
-        "https://www.goodreads.com/list/show/5152.Classic_Science_Fiction_1950_1959",
-        "https://www.goodreads.com/list/show/5158.Classic_Science_Fiction_1960_1969",
-        "https://www.goodreads.com/list/show/42069.Classic_Science_Fiction_1970_1979",
-        "https://www.goodreads.com/list/show/42417.Classic_Science_Fiction_1980_1989",
-        "https://www.goodreads.com/list/show/42875.Classic_Science_Fiction_1990_1999",
-        "https://www.goodreads.com/list/show/43319.Classic_Science_Fiction_2000_2009",
-        "https://www.goodreads.com/list/show/75182.Science_Fiction_2010_2019",
-        "https://www.goodreads.com/list/show/146613.Science_Fiction_2020_2029",
-        "https://www.goodreads.com/list/show/79670.Best_Science_Fiction_on_Goodreads_with_fewer_than_100_ratings",
-        "https://www.goodreads.com/list/show/78128.Best_Science_Fiction_on_Goodreads_with_between_100_and_999_ratings",
-        "https://www.goodreads.com/list/show/77875.Best_Science_Fiction_on_Goodreads_with_between_1000_and_9999_ratings",
-        "https://www.goodreads.com/list/show/46769.Popular_Science_Fiction_on_GoodReads_with_between_10000_and_24999_ratings",
-        "https://www.goodreads.com/list/show/39287.Popular_Science_Fiction_on_GoodReads_with_between_25000_and_50000_ratings",
-        "https://www.goodreads.com/list/show/138257.Popular_Science_Fiction_on_Goodreads_with_between_50000_and_99999_ratings",
-        "https://www.goodreads.com/list/show/35776.Most_Popular_Science_Fiction_on_Goodreads",
-        "https://www.goodreads.com/list/show/115331.Nineteenth_Century_Science_Fiction",
-        "https://www.goodreads.com/list/show/18864.Genetics_in_Science_Fiction",
-        "https://www.goodreads.com/list/show/549.Most_Under_rated_Science_Fiction",
-        "https://www.goodreads.com/list/show/6228.SF_Masterworks",
-        "https://www.goodreads.com/list/show/6934.Science_Fiction_Books_by_Female_Authors",
-        "https://www.goodreads.com/list/show/9951.best_hard_science_fiction",
-        "https://www.goodreads.com/list/show/17148.Space_Horror",
-        "https://www.goodreads.com/list/show/6032.Best_Aliens",
-        "https://www.goodreads.com/list/show/485.Best_Books_on_Artificial_Intelligence_",
-        "https://www.goodreads.com/list/show/487.Best_of_Cyberpunk",
-        "https://www.goodreads.com/list/show/17324.Transhuman_Science_Fiction_"
-    ]
+    urls = ["https://www.goodreads.com/list/show/43374.Classic_Science_Fiction_1930_1939",
+            "https://www.goodreads.com/list/show/40744.Classic_Science_Fiction_1940_1949",
+            "https://www.goodreads.com/list/show/5152.Classic_Science_Fiction_1950_1959",
+            "https://www.goodreads.com/list/show/5158.Classic_Science_Fiction_1960_1969",
+            "https://www.goodreads.com/list/show/42069.Classic_Science_Fiction_1970_1979",
+            "https://www.goodreads.com/list/show/42417.Classic_Science_Fiction_1980_1989",
+            "https://www.goodreads.com/list/show/42875.Classic_Science_Fiction_1990_1999",
+            "https://www.goodreads.com/list/show/43319.Classic_Science_Fiction_2000_2009",
+            "https://www.goodreads.com/list/show/75182.Science_Fiction_2010_2019",
+            "https://www.goodreads.com/list/show/146613.Science_Fiction_2020_2029",
+            "https://www.goodreads.com/list/show/79670.Best_Science_Fiction_on_Goodreads_with_fewer_than_100_ratings",
+            "https://www.goodreads.com/list/show/78128.Best_Science_Fiction_on_Goodreads_with_between_100_and_999_ratings",
+            "https://www.goodreads.com/list/show/77875.Best_Science_Fiction_on_Goodreads_with_between_1000_and_9999_ratings",
+            "https://www.goodreads.com/list/show/46769.Popular_Science_Fiction_on_GoodReads_with_between_10000_and_24999_ratings",
+            "https://www.goodreads.com/list/show/39287.Popular_Science_Fiction_on_GoodReads_with_between_25000_and_50000_ratings",
+            "https://www.goodreads.com/list/show/138257.Popular_Science_Fiction_on_Goodreads_with_between_50000_and_99999_ratings",
+            "https://www.goodreads.com/list/show/35776.Most_Popular_Science_Fiction_on_Goodreads",
+            "https://www.goodreads.com/list/show/115331.Nineteenth_Century_Science_Fiction",
+            "https://www.goodreads.com/list/show/18864.Genetics_in_Science_Fiction",
+            "https://www.goodreads.com/list/show/549.Most_Under_rated_Science_Fiction",
+            "https://www.goodreads.com/list/show/6228.SF_Masterworks",
+            "https://www.goodreads.com/list/show/6934.Science_Fiction_Books_by_Female_Authors",
+            "https://www.goodreads.com/list/show/9951.best_hard_science_fiction",
+            "https://www.goodreads.com/list/show/17148.Space_Horror",
+            "https://www.goodreads.com/list/show/6032.Best_Aliens",
+            "https://www.goodreads.com/list/show/485.Best_Books_on_Artificial_Intelligence_",
+            "https://www.goodreads.com/list/show/487.Best_of_Cyberpunk",
+            "https://www.goodreads.com/list/show/17324.Transhuman_Science_Fiction_"]
 
     books = scrape_goodreads_lists(urls, max_pages=30)
 
@@ -320,7 +318,7 @@ def main():
     df_books = df_books.reindex(columns=column_order)
 
     #--------------------------------------------
-    # Save the flattened DataFrame to a CSV file
+    # Save the flattened and final DataFrame to a CSV file
     df_books.to_csv('./Data/sci-fi_books_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
 
     logging.info(f"Data saved to ./Data/sci-fi_books_LISTS.csv")

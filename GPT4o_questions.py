@@ -172,8 +172,9 @@ def analyze_book(title, author, year, synopsis, review, genres): # Function to a
     return answer
 
 #----------------------------------------------------------------------------------
-# Function to process each book and save progress incrementally
-def ask_to_AI(df):
+# Function to process each book, save progress incrementally, and retry after parsing errors
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(5))
+def ask_to_AI(df, output_file):
     # Lists to store the complete answer the AI give and its parts for each book
 
     # Complete AI answer
@@ -222,8 +223,6 @@ def ask_to_AI(df):
 
     #----------------------------------------
     # Load existing progress if the file exists
-    #output_file = './Data/AI_answers_to_sci-fi_books_test.csv'
-    output_file = './Data/AI_ANSWERS_TO_sci-fi_books.csv'
     if os.path.exists(output_file):
         df_processed = pd.read_csv(output_file, sep=';', encoding='utf-8-sig')
 
@@ -251,16 +250,19 @@ def ask_to_AI(df):
         url = book['url']
 
         #----------------------------------------
-        #@retry(stop=stop_after_attempt(3), wait=wait_fixed(5))
         try:
             # Get the AI's answers for the book
             AI_answers = analyze_book(title, author, year, synopsis, review, genres)
             #print("\n",AI_answers)
 
-            # Split answers into a list
+            # Split answers into a list of, hopefully, 19 items
             answers = []
             justifications = []
-            lines = AI_answers.split('\n')            
+            lines = AI_answers.split('\n')
+
+            # Just to garantee that it will produce a list with at least two items and not rase and index error
+            if (len(lines) < 2) | (len(lines) > 19):
+                lines = ["", ""]
 
             # Process the first line differently
             paragraph_text = lines[0]
@@ -495,7 +497,8 @@ def ask_to_AI(df):
             logging.info(f"Progress saved for book: {title}")
 
         except Exception as e:
-            logging.error(f"Failed to analyze book {title} after 3 attempts. \nError: {e}\nPlease, try again later.")
+            logging.error(f"Failed to analyze book {title}. Error: {e}")
+            raise  # Re-raise the exception to trigger a retry
 
     return df_processed
 
@@ -503,12 +506,20 @@ def ask_to_AI(df):
 # Main execution
 
 #------------------------------------------
-# Load book data to be sent to the AI
-#df = pd.read_csv("./Data/top_books_TEST.csv", sep=';', encoding="utf-8-sig")
-df = pd.read_csv("./Data/top_sci-fi_books_200_PER_DECADE.csv", sep=';', encoding="utf-8-sig")
+# Name of the input file
+#input_file = './Data/top_books_TEST.csv'
+input_file = './Data/top_sci-fi_books_200_PER_DECADE.csv'
 
-# Ask the AI
-df_processed = ask_to_AI(df)
+# Name of the output file
+#output_file = './Data/AI_answers_to_sci-fi_books_test.csv'
+output_file = './Data/AI_ANSWERS_TO_sci-fi_books.csv'
+
+#------------------------------------------
+# Load book data to send to the AI
+df = pd.read_csv(input_file, sep=';', encoding="utf-8-sig")
+
+# Ask the AI about ALL the books
+df_processed = ask_to_AI(df, output_file)
 
 # Retyping columns of the processed dataframe
 df_processed['year'] = df_processed['year'].astype(int)
@@ -518,8 +529,8 @@ df_processed['ratings'] = df_processed['ratings'].astype(int)
 
 #------------------------------------------
 # Sometimes the AI output is not formatted right
-# This will exclude wrong rows (null on paragraph or some other columns just to be sure)
-# You will need to rerun the program at least once to get all the books/rows but it will keep the progress
+# This will exclude wrong rows (a null paragraph or  null on some other column just to be sure)
+# You will need to rerun the program at least once to get all the books/rows but it will keep the progress until then
 df_processed = df_processed.dropna(axis=0, subset=['paragraph', 'justifying on Earth', '12 protagonist', 'justifying enviromental'], how = 'any', ignore_index=True)
 
 df_processed = df_processed.sort_values(by = ['decade', 'year', 'author', 'title'], ascending=True)
@@ -535,6 +546,5 @@ missing_books = size_in - size_out # Difference in number of rows
 print(f"If the number of missing books ({missing_books}) is higher than 0, rerun this program until it is 0 AND there are no more WARNINGS.")
 
 #------------------------------------------
-#df_processed.to_csv('./Data/AI_ANSWERS_TO_sci-fi_books_test.csv', index=False, sep=';', encoding='utf-8-sig')
-df_processed.to_csv('./Data/AI_ANSWERS_TO_sci-fi_books.csv', index=False, sep=';', encoding='utf-8-sig')
+df_processed.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig')
 print(f"Data saved to ./Data/AI_ANSWERS_TO_sci-fi_books.csv")
