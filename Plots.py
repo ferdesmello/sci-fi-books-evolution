@@ -5,11 +5,9 @@ from matplotlib.ticker import PercentFormatter
 
 #----------------------------------------------------------------------------------
 # reading the data
-df_filtered = pd.read_csv("./Data/sci-fi_books_FILTERED.csv", sep=";")
-
-df_200 = pd.read_csv("./Data/top_sci-fi_books_200_PER_DECADE.csv", sep=";")
-
-df_200_AI = pd.read_csv("./Data/AI_answers_to_sci-fi_books.csv", sep=";")
+df_filtered = pd.read_csv("./Data/sci-fi_books_FILTERED.csv", sep=";", encoding="utf-8-sig")
+df_200 = pd.read_csv("./Data/top_sci-fi_books_200_PER_DECADE.csv", sep=";", encoding="utf-8-sig")
+df_200_AI = pd.read_csv("./Data/AI_answers_to_sci-fi_books.csv", sep=";", encoding="utf-8-sig")
 
 #print(df_200_AI.info())
 #print(df.head())
