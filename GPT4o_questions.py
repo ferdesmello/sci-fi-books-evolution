@@ -547,4 +547,4 @@ print(f"If the number of missing books ({missing_books}) is higher than 0, rerun
 
 #------------------------------------------
 df_processed.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig')
-print(f"Data saved to ./Data/AI_ANSWERS_TO_sci-fi_books.csv")
+print(f"Data saved to {output_file}")

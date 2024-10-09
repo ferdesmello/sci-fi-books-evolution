@@ -2,12 +2,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.ticker import PercentFormatter
+from scipy.stats import chi2_contingency
+import seaborn as sns
 
 #----------------------------------------------------------------------------------
-# reading the data
+# Reading the data
 df_filtered = pd.read_csv("./Data/sci-fi_books_FILTERED.csv", sep=";", encoding="utf-8-sig")
 df_200 = pd.read_csv("./Data/top_sci-fi_books_200_PER_DECADE.csv", sep=";", encoding="utf-8-sig")
-df_200_AI = pd.read_csv("./Data/AI_answers_to_sci-fi_books.csv", sep=";", encoding="utf-8-sig")
+df_200_AI = pd.read_csv("./Data/AI_ANSWERS_TO_sci-fi_books.csv", sep=";", encoding="utf-8-sig")
+df_200_AI_gender = pd.read_csv("./Data/AI_ANSWERS_TO_author_gender.csv", sep=";", encoding="utf-8-sig")
 
 #print(df_200_AI.info())
 #print(df.head())
@@ -23,6 +26,15 @@ df_200 = df_200[mask_200]
 
 mask_200_AI = df_200_AI['decade'] >= 1860
 df_200_AI = df_200_AI[mask_200_AI]
+
+#----------------------------------------------------------------------------------
+# Including author gender to data
+
+# Create a dictionary from df_200_AI_gender
+author_gender_dict = df_200_AI_gender.set_index('author')['gender'].to_dict()
+
+# Map the 'gender' based on 'author' column from df_200_AI
+df_200_AI['gender'] = df_200_AI['author'].map(author_gender_dict).fillna('Unknown')
 
 #----------------------------------------------------------------------------------
 # For the boxplots
@@ -87,14 +99,17 @@ df_all_200 = (df_all_200
               .sort_values(by = ['decade'], ascending = True)
               .reset_index(drop = True))
 
-#------------------------------------------
+# Part in a series of books------------------------------------------
 # Count the occurrences of each category per decade
 category_counts_series = pd.crosstab(df_200['decade'], df_200['series'])
 # Normalize the counts to get percentages
 category_percent_series = category_counts_series.div(category_counts_series.sum(axis = 1), axis = 0) * 100
 
-#print(df_all_200.info())
-#print(df_all_200)
+# Author gender------------------------------------------
+# Count the occurrences of each category per decade
+category_counts_gender = pd.crosstab(df_200_AI['decade'], df_200_AI['gender'])
+# Normalize the counts to get percentages
+category_percent_gender = category_counts_gender.div(category_counts_gender.sum(axis = 1), axis = 0) * 100
 
 #----------------------------------------------------------------------------------
 # Processing for the questions/answers
@@ -203,6 +218,68 @@ category_percent_17 = category_counts_17.div(category_counts_17.sum(axis = 1), a
 
 #----------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------
+
+
+
+
+
+
+
+mask = df_200_AI['decade'] >= 2000
+df_200_AI_recent = df_200_AI[mask]
+
+
+
+
+# Step 1: Create a contingency table (cross-tab)
+contingency_table_1 = pd.crosstab(df_200_AI_recent['gender'], df_200_AI_recent['13 protagonist is'])
+
+contingency_table = contingency_table_1.div(contingency_table_1.sum(axis = 1), axis = 0) * 100
+
+print("Contingency Table:")
+print(contingency_table)
+
+
+
+
+# Creates a figure object with size 8x6 inches
+figure_c0 = plt.figure(0, figsize = (8, 6))
+gs = figure_c0.add_gridspec(ncols = 1, nrows = 1)
+
+# Create the main plot
+ax1 = figure_c0.add_subplot(gs[0])
+#sns.heatmap(contingency_table, annot=True, cmap='coolwarm', fmt="d")
+sns.heatmap(contingency_table, annot=True, cmap='coolwarm', fmt=".2f")
+
+# Set the title and labels
+ax1.set_title('Contingency Table Heatmap')
+ax1.set_xlabel('Protagonist Gender')
+ax1.set_ylabel('Author Gender')
+plt.savefig("./Figures/00 Heatmap.png", bbox_inches = 'tight')
+
+
+
+
+# Step 2: Perform Chi-Square test
+chi2, p_value, dof, expected = chi2_contingency(contingency_table)
+
+# Results
+print("\nChi-Square Test Results:")
+print(f"Chi2 Statistic: {chi2}")
+print(f"P-Value: {p_value}")
+
+# Interpret the result
+if p_value < 0.05:
+    print("There is a significant correlation between Author Gender and Protagonist Gender.")
+else:
+    print("There is no significant correlation between Author Gender and Protagonist Gender.")
+
+
+
+
+
+#----------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------
 # Making figures
 print("Making the figures...")
 #----------------------------------------------------------------------------------
@@ -276,22 +353,144 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/Sample Quantities.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/Sample Quantities.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/00 Quantities.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/00 Quantities.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/Sample Quantities.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/00 Quantities.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------
-# Figure 2, Series
+# Figure 2, Quantities
+print("  Making rate and ratings...")
+
+# Creates a figure object with size 14x8 inches
+figure_c2 = plt.figure(2, figsize = (14, 8))
+gs = figure_c2.add_gridspec(ncols = 2, nrows = 1)
+
+#figure_c2.subplots_adjust(hspace = 0.5)
+
+#-----------------------------------------
+# Create the main plot
+ax1 = figure_c2.add_subplot(gs[0])
+
+# Specify custom colors for each dataset
+custom_palette = {'All sample': '#385AC2',
+                  'Top 200': '#AE305D'}
+
+# Create the boxplot with hue
+sns.boxplot(x = 'decade', 
+            y = 'rate', 
+            hue = 'dataset', 
+            data = df_filtered_200, 
+            palette = custom_palette,
+            #width = 0.8,
+            #gap = 0.3,
+            fliersize = 2.0,
+            fill = True,
+            linecolor = custom_dark_gray)
+
+# Design-------------------------------------------
+ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
+ax1.set_ylabel("Average rate", fontsize = 12, color = custom_dark_gray)
+ax1.set_title("Distribution of Average Rate per Decade", fontsize = 14, pad = 5, color = custom_dark_gray)
+#ax1.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
+ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 0.5)
+
+# Legend-------------------------------------------
+ax1.legend(frameon = False, 
+           #labelspacing = 10.0,
+           loc = 'upper left')
+
+# Axes-------------------------------------------
+for tick in ax1.get_xticklabels():
+    tick.set_rotation(90)
+
+ax1.minorticks_on()
+ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
+ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
+ax1.tick_params(which = "both", bottom = True, top = False, left = False, right = False, color = custom_dark_gray)
+ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
+ax1.tick_params(axis = 'both', colors = custom_dark_gray)
+
+ax1.spines['right'].set_visible(False)
+ax1.spines['top'].set_visible(False)
+ax1.spines['left'].set_visible(False)
+#ax1.spines['top'].set_visible(False)
+#ax1.spines['right'].set_color(custom_dark_gray)
+#ax1.spines['left'].set_color(custom_dark_gray)
+ax1.spines['bottom'].set_color(custom_dark_gray)
+
+#----------------------------------------------------------------------------------
+# Create the main plot
+ax2 = figure_c2.add_subplot(gs[1])
+
+# Specify custom colors for each dataset
+custom_palette = {'All sample': '#385AC2',
+                  'Top 200': '#AE305D'}
+
+# Create the boxplot with hue
+sns.boxplot(x = 'decade', 
+            y = 'ratings', 
+            hue = 'dataset', 
+            data = df_filtered_200, 
+            palette = custom_palette,
+            #width = 0.8,
+            #gap = 0.3,
+            fliersize = 2.0,
+            fill = True,
+            linecolor = custom_dark_gray,
+            log_scale = True)
+
+# Design-------------------------------------------
+ax2.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
+ax2.set_ylabel("Number of ratings", fontsize = 12, color = custom_dark_gray)
+ax2.set_title("Distribution of Number of Ratings per Decade", fontsize = 14, pad = 5, color = custom_dark_gray)
+#ax2.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
+ax2.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 0.5)
+
+# Legend-------------------------------------------
+ax2.legend(frameon = False, 
+           #labelspacing = 10.0,
+           loc = 'upper left')
+
+# Axes-------------------------------------------
+for tick in ax2.get_xticklabels():
+    tick.set_rotation(90)
+
+#ax2.set_yscale('log')
+
+ax2.minorticks_on()
+ax2.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
+ax2.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
+ax2.tick_params(which = "both", bottom = True, top = False, left = False, right = False, color = custom_dark_gray)
+ax2.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
+ax2.tick_params(axis = 'both', colors = custom_dark_gray)
+
+ax2.spines['right'].set_visible(False)
+ax2.spines['top'].set_visible(False)
+ax2.spines['left'].set_visible(False)
+#ax2.spines['top'].set_visible(False)
+#ax2.spines['right'].set_color(custom_dark_gray)
+#ax2.spines['left'].set_color(custom_dark_gray)
+ax2.spines['bottom'].set_color(custom_dark_gray)
+
+# Saving image-------------------------------------------
+plt.savefig("./Figures/00 Rates and Ratings.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/00 Rates and Ratings.eps", transparent = True, bbox_inches = 'tight')
+# Transparence will be lost in .eps, save in .svg for transparences
+#plt.savefig("./Figures/00 Rates and Ratings.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+
+#----------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------
+# Figure 3, Series
 print("  Making series...")
 
 # Creates a figure object with size 12x6 inches
-figure_c2 = plt.figure(2, figsize = (12, 6))
-gs = figure_c2.add_gridspec(ncols = 1, nrows = 1)
+figure_c3 = plt.figure(3, figsize = (12, 6))
+gs = figure_c3.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure_c2.add_subplot(gs[0])
+ax1 = figure_c3.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
@@ -361,136 +560,94 @@ plt.savefig("./Figures/00 series.png", bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------
-# Figure 3, Quantities
-print("  Making rate and ratings...")
+# Figure 4, author gender
+print("  Making author gender...")
 
-# Creates a figure object with size 14x8 inches
-figure_c3 = plt.figure(3, figsize = (14, 8))
-gs = figure_c3.add_gridspec(ncols = 2, nrows = 1)
+# Creates a figure object with size 12x6 inches
+figure_c4 = plt.figure(4, figsize = (12, 6))
+gs = figure_c4.add_gridspec(ncols = 1, nrows = 1)
 
-#figure_c3.subplots_adjust(hspace = 0.5)
-
-#-----------------------------------------
 # Create the main plot
-ax1 = figure_c3.add_subplot(gs[0])
+ax1 = figure_c4.add_subplot(gs[0])
 
-# Specify custom colors for each dataset
-custom_palette = {'All sample': '#385AC2',
-                  'Top 200': '#AE305D'}
+#-------------------------------------------
+# Define the desired order of the categories
+category_order_gender = ['Male',
+                         'Female',
+                         'Other']
 
-# Create the boxplot with hue
-sns.boxplot(x = 'decade', 
-            y = 'rate', 
-            hue = 'dataset', 
-            data = df_filtered_200, 
-            palette = custom_palette,
-            #width = 0.8,
-            #gap = 0.3,
-            fliersize = 2.0,
-            fill = True,
-            linecolor = custom_dark_gray)
+# Reorder the columns in the DataFrame according to the desired category order
+category_percent_gender = category_percent_gender[category_order_gender]
+
+# Define custom colors for each category
+custom_colors_gender = ['#385AC2',
+                        '#AE305D',
+                        '#8B3FCF']
+
+# Bar plot-------------------------------------------
+category_percent_gender.plot(kind = 'bar',
+                             stacked = True,
+                             ax = ax1,
+                             color = custom_colors_gender,
+                             width = 1.0,
+                             alpha = 1.0,
+                             label = "gender")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-ax1.set_ylabel("Average rate", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Distribution of Average Rate per Decade", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 0.5)
+#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
+ax1.set_title("What is the gender of the author?", fontsize = 14, pad = 5, color = custom_dark_gray)
+#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
+
+# Format the y-axis to show percentages
+ax1.yaxis.set_major_formatter(PercentFormatter())
 
 # Legend-------------------------------------------
-ax1.legend(frameon = False, 
-           #labelspacing = 10.0,
-           loc = 'upper left')
+# Get handles and labels
+handles, labels = ax1.get_legend_handles_labels()
+
+# Reverse the order
+handles.reverse()
+labels.reverse()
+
+# Pass the reversed handles and labels to the legend
+ax1.legend(handles, 
+           labels, 
+           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
+           frameon = False, 
+           labelspacing = 10.0,
+           loc = 'center left')
 
 # Axes-------------------------------------------
-for tick in ax1.get_xticklabels():
-    tick.set_rotation(90)
-
 ax1.minorticks_on()
 ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
 ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = False, right = False, color = custom_dark_gray)
+ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
 ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
 ax1.tick_params(axis = 'both', colors = custom_dark_gray)
 
 ax1.spines['right'].set_visible(False)
 ax1.spines['top'].set_visible(False)
-ax1.spines['left'].set_visible(False)
-#ax1.spines['top'].set_visible(False)
-#ax1.spines['right'].set_color(custom_dark_gray)
-#ax1.spines['left'].set_color(custom_dark_gray)
+#ax1.spines['left'].set_visible(False)
+ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-#----------------------------------------------------------------------------------
-# Create the main plot
-ax2 = figure_c3.add_subplot(gs[1])
-
-# Specify custom colors for each dataset
-custom_palette = {'All sample': '#385AC2',
-                  'Top 200': '#AE305D'}
-
-# Create the boxplot with hue
-sns.boxplot(x = 'decade', 
-            y = 'ratings', 
-            hue = 'dataset', 
-            data = df_filtered_200, 
-            palette = custom_palette,
-            #width = 0.8,
-            #gap = 0.3,
-            fliersize = 2.0,
-            fill = True,
-            linecolor = custom_dark_gray,
-            log_scale = True)
-
-# Design-------------------------------------------
-ax2.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-ax2.set_ylabel("Number of ratings", fontsize = 12, color = custom_dark_gray)
-ax2.set_title("Distribution of Number of Ratings per Decade", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax2.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-ax2.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 0.5)
-
-# Legend-------------------------------------------
-ax2.legend(frameon = False, 
-           #labelspacing = 10.0,
-           loc = 'upper left')
-
-# Axes-------------------------------------------
-for tick in ax2.get_xticklabels():
-    tick.set_rotation(90)
-
-#ax2.set_yscale('log')
-
-ax2.minorticks_on()
-ax2.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax2.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax2.tick_params(which = "both", bottom = True, top = False, left = False, right = False, color = custom_dark_gray)
-ax2.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax2.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax2.spines['right'].set_visible(False)
-ax2.spines['top'].set_visible(False)
-ax2.spines['left'].set_visible(False)
-#ax2.spines['top'].set_visible(False)
-#ax2.spines['right'].set_color(custom_dark_gray)
-#ax2.spines['left'].set_color(custom_dark_gray)
-ax2.spines['bottom'].set_color(custom_dark_gray)
-
 # Saving image-------------------------------------------
-plt.savefig("./Figures/Sample Rates_and_Ratings.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/Sample Rates_and_Ratings.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/00 author gender.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/00 author gender.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/Sample Rates_and_Ratings.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/00 author gender.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------
 # figures for the questions/answers
 #----------------------------------------------------------------------------------
-# Figure 4 - 1 soft hard
+# Figure 5 - 1 soft hard
 print("  Making 1 soft hard...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure1 = plt.figure(4, figsize = (12, 6))
+figure1 = plt.figure(5, figsize = (12, 6))
 gs = figure1.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -569,12 +726,12 @@ plt.savefig("./Figures/01 soft hard.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/01 soft hard.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 5 - 1 light heavy
+# Figure 6 - 1 light heavy
 print("  Making 2 light heavy...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure2 = plt.figure(5, figsize = (12, 6))
+figure2 = plt.figure(6, figsize = (12, 6))
 gs = figure2.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -653,12 +810,12 @@ plt.savefig("./Figures/02 light heavy.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/02 light heavy.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 6 - 3 time
+# Figure 7 - 3 time
 print("  Making 3 time...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure3 = plt.figure(6, figsize = (12, 6))
+figure3 = plt.figure(7, figsize = (12, 6))
 gs = figure3.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -747,12 +904,12 @@ plt.savefig("./Figures/03 time.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/03 time.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 7 - 4 mood
+# Figure 8 - 4 mood
 print("  Making 4 mood...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure4 = plt.figure(7, figsize = (12, 6))
+figure4 = plt.figure(8, figsize = (12, 6))
 gs = figure4.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -831,12 +988,12 @@ plt.savefig("./Figures/04 mood.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/04 mood.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 8 - 5 setting
+# Figure 9 - 5 setting
 print("  Making 5 setting...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure5 = plt.figure(8, figsize = (12, 6))
+figure5 = plt.figure(9, figsize = (12, 6))
 gs = figure5.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -919,12 +1076,12 @@ plt.savefig("./Figures/05 setting.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/05 setting.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 9 - 6 on Earth
+# Figure 10 - 6 on Earth
 print("  Making 6 on Earth...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure6 = plt.figure(9, figsize = (12, 6))
+figure6 = plt.figure(10, figsize = (12, 6))
 gs = figure6.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -997,12 +1154,12 @@ plt.savefig("./Figures/06 on Earth.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/06 on Earth.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 10 - 7 post apocalyptic
+# Figure 11 - 7 post apocalyptic
 print("  Making 7 post apocalyptic...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure7 = plt.figure(10, figsize = (12, 6))
+figure7 = plt.figure(11, figsize = (12, 6))
 gs = figure7.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -1077,12 +1234,12 @@ plt.savefig("./Figures/07 post apocalyptic.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/07 post apocalyptic.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 11 - 8 aliens
+# Figure 12 - 8 aliens
 print("  Making 8 aliens...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure8 = plt.figure(11, figsize = (12, 6))
+figure8 = plt.figure(12, figsize = (12, 6))
 gs = figure8.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -1155,12 +1312,12 @@ plt.savefig("./Figures/08 aliens.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/08 aliens.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 12 - 9 aliens are
+# Figure 13 - 9 aliens are
 print("  Making 9 aliens are...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure9 = plt.figure(12, figsize = (12, 6))
+figure9 = plt.figure(13, figsize = (12, 6))
 gs = figure9.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -1244,12 +1401,12 @@ plt.savefig("./Figures/09 aliens are.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/09 aliens are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 13 - 10 robots and AI
+# Figure 14 - 10 robots and AI
 print("  Making 10 robots and AI...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure10 = plt.figure(13, figsize = (12, 6))
+figure10 = plt.figure(14, figsize = (12, 6))
 gs = figure10.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -1322,12 +1479,12 @@ plt.savefig("./Figures/10 robots and AI.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/10 robots and AI.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 14 - 11 robots and AI are
+# Figure 15 - 11 robots and AI are
 print("  Making 11 robots and AI are...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure11 = plt.figure(14, figsize = (12, 6))
+figure11 = plt.figure(15, figsize = (12, 6))
 gs = figure11.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -1413,11 +1570,11 @@ plt.savefig("./Figures/11 robots and AI are.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/11 robots and AI are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 15 - 12 protagonist
+# Figure 16 - 12 protagonist
 print("  Making 12 protagonist...")
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure12 = plt.figure(15, figsize = (12, 6))
+figure12 = plt.figure(16, figsize = (12, 6))
 gs = figure12.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -1490,11 +1647,11 @@ plt.savefig("./Figures/12 protagonist.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/12 protagonist.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 16 - 13 protagonist is
+# Figure 17 - 13 protagonist is
 print("  Making 13 protagonist is...")
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure13 = plt.figure(16, figsize = (12, 6))
+figure13 = plt.figure(17, figsize = (12, 6))
 gs = figure13.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -1577,11 +1734,11 @@ plt.savefig("./Figures/13 protagonist is.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/13 protagonist is.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 17 - 14 virtual
+# Figure 18 - 14 virtual
 print("  Making 14 virtual...")
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure14 = plt.figure(17, figsize = (12, 6))
+figure14 = plt.figure(18, figsize = (12, 6))
 gs = figure14.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -1656,11 +1813,11 @@ plt.savefig("./Figures/14 virtual.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/14 virtual.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 18 - 15 tech and science
+# Figure 19 - 15 tech and science
 print("  Making 15 tech and science...")
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure15 = plt.figure(18, figsize = (12, 6))
+figure15 = plt.figure(19, figsize = (12, 6))
 gs = figure15.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -1743,12 +1900,12 @@ plt.savefig("./Figures/15 tech and science.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/15 tech and science.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 19 - 16 social issues
+# Figure 20 - 16 social issues
 print("  Making 16 social issues...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure16 = plt.figure(19, figsize = (12, 6))
+figure16 = plt.figure(20, figsize = (12, 6))
 gs = figure16.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -1827,12 +1984,12 @@ plt.savefig("./Figures/16 social issues.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/16 social issues.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 20 - 17 enviromental
+# Figure 21 - 17 enviromental
 print("  Making 17 enviromental...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure17 = plt.figure(20, figsize = (12, 6))
+figure17 = plt.figure(21, figsize = (12, 6))
 gs = figure17.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -1914,4 +2071,4 @@ plt.savefig("./Figures/17 enviromental.png", bbox_inches = 'tight')
 print("All done.")
 
 # Showing figures-------------------------------------------------------------------------------------------
-plt.show()  # You must call plt.show() to make graphics appear.
+plt.show() # You must call plt.show() to make graphics appear.
