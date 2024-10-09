@@ -2,11 +2,11 @@
 
 ## Overview
 
-Inspired by this project ([video](https://www.youtube.com/watch?v=nRQ2vMpw-n8), [page](https://pudding.cool/2024/07/scifi/)) about the plot evolution of sci-fi movies and series and this [comment](https://www.youtube.com/watch?v=nRQ2vMpw-n8&lc=UgyRg89P8kRYQ2SdXrV4AaABAg) to it I decided to do a similar analysis but for sci-fi _novels_.
+Inspired by this project ([video](https://www.youtube.com/watch?v=nRQ2vMpw-n8), [page](https://pudding.cool/2024/07/scifi/)) about the evolution in plot of sci-fi movies and series and this [comment](https://www.youtube.com/watch?v=nRQ2vMpw-n8&lc=UgyRg89P8kRYQ2SdXrV4AaABAg) I decided to do a similar analysis but for sci-fi _novels_.
 
 You can read in detail all the process and analysis of results [here]().
 
-But in short, I scraped data about thousands of sci-fi books from Goodreads lists and shelves, cleaned and reduced the data, selected the top 200 books per decade (or all the books if fewer than 200), and fed that into GPT4o via the OpenAI API, asking about many plot-related things. Then, I aggregated the results in figures to see how things changed over time.
+But, in short, I scraped data about thousands of sci-fi books from [Goodreads](https://www.goodreads.com/) lists and shelves, cleaned and reduced the data, selected the top 200 books per decade (or all the books if fewer than 200 per decade), and fed that into GPT-4o via the OpenAI API, asking about many plot-related things. Then, I aggregated the results in figures to see how things changed over time.
 
 ## What the code does
 
@@ -25,11 +25,13 @@ All data recovered and processed is stored in the **Data** folder.
 
 ### 3. Using the AI
 
-**GPT4o_questions.py** reads the **top_sci-fi_books_200_PER_DECADE.csv** file (or **top_books_TEST.csv**) and, for every book in the file, sends the prompt with the book's data to OpenAI's API for GPT4o and receives a text answer, parses it and saves it in the **AI_ANSWERS_TO_sci-fi_books.csv** file.
+**GPT4o_questions.py** reads the **top_sci-fi_books_200_PER_DECADE.csv** file (or **top_books_TEST.csv**) and, for every _book_ in the file, sends the prompt with the book's data to OpenAI's API for GPT-4o and receives a text answer, parses it and saves it in the **AI_ANSWERS_TO_sci-fi_books.csv** file.
+
+**GPT4o_gender.py** reads the **top_sci-fi_books_200_PER_DECADE.csv** file and, for every _author_ in the file, sends the prompt with the author's name to OpenAI's API for GPT-4o and receives the author's gender, and saves it in the **AI_ANSWERS_TO_author_gender.csv** file.
 
 ### 4. Plotting the results
 
-**Plots.py** reads the **AI_ANSWERS_TO_sci-fi_books.csv** file and makes plot figures from it, saving all of them in the **Figures** folder.
+**Plots.py** reads the **AI_ANSWERS_TO_sci-fi_books.csv** and **AI_ANSWERS_TO_author_gender.csv** files and makes plot figures from them, saving all of them in the **Figures** folder.
 
 ## Example of a figure
 
