@@ -218,68 +218,6 @@ category_percent_17 = category_counts_17.div(category_counts_17.sum(axis = 1), a
 
 #----------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------
-
-
-
-
-
-
-
-mask = df_200_AI['decade'] >= 2000
-df_200_AI_recent = df_200_AI[mask]
-
-
-
-
-# Step 1: Create a contingency table (cross-tab)
-contingency_table_1 = pd.crosstab(df_200_AI_recent['gender'], df_200_AI_recent['13 protagonist is'])
-
-contingency_table = contingency_table_1.div(contingency_table_1.sum(axis = 1), axis = 0) * 100
-
-print("Contingency Table:")
-print(contingency_table)
-
-
-
-
-# Creates a figure object with size 8x6 inches
-figure_c0 = plt.figure(0, figsize = (8, 6))
-gs = figure_c0.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure_c0.add_subplot(gs[0])
-#sns.heatmap(contingency_table, annot=True, cmap='coolwarm', fmt="d")
-sns.heatmap(contingency_table, annot=True, cmap='coolwarm', fmt=".2f")
-
-# Set the title and labels
-ax1.set_title('Contingency Table Heatmap')
-ax1.set_xlabel('Protagonist Gender')
-ax1.set_ylabel('Author Gender')
-plt.savefig("./Figures/00 Heatmap.png", bbox_inches = 'tight')
-
-
-
-
-# Step 2: Perform Chi-Square test
-chi2, p_value, dof, expected = chi2_contingency(contingency_table)
-
-# Results
-print("\nChi-Square Test Results:")
-print(f"Chi2 Statistic: {chi2}")
-print(f"P-Value: {p_value}")
-
-# Interpret the result
-if p_value < 0.05:
-    print("There is a significant correlation between Author Gender and Protagonist Gender.")
-else:
-    print("There is no significant correlation between Author Gender and Protagonist Gender.")
-
-
-
-
-
-#----------------------------------------------------------------------------------
-#----------------------------------------------------------------------------------
 # Making figures
 print("Making the figures...")
 #----------------------------------------------------------------------------------
@@ -2066,6 +2004,230 @@ plt.savefig("./Figures/17 enviromental.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/17 enviromental.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
 #plt.savefig("./Figures/17 enviromental.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+
+#----------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------
+# For the Tests and more
+#----------------------------------------------------------------------------------
+# Figure 22 - Author and protagonist heatmap
+print("  Making author and protagonist heatmap...")
+
+#-------------------------------------------
+# Creates a figure object with size 16x5 inches
+figure_t1 = plt.figure(22, figsize = (16, 5))
+gs = figure_t1.add_gridspec(ncols = 2, nrows = 1)
+
+#-------------------------------------------
+# Step 1: Create a contingency table (cross-tab)
+contingency_table = pd.crosstab(df_200_AI['gender'], df_200_AI['13 protagonist is'])
+
+contingency_table = contingency_table.div(contingency_table.sum(axis = 1), axis = 0) * 100
+
+# Create a formatted string version of the percentages with % symbol for annotation
+annot = contingency_table.map(lambda x: f'{x:.2f}%')
+
+print("\n")
+print("Contingency Table:")
+print(contingency_table)
+
+#-------------------------------------------
+# Create the main plot
+ax1 = figure_t1.add_subplot(gs[0])
+#sns.heatmap(contingency_table, annot=True, cmap='coolwarm', fmt="d")
+sns.heatmap(contingency_table, cmap='coolwarm', annot=annot, fmt="")
+
+# Set the title and labels
+ax1.set_title('Contingency Table Heatmap (All decades)')
+ax1.set_xlabel('Protagonist Gender')
+ax1.set_ylabel('Author Gender')
+
+#-------------------------------------------
+# Step 2: Perform Chi-Square test
+chi2, p_value, dof, expected = chi2_contingency(contingency_table)
+
+# Results
+print("Chi-Square Test Results:")
+print(f"Chi2 Statistic: {chi2}")
+print(f"P-Value: {p_value}")
+
+# Interpret the result
+if p_value < 0.05:
+    print("There is a significant correlation between Author Gender and Protagonist Gender.")
+else:
+    print("There is no significant correlation between Author Gender and Protagonist Gender.")
+
+#-------------------------------------------
+mask = df_200_AI['decade'] >= 2000
+df_200_AI_2000 = df_200_AI[mask]
+
+# Step 1: Create a contingency table (cross-tab)
+contingency_table_2000 = pd.crosstab(df_200_AI_2000['gender'], df_200_AI_2000['13 protagonist is'])
+
+contingency_table_2000 = contingency_table_2000.div(contingency_table_2000.sum(axis = 1), axis = 0) * 100
+
+# Create a formatted string version of the percentages with % symbol for annotation
+annot_2000 = contingency_table_2000.map(lambda x: f'{x:.2f}%')
+
+print("\n")
+print("Contingency Table 2000:")
+print(contingency_table_2000)
+
+#-------------------------------------------
+# Create the main plot
+ax2 = figure_t1.add_subplot(gs[1])
+#sns.heatmap(contingency_table, annot=True, cmap='coolwarm', fmt="d")
+sns.heatmap(contingency_table_2000, cmap='coolwarm', annot=annot_2000, fmt="")
+
+# Set the title and labels
+ax2.set_title('Contingency Table Heatmap (2000s, 2010s, 2020s)')
+ax2.set_xlabel('Protagonist Gender')
+ax2.set_ylabel('Author Gender')
+
+#-------------------------------------------
+# Step 2: Perform Chi-Square test
+chi2, p_value, dof, expected = chi2_contingency(contingency_table_2000)
+
+# Results
+print("Chi-Square Test Results:")
+print(f"Chi2 Statistic: {chi2}")
+print(f"P-Value: {p_value}")
+
+# Interpret the result
+if p_value < 0.05:
+    print("There is a significant correlation between Author Gender and Protagonist Gender.")
+else:
+    print("There is no significant correlation between Author Gender and Protagonist Gender.")
+
+# Saving image-------------------------------------------
+plt.savefig("./Figures/00 author and protagonist heatmap.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/00 author and protagonist heatmap.eps", transparent = True, bbox_inches = 'tight')
+# Transparence will be lost in .eps, save in .svg for transparences
+#plt.savefig("./Figures/00 author and protagonist heatmap.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+
+#----------------------------------------------------------------------------------
+# Figure 23 - Author and protagonist gender
+print("  Making author and protagonist heatmap...")
+
+#-------------------------------------------
+df_200_AI_new = df_200_AI.copy()
+df_200_AI_new["genders"] = df_200_AI_new['gender'] + " " + df_200_AI_new['13 protagonist is']
+
+# Count the occurrences of each category per decade
+category_counts_genders = pd.crosstab(df_200_AI_new['decade'], df_200_AI_new["genders"])
+
+# Sum columns to create a new 'Other' category (combining the Others)
+category_counts_genders['Other (Combined)'] = (category_counts_genders['Other Male'] + 
+                                               category_counts_genders['Other Female'] + 
+                                               category_counts_genders['Other Non-human'] + 
+                                               category_counts_genders['Other Not applicable'])
+
+# Drop the original Others columns
+category_counts_genders = category_counts_genders.drop(columns=['Other Male', 
+                                                                'Other Female',
+                                                                'Other Non-human',
+                                                                'Other Not applicable'])
+
+# Normalize the counts to get percentages
+category_percent_genders = category_counts_genders.div(category_counts_genders.sum(axis = 1), axis = 0) * 100
+
+print("\ngenders",df_200_AI_new["genders"].unique())
+#print("\n")
+
+#------------------------------------------
+# Creates a figure object with size 12x6 inches
+figure_t2 = plt.figure(23, figsize = (12, 6))
+gs = figure_t2.add_gridspec(ncols = 1, nrows = 1)
+
+# Create the main plot
+ax1 = figure_t2.add_subplot(gs[0])
+
+#-------------------------------------------
+# Define the desired order of the categories
+category_order_genders = ['Male Male',
+                          'Male Female',
+                          'Male Other',
+                          'Male Non-human',
+                          'Male Not applicable',
+                          
+                          'Female Male',
+                          'Female Female',
+                          'Female Other',
+                          'Female Non-human',
+                          'Female Not applicable',
+                          
+                          'Other (Combined)']
+
+# Reorder the columns in the DataFrame according to the desired category order
+category_percent_genders = category_percent_genders[category_order_genders]
+
+# Define custom colors for each category
+custom_colors_genders = ['#385AC2',
+                         '#5580D0',
+                         '#6CACEB',
+                         '#A4C8ED',
+                         '#CFE3F7',
+                         
+                         '#AE305D',
+                         '#CF5D5F',
+                         '#E3937B',
+                         '#EFB8A7',
+                         '#FBD9CF',
+                         
+                         '#8B3FCF']
+
+# Bar plot-------------------------------------------
+category_percent_genders.plot(kind = 'bar',
+                              stacked = True,
+                              ax = ax1,
+                              color = custom_colors_genders,
+                              width = 1.0,
+                              alpha = 1.0,
+                              label = "genders")
+
+# Design-------------------------------------------
+ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
+#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
+ax1.set_title("What is the gender of the author and the protagonist?", fontsize = 14, pad = 5, color = custom_dark_gray)
+#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
+
+# Format the y-axis to show percentages
+ax1.yaxis.set_major_formatter(PercentFormatter())
+
+# Legend-------------------------------------------
+# Get handles and labels
+handles, labels = ax1.get_legend_handles_labels()
+
+# Reverse the order
+handles.reverse()
+labels.reverse()
+
+# Pass the reversed handles and labels to the legend
+ax1.legend(handles, 
+           labels, 
+           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
+           frameon = False, 
+           labelspacing = 1.0,
+           loc = 'center left')
+
+# Axes-------------------------------------------
+ax1.minorticks_on()
+ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
+ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
+ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
+ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
+ax1.tick_params(axis = 'both', colors = custom_dark_gray)
+
+ax1.spines['right'].set_visible(False)
+ax1.spines['top'].set_visible(False)
+#ax1.spines['left'].set_visible(False)
+ax1.spines['left'].set_color(custom_dark_gray)
+ax1.spines['bottom'].set_color(custom_dark_gray)
+
+# Saving image-------------------------------------------
+plt.savefig("./Figures/00 author and protagonist gender.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/00 author and protagonist gender.eps", transparent = True, bbox_inches = 'tight')
+# Transparence will be lost in .eps, save in .svg for transparences
+#plt.savefig("./Figures/00 author and protagonist gender.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 print("All done.")
