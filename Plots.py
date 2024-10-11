@@ -2110,22 +2110,22 @@ print("  Making author and protagonist heatmap...")
 
 #-------------------------------------------
 df_200_AI_new = df_200_AI.copy()
-df_200_AI_new["genders"] = df_200_AI_new['gender'] + " " + df_200_AI_new['13 protagonist is']
+df_200_AI_new["genders"] = df_200_AI_new['gender'] + " / " + df_200_AI_new['13 protagonist is']
 
 # Count the occurrences of each category per decade
 category_counts_genders = pd.crosstab(df_200_AI_new['decade'], df_200_AI_new["genders"])
 
 # Sum columns to create a new 'Other' category (combining the Others)
-category_counts_genders['Other (Combined)'] = (category_counts_genders['Other Male'] + 
-                                               category_counts_genders['Other Female'] + 
-                                               category_counts_genders['Other Non-human'] + 
-                                               category_counts_genders['Other Not applicable'])
+category_counts_genders['Other (Combined)'] = (category_counts_genders['Other / Male'] + 
+                                               category_counts_genders['Other / Female'] + 
+                                               category_counts_genders['Other / Non-human'] + 
+                                               category_counts_genders['Other / Not applicable'])
 
 # Drop the original Others columns
-category_counts_genders = category_counts_genders.drop(columns=['Other Male', 
-                                                                'Other Female',
-                                                                'Other Non-human',
-                                                                'Other Not applicable'])
+category_counts_genders = category_counts_genders.drop(columns=['Other / Male', 
+                                                                'Other / Female',
+                                                                'Other / Non-human',
+                                                                'Other / Not applicable'])
 
 # Normalize the counts to get percentages
 category_percent_genders = category_counts_genders.div(category_counts_genders.sum(axis = 1), axis = 0) * 100
@@ -2143,17 +2143,17 @@ ax1 = figure_t2.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_genders = ['Male Male',
-                          'Male Female',
-                          'Male Other',
-                          'Male Non-human',
-                          'Male Not applicable',
+category_order_genders = ['Male / Male',
+                          'Male / Female',
+                          'Male / Other',
+                          'Male / Non-human',
+                          'Male / Not applicable',
                           
-                          'Female Male',
-                          'Female Female',
-                          'Female Other',
-                          'Female Non-human',
-                          'Female Not applicable',
+                          'Female / Male',
+                          'Female / Female',
+                          'Female / Other',
+                          'Female / Non-human',
+                          'Female / Not applicable',
                           
                           'Other (Combined)']
 
@@ -2184,6 +2184,13 @@ category_percent_genders.plot(kind = 'bar',
                               alpha = 1.0,
                               label = "genders")
 
+ax1.text(17.57, 
+         106, 
+         r"Author / Protagonist", 
+         fontsize = 10.7, 
+         zorder = 1,)
+         #color = custom_dark_gray)
+
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
@@ -2206,7 +2213,7 @@ ax1.legend(handles,
            labels, 
            bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
            frameon = False, 
-           labelspacing = 1.0,
+           labelspacing = 2.0,
            loc = 'center left')
 
 # Axes-------------------------------------------
