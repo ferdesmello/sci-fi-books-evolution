@@ -12,7 +12,8 @@ But, in short, I scraped data about thousands of sci-fi books from [Goodreads](h
 
 ### 1. Scraping the data
 
-**Goodreads_scraper_SHELF.py** reads HTML files in the folder **Saved_pages** and search for the book links and downloads data for book's _title_, _author_, publishing _year_, number of _pages_, if it is part of a _series_, average _rate_, number of _ratings_, _genres_, _synopsis_ and the longest of the first two _reviews_, saving everything in the **sci-fi_books_SHELF.csv** file at the end.
+**Goodreads_scraper_SHELF.py** reads HTML files in the folder **Saved_pages** and searches for links to the book pages and downloads data for book's _title_, _author_, publishing _year_, number of _pages_, if it is part of a _series_, average _rate_, number of _ratings_, _genres_, _synopsis_ and the longest of the first two _reviews_, saving everything in the **sci-fi_books_SHELF.csv** file at the end.
+You will have to dowanlod and put the HTML files in the Saved_pages folder by hand. I didn't include them because they are big and were using too much space.
 
 **Goodreads_scraper_LISTS.py** does the same but from a list of URLs for the initial pages of thematic book lists, saving the progress in a JSON file and everything in the **sci-fi_books_LISTS.csv** file at the end. 
 
@@ -20,18 +21,22 @@ All data recovered and processed is stored in the **Data** folder.
 
 ### 2. Cleaning the data
 
-**Data_reducer_FILTERED.py** merges the datafiles and cleans them (many duplicates, bad data, and books not of interest), creating **sci-fi_books_BRUTE.csv** first and then the **sci-fi_books_FILTERED.csv** file.
-**Data_reducer_200_PER_DECADE.py** selects the top 200 books per decade (by user ratings) and saves them as **top_sci-fi_books_200_PER_DECADE.csv**. It also creates the **top_books_TEST.csv** file, with just a small selection of the books to test the AI's performance. 
+**Data_reducer_FILTERED.py** merges the datafiles, creating **sci-fi_books_BRUTE.csv**, and cleans them (many duplicates, bad data, and books not of interest), creating the **sci-fi_books_FILTERED.csv** file.
+
+**Data_reducer_TOP.py** selects the top 200 books per decade (by the number of user ratings) and saves them as **sci-fi_books_TOP.csv**. It also creates the **sci-fi_books_TEST.csv** file, with just a small selection of the books to test the AI performance. 
 
 ### 3. Using the AI
 
-**GPT4o_questions.py** reads the **top_sci-fi_books_200_PER_DECADE.csv** file (or **top_books_TEST.csv**) and, for every _book_ in the file, sends the prompt with the book's data to OpenAI's API for GPT-4o and receives a text answer, parses it and saves it in the **AI_ANSWERS_TO_sci-fi_books.csv** file.
+**AI_asker_AI_ANSWERS.py** reads the **sci-fi_books_TOP.csv** file (or **sci-fi_books_TEST.csv**) and, for every _book_ in the file, sends the prompt with the book's data to OpenAI's API for GPT-4o and receives a text answer, parses it and saves it in the **sci-fi_books_AI_ANSWERS.csv** file.
+Sometimes, the output from GPT-4o will not be in the right format, so that book will fail, but the run will keep going. You just need to rerun the program after the run is over for it to try again _only_ on the failed books of the prior run.
 
-**GPT4o_gender.py** reads the **top_sci-fi_books_200_PER_DECADE.csv** file and, for every _author_ in the file, sends the prompt with the author's name to OpenAI's API for GPT-4o and receives the author's gender, and saves it in the **AI_ANSWERS_TO_author_gender.csv** file.
+**AI_asker_AI_ANSWERS_GENDER.py** reads the **sci-fi_books_TOP.csv** file and, for every _author_ in the file, sends the prompt with the author's name to OpenAI's API for GPT-4o and receives the author's gender, and saves it in the **sci-fi_books_AI_ANSWERS_GENDER.csv** file.
+
+For both programs, you will need to have a working API key set in your environment and credits in your OpenAI account.
 
 ### 4. Plotting the results
 
-**Plots.py** reads the **AI_ANSWERS_TO_sci-fi_books.csv** and **AI_ANSWERS_TO_author_gender.csv** files and makes plot figures from them, saving all of them in the **Figures** folder.
+**Figure_maker.py** reads the **sci-fi_books_AI_ANSWERS.csv** and **sci-fi_books_AI_ANSWERS_GENDER.csv** files and makes data figures from them, saving all of them in the **Figures** folder.
 
 ## Example of a figure
 
