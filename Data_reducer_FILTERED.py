@@ -61,7 +61,7 @@ ratings_mask = df['ratings'] >= N_r
 df = df[ratings_mask]
 
 #----------------------------------------------------------------------------------
-# Cleaning urls
+# Cleaning URLs
 df['url'] = df['url'].str.strip()
 
 #----------------------------------------------------------------------------------
@@ -207,6 +207,13 @@ df = df.drop_duplicates(subset=['url'], keep='first')
 
 # Drop the temporary lowercase columns
 df = df.drop(columns=['title_lower', 'author_lower'])
+
+# Special case of author names
+pattern_1 = "Anne; Lackey McCaffrey, Mercedes Lackey"
+pattern_2 = "Anne; Lackey McCaffrey"
+names = "Anne McCaffrey, Mercedes Lackey"
+df['author'] = df['author'].replace(pattern_1, names)
+df['author'] = df['author'].replace(pattern_2, names)
 
 #----------------------------------------------------------------------------------
 # Deleting some left over duplicates, unwanted non-fiction, and collections
