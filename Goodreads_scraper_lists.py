@@ -266,7 +266,11 @@ def main():
             "https://www.goodreads.com/list/show/6032.Best_Aliens",
             "https://www.goodreads.com/list/show/485.Best_Books_on_Artificial_Intelligence_",
             "https://www.goodreads.com/list/show/487.Best_of_Cyberpunk",
-            "https://www.goodreads.com/list/show/17324.Transhuman_Science_Fiction_"]
+            "https://www.goodreads.com/list/show/17324.Transhuman_Science_Fiction_",
+            "https://www.goodreads.com/list/show/114349.Best_Forgotten_Science_Fiction_of_the_20th_Century",
+            "https://www.goodreads.com/list/show/47.Best_Dystopian_and_Post_Apocalyptic_Fiction",
+            "https://www.goodreads.com/list/show/7239.Best_Utopian_Dystopian_Fiction",
+            "https://www.goodreads.com/list/show/25823"]
 
     books = scrape_goodreads_lists(urls, max_pages=30)
 

@@ -4,8 +4,12 @@ import seaborn as sns
 from matplotlib.ticker import PercentFormatter
 from scipy.stats import chi2_contingency
 import seaborn as sns
+import numpy as np
+from scipy.stats import mode
 
 #----------------------------------------------------------------------------------
+print("Reading and processing tha data...")
+
 # Reading the data
 df_filtered = pd.read_csv("./Data/sci-fi_books_FILTERED.csv", sep=";", encoding="utf-8-sig")
 df_top = pd.read_csv("./Data/sci-fi_books_TOP.csv", sep=";", encoding="utf-8-sig")
@@ -138,9 +142,9 @@ category_counts_4 = pd.crosstab(df_top_AI['decade'], df_top_AI['4 mood'])
 # Normalize the counts to get percentages
 category_percent_4 = category_counts_4.div(category_counts_4.sum(axis = 1), axis = 0) * 100
 
-# 5 setting------------------------------------------
+# 5 social political------------------------------------------
 # Count the occurrences of each category per decade
-category_counts_5 = pd.crosstab(df_top_AI['decade'], df_top_AI['5 setting'])
+category_counts_5 = pd.crosstab(df_top_AI['decade'], df_top_AI['5 social political'])
 # Normalize the counts to get percentages
 category_percent_5 = category_counts_5.div(category_counts_5.sum(axis = 1), axis = 0) * 100
 
@@ -215,6 +219,203 @@ category_percent_16 = category_counts_16.div(category_counts_16.sum(axis = 1), a
 category_counts_17 = pd.crosstab(df_top_AI['decade'], df_top_AI['17 enviromental'])
 # Normalize the counts to get percentages
 category_percent_17 = category_counts_17.div(category_counts_17.sum(axis = 1), axis = 0) * 100
+
+#----------------------------------------------------------------------------------
+# Processing for the complex figures
+#----------------------------------------------------------------------------------
+# Author and protagonist gender
+
+df_top_AI_new = df_top_AI.copy()
+df_top_AI_new["genders"] = df_top_AI_new['gender'] + " / " + df_top_AI_new['13 protagonist is']
+
+# Count the occurrences of each category per decade
+category_counts_genders = pd.crosstab(df_top_AI_new['decade'], df_top_AI_new["genders"])
+
+# Sum columns to create a new 'Other' category (combining the Others)
+category_counts_genders['Other / All combined'] = (category_counts_genders['Other / Male'] + 
+                                                   category_counts_genders['Other / Female'] + 
+                                                   category_counts_genders['Other / Non-human'] + 
+                                                   category_counts_genders['Other / Not applicable'])
+
+# Drop the original Others columns
+category_counts_genders = category_counts_genders.drop(columns=['Other / Male', 
+                                                                'Other / Female',
+                                                                'Other / Non-human',
+                                                                'Other / Not applicable'])
+
+# Normalize the counts to get percentages
+category_percent_genders = category_counts_genders.div(category_counts_genders.sum(axis = 1), axis = 0) * 100
+
+print("\ngenders",df_top_AI_new["genders"].unique())
+#print("\n")
+
+#----------------------------------------------------------------------------------
+# Variance in Answers
+
+# Reading test answers
+df1 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_1.csv", sep=";", encoding="utf-8-sig")
+df2 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_2.csv", sep=";", encoding="utf-8-sig")
+df3 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_3.csv", sep=";", encoding="utf-8-sig")
+df4 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_4.csv", sep=";", encoding="utf-8-sig")
+df5 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_5.csv", sep=";", encoding="utf-8-sig")
+df6 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_6.csv", sep=";", encoding="utf-8-sig")
+df7 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_7.csv", sep=";", encoding="utf-8-sig")
+df8 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_8.csv", sep=";", encoding="utf-8-sig")
+df9 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_9.csv", sep=";", encoding="utf-8-sig")
+df10 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_10.csv", sep=";", encoding="utf-8-sig")
+
+# Setting novel id as index
+df1['year'] = df1['year'].astype('string')
+df2['year'] = df2['year'].astype('string')
+df3['year'] = df3['year'].astype('string')
+df4['year'] = df4['year'].astype('string')
+df5['year'] = df5['year'].astype('string')
+df6['year'] = df6['year'].astype('string')
+df7['year'] = df7['year'].astype('string')
+df8['year'] = df8['year'].astype('string')
+df9['year'] = df9['year'].astype('string')
+df10['year'] = df10['year'].astype('string')
+
+df1['id'] = df1['title'] + " (" + df1['year'] + ") " + df1['author']
+df2['id'] = df2['title'] + " (" + df2['year'] + ") " + df2['author']
+df3['id'] = df3['title'] + " (" + df3['year'] + ") " + df3['author']
+df4['id'] = df4['title'] + " (" + df4['year'] + ") " + df4['author']
+df5['id'] = df5['title'] + " (" + df5['year'] + ") " + df5['author']
+df6['id'] = df6['title'] + " (" + df6['year'] + ") " + df6['author']
+df7['id'] = df7['title'] + " (" + df7['year'] + ") " + df7['author']
+df8['id'] = df8['title'] + " (" + df8['year'] + ") " + df8['author']
+df9['id'] = df9['title'] + " (" + df9['year'] + ") " + df9['author']
+df10['id'] = df10['title'] + " (" + df10['year'] + ") " + df10['author']
+
+df1 = df1.set_index('id')
+df2 = df2.set_index('id')
+df3 = df3.set_index('id')
+df4 = df4.set_index('id')
+df5 = df5.set_index('id')
+df6 = df6.set_index('id')
+df7 = df7.set_index('id')
+df8 = df8.set_index('id')
+df9 = df9.set_index('id')
+df10 = df10.set_index('id')
+
+#-------------------------------------------
+# Selecting columns
+column_order = ['1 soft hard',
+                '2 light heavy',
+                '3 time',
+                '4 mood',
+                '5 setting',
+                '6 on Earth',
+                '7 post apocalyptic',
+                '8 aliens',
+                '9 aliens are',
+                '10 robots and AI',
+                '11 robots and AI are',
+                '12 protagonist',
+                '13 protagonist is',
+                '14 virtual',
+                '15 tech and science',
+                '16 social issues',
+                '17 enviromental',]
+
+df1 = df1.reindex(columns=column_order)
+df2 = df2.reindex(columns=column_order)
+df3 = df3.reindex(columns=column_order)
+df4 = df4.reindex(columns=column_order)
+df5 = df5.reindex(columns=column_order)
+df6 = df6.reindex(columns=column_order)
+df7 = df7.reindex(columns=column_order)
+df8 = df8.reindex(columns=column_order)
+df9 = df9.reindex(columns=column_order)
+df10 = df10.reindex(columns=column_order)
+
+#-------------------------------------------
+# List of dataframes
+dfs = [df1, df2, df3, df4, df5, df6, df7, df8, df9, df10]
+
+#-----------------------------
+# Stack DataFrames to create a 3D array (rows x columns x runs)
+data_array = np.stack([df.to_numpy() for df in dfs], axis=-1) # Shape: (rows, columns, runs)
+
+#-------------------------
+# Difference two by two of the answers
+
+# Initialize a dataframe to store the sum of differences
+comparison_sum = pd.DataFrame(0, index=df1.index, columns=df1.columns)
+
+# Count the number of comparisons made (for averaging later)
+num_comparisons = 0
+
+# Compare each pair of dataframes
+for i in range(len(dfs)):
+    for j in range(i + 1, len(dfs)):
+        # Compare dataframes element-wise, convert booleans to integers (1 for different, 0 for same)
+        difference = (dfs[i] != dfs[j]).astype(int)
+        
+        # Add to comparison sum
+        comparison_sum += difference
+        
+        # Increment the comparison count
+        num_comparisons += 1
+
+# Calculate the mean difference for each cell
+df_mean_difference = comparison_sum / num_comparisons
+
+print("num_comparisons =", num_comparisons)
+
+# Calculate the mean of all cells
+overall_mean = df_mean_difference.values.mean()
+print("Mean of all cells:", overall_mean)
+
+# Add column and row of means
+df_mean_difference['Mean'] = df_mean_difference.mean(axis=1)
+df_mean_difference.loc['Mean'] = df_mean_difference.mean(axis=0)
+
+# Display the resulting mean difference dataframe
+print(df_mean_difference)
+
+#-----------------------------
+# Percent Agreement / Mode Consistency
+
+# Initialize empty arrays to store modes and percent agreements
+rows, cols = data_array.shape[0], data_array.shape[1]
+modes = np.empty((rows, cols), dtype=object)
+percent_agreement = np.empty((rows, cols))
+
+# Compute the mode and agreement level for each cell
+for i in range(rows):
+    for j in range(cols):
+        answers = data_array[i, j, :] # All answers for a particular cell across dataframes
+        unique_values, counts = np.unique(answers, return_counts=True)  # Unique values and their counts
+        mode_index = np.argmax(counts) # Index of the mode (most frequent value)
+        modes[i, j] = unique_values[mode_index] # Mode value
+        percent_agreement[i, j] = (counts[mode_index] / len(dfs)) * 100 # Agreement as a percentage
+
+# Convert modes and percent_agreement back to DataFrames for easier interpretation
+df_modes = pd.DataFrame(modes, columns=df1.columns, index=df1.index)
+# Convert to DataFrames
+df_percent_agreement = pd.DataFrame(percent_agreement, index=df1.index, columns=df1.columns)
+
+# Add column and row of means
+df_percent_agreement['Mean'] = df_percent_agreement.mean(axis=1)
+df_percent_agreement.loc['Mean'] = df_percent_agreement.mean(axis=0)
+
+#-----------------------------
+# Shannon Entropy (Diversity Index)
+def shannon_entropy(values):
+    _, counts = np.unique(values, return_counts=True) # values, counts
+    probabilities = counts / counts.sum()
+    return -np.sum(probabilities * np.log2(probabilities + 1e-9)) # Avoid log(0)
+
+# Apply the entropy function along the last axis (runs)
+entropy_values = np.apply_along_axis(shannon_entropy, 2, data_array)
+
+# Convert to DataFrames
+df_entropy = pd.DataFrame(entropy_values, index=df1.index, columns=df1.columns)
+
+# Add column and row of means
+df_entropy['Mean'] = df_entropy.mean(axis=1)
+df_entropy.loc['Mean'] = df_entropy.mean(axis=0)
 
 #----------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------
@@ -593,20 +794,20 @@ ax1 = figure1.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_1 = ['Very soft',
-                    'Soft',
-                    'Mixed', 
+category_order_1 = ['Very hard',
                     'Hard',
-                    'Very hard']
+                    'Mixed', 
+                    'Soft',
+                    'Very soft']
 # Reorder the columns in the DataFrame according to the desired category order
 category_percent_1 = category_percent_1[category_order_1]
 
 # Define custom colors for each category
-custom_colors_1 = ['#385AC2',
-                   '#5580D0',
-                   '#8B3FCF',
+custom_colors_1 = ['#AE305D',
                    '#CF5D5F',
-                   '#AE305D']
+                   '#8B3FCF',
+                   '#5580D0',
+                   '#385AC2']
 
 # Bar plot-------------------------------------------
 category_percent_1.plot(kind = 'bar',
@@ -677,20 +878,20 @@ ax1 = figure2.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_2 = ['Very light',
-                    'Light',
-                    'Balanced', 
+category_order_2 = ['Very heavy',
                     'Heavy',
-                    'Very heavy']
+                    'Balanced', 
+                    'Light',
+                    'Very light']
 # Reorder the columns in the DataFrame according to the desired category order
 category_percent_2 = category_percent_2[category_order_2]
 
 # Define custom colors for each category
-custom_colors_2 = ['#385AC2',
-                   '#5580D0',
-                   '#8B3FCF',
+custom_colors_2 = ['#AE305D',
                    '#CF5D5F',
-                   '#AE305D']
+                   '#8B3FCF',
+                   '#5580D0',
+                   '#385AC2']
 
 # Bar plot-------------------------------------------
 category_percent_2.plot(kind = 'bar',
@@ -927,7 +1128,7 @@ plt.savefig("./Figures/04 mood.png", bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 # Figure 9 - 5 setting
-print("  Making 5 setting...")
+print("  Making 5 social political...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
@@ -966,7 +1167,7 @@ category_percent_5.plot(kind = 'bar',
                         color = custom_colors_5,
                         width = 1.0,
                         alpha = 1.0,
-                        label = "5 setting")
+                        label = "5 social political")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -1008,10 +1209,10 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/05 setting.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/05 setting.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/05 social political.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/05 social political.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/05 setting.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/05 social political.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 # Figure 10 - 6 on Earth
@@ -2108,31 +2309,6 @@ plt.savefig("./Figures/00 author and protagonist heatmap.png", bbox_inches = 'ti
 # Figure 23 - Author and protagonist gender
 print("  Making author and protagonist heatmap...")
 
-#-------------------------------------------
-df_top_AI_new = df_top_AI.copy()
-df_top_AI_new["genders"] = df_top_AI_new['gender'] + " / " + df_top_AI_new['13 protagonist is']
-
-# Count the occurrences of each category per decade
-category_counts_genders = pd.crosstab(df_top_AI_new['decade'], df_top_AI_new["genders"])
-
-# Sum columns to create a new 'Other' category (combining the Others)
-category_counts_genders['Other / All combined'] = (category_counts_genders['Other / Male'] + 
-                                                   category_counts_genders['Other / Female'] + 
-                                                   category_counts_genders['Other / Non-human'] + 
-                                                   category_counts_genders['Other / Not applicable'])
-
-# Drop the original Others columns
-category_counts_genders = category_counts_genders.drop(columns=['Other / Male', 
-                                                                'Other / Female',
-                                                                'Other / Non-human',
-                                                                'Other / Not applicable'])
-
-# Normalize the counts to get percentages
-category_percent_genders = category_counts_genders.div(category_counts_genders.sum(axis = 1), axis = 0) * 100
-
-print("\ngenders",df_top_AI_new["genders"].unique())
-#print("\n")
-
 #------------------------------------------
 # Creates a figure object with size 12x6 inches
 figure_t2 = plt.figure(23, figsize = (12, 6))
@@ -2235,6 +2411,98 @@ plt.savefig("./Figures/00 author and protagonist gender.png", bbox_inches = 'tig
 #plt.savefig("./Figures/00 author and protagonist gender.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
 #plt.savefig("./Figures/00 author and protagonist gender.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+
+#----------------------------------------------------------------------------------
+# Figure 24 - Author and protagonist gender
+print("  Making Variance in Answers...")
+
+#----------------------------------------------------------------------------------
+# Creates a figure object with size 10x14 inches
+figure_t3 = plt.figure(24, figsize = (10, 14))
+gs = figure_t3.add_gridspec(ncols = 1, nrows = 1)
+
+# Create the main plot
+ax1 = figure_t3.add_subplot(gs[0])
+
+# Heatmap-------------------------------------------
+# Set var_flag to the measure of variation in answers that you want:
+# 1 Difference two by two of the answers
+# 2 Percent Agreement / Mode Consistency
+# 3 Shannon Entropy (Diversity Index)
+var_flag = 3
+
+# 1 Difference two by two of the answers
+if var_flag == 1:
+    sns.heatmap(df_mean_difference, 
+                annot=True, 
+                cmap="coolwarm",
+                fmt=".2f", 
+                cbar_kws={'label': 'Mean Difference Score'},
+                annot_kws={"size": 8})
+    #annot=True, fmt=".1%", cmap="YlGnBu", cbar_kws={'format': '%.0f%%'}
+
+# 2 Percent Agreement / Mode Consistency
+elif var_flag == 2:
+    sns.heatmap(df_percent_agreement, 
+                annot=True, 
+                cmap="coolwarm_r", # coolwarm_r:reversed coolwarm
+                fmt=".0f", 
+                cbar_kws={'label': 'Percent Agreement'},
+                annot_kws={"size": 8})
+    #annot=True, fmt=".1%", cmap="YlGnBu", cbar_kws={'format': '%.0f%%'}
+
+# 3 Shannon Entropy (Diversity Index)
+elif var_flag == 3:
+    sns.heatmap(df_entropy, 
+                annot=True, 
+                cmap="coolwarm",
+                fmt=".2f", 
+                cbar_kws={'label': 'Shannon Index'},
+                annot_kws={"size": 8})
+    #annot=True, fmt=".1%", cmap="YlGnBu", cbar_kws={'format': '%.0f%%'}
+
+# Add thicker lines to separate the last row and column
+"""
+ax.get_xlim() returns a tuple with the x-axis limits, like (0.0, 4.0).
+Using *ax.get_xlim() unpacks this tuple into two separate arguments. 
+So, hlines interprets it as hlines(y, xmin=0.0, xmax=4.0).
+"""
+# Horizontal line above mean row
+ax1.hlines(len(df_mean_difference) - 1, 
+           *ax1.get_xlim(), 
+           colors = custom_dark_gray, 
+           linewidth=2.0)
+# Vertical line before mean column
+ax1.vlines(len(df_mean_difference.columns) - 1, 
+           *ax1.get_ylim(), 
+           colors = custom_dark_gray, 
+           linewidth=2.0)
+
+# Design-------------------------------------------
+#ax1.set_xlabel("Questions", fontsize = 12, color = custom_dark_gray)
+ax1.set_ylabel("", fontsize = 12, color = custom_dark_gray)
+ax1.set_title("Variability in Answers", fontsize = 14, pad = 5, color = custom_dark_gray)
+#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
+
+# Axes-------------------------------------------
+ax1.minorticks_on()
+ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
+ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
+ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
+ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
+ax1.tick_params(axis = 'both', colors = custom_dark_gray)
+
+ax1.spines['right'].set_visible(False)
+ax1.spines['top'].set_visible(False)
+#ax1.spines['left'].set_visible(False)
+ax1.spines['left'].set_color(custom_dark_gray)
+ax1.spines['bottom'].set_color(custom_dark_gray)
+
+# Saving image-------------------------------------------
+plt.savefig("./Figures/00 variation.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/00 variation.eps", transparent = True, bbox_inches = 'tight')
+# Transparence will be lost in .eps, save in .svg for transparences
+#plt.savefig("./Figures/00 variation.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 print("All done.")

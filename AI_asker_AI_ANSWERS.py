@@ -188,7 +188,7 @@ def ask_to_AI(df, output_file):
     light_heavy = []
     time = []
     mood = []
-    setting = []
+    social_political = []
     on_earth = []
     post_apocalyptic = []
     aliens = []
@@ -207,7 +207,7 @@ def ask_to_AI(df, output_file):
     light_heavy_just = []
     time_just = []
     mood_just = []
-    setting_just = []
+    social_political_just = []
     on_earth_just = []
     post_apocalyptic_just = []
     aliens_just = []
@@ -323,8 +323,8 @@ def ask_to_AI(df, output_file):
                 mood.append(answers[3])
                 mood_just.append(justifications[3])
 
-                setting.append(answers[4])
-                setting_just.append(justifications[4])
+                social_political.append(answers[4])
+                social_political_just.append(justifications[4])
 
                 on_earth.append(answers[5])
                 on_earth_just.append(justifications[5])
@@ -379,8 +379,8 @@ def ask_to_AI(df, output_file):
                 mood.append(None)
                 mood_just.append(None)
 
-                setting.append(None)
-                setting_just.append(None)
+                social_political.append(None)
+                social_political_just.append(None)
 
                 on_earth.append(None)
                 on_earth_just.append(None)
@@ -439,8 +439,8 @@ def ask_to_AI(df, output_file):
                 '4 mood': [mood[-1]],
                 'justifying mood': [mood_just[-1]],
 
-                '5 setting': [setting[-1]],
-                'justifying setting': [setting_just[-1]],
+                '5 social political': [social_political[-1]],
+                'justifying social political': [social_political_just[-1]],
 
                 '6 on Earth': [on_earth[-1]],
                 'justifying on Earth': [on_earth_just[-1]],
@@ -511,7 +511,7 @@ def ask_to_AI(df, output_file):
 input_file = './Data/sci-fi_books_TOP.csv'
 
 # Name of the output file
-#output_file = './Data/sci-fi_books_AI_ANSWERS_TEST.csv'
+#output_file = './Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST.csv'
 output_file = './Data/sci-fi_books_AI_ANSWERS.csv'
 
 #------------------------------------------
@@ -529,7 +529,7 @@ df_processed['ratings'] = df_processed['ratings'].astype(int)
 
 #------------------------------------------
 # Sometimes the AI output is not formatted right
-# This will exclude wrong rows (a null paragraph or  null on some other column just to be sure)
+# This will exclude wrong rows (a null paragraph or null on some other column just to be sure)
 # You will need to rerun the program at least once to get all the books/rows but it will keep the progress until then
 df_processed = df_processed.dropna(axis=0, subset=['paragraph', 'justifying on Earth', '12 protagonist', 'justifying enviromental'], how = 'any', ignore_index=True)
 

@@ -83,6 +83,11 @@ test_books = [
 test_books_mask = df_filtered['title'].isin(test_books)
 df_test_books = df_filtered[test_books_mask]
 
+# There is more than one book titled 'Contact'. I only want the one authored by Carl Sagan.
+no_test_authors = ["Susan Grant", "Mike Duke"]
+no_test_authors_mask = ~df_test_books['author'].isin(no_test_authors)
+df_test_books = df_test_books[no_test_authors_mask]
+
 df_test_books = df_test_books.reindex(columns=column_order)
 #df_test_books = df_test_books.sort_values(by=['ratings'], axis=0, ascending=False)
 df_test_books = df_test_books.sort_values(by=['decade', 'year', 'author', 'title'], axis=0, ascending=True)

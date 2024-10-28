@@ -64,15 +64,33 @@ def analyze_author(author):
 # Create a list to store the results
 results = []
 
-# Iterate through the author names and query GPT-4
+number = 0
+
+# Load existing progress if the file exists
+if os.path.exists(output_file):
+    df_authors = pd.read_csv(output_file, sep=';', encoding='utf-8-sig')
+else:
+    df_authors = pd.DataFrame(columns=['author', 'gender'])
+
+processed_authors = set(df_authors['author'].values)
+
+# Iterate through the author names and query GPT-4o
 for name in authors_list:
+    # Skip already processed authors
+    if name in processed_authors:
+        continue
+    
     gender = analyze_author(name)
     results.append((name, gender))
+    number += 1
 
-# Convert to a DataFrame
-df_authors = pd.DataFrame(results, columns=['author', 'gender'])
+print(f"Added {number} author(s) and their gender to the list.")
 
-df_authors = df_authors.sort_values(by=['author', 'gender'], ascending=True)
+# Convert to a DataFrame and add it to the end of the present DataFrame
+df_added_authors = pd.DataFrame(results, columns=['author', 'gender'])
+df_authors = pd.concat([df_authors, df_added_authors], ignore_index=True)
+
+df_authors = df_authors.sort_values(by=['gender', 'author'], ascending=True)
 df_authors = df_authors.reset_index(drop=True)
 
 #------------------------------------------

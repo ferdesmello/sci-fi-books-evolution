@@ -1,4 +1,5 @@
 import pandas as pd
+import datetime
 import re
 
 #----------------------------------------------------------------------------------
@@ -49,6 +50,13 @@ df = df[synopsis_mask | review_mask]
 #-----------------------------------------
 # Dropping books without publishing year
 df = df.dropna(axis=0, subset=['year'])
+
+# Exclude books resulted of "time travel" (just use books with year until the current year)
+today = datetime.date.today()
+year = today.year
+
+mask_year = df['year'] <= year
+df = df[mask_year]
 
 #-----------------------------------------
 # Dropping books with fewer than N_r ratings
@@ -222,11 +230,13 @@ def delete_books(row):
     # Titles to be deleted
     titles_to_del = ["Feersum Endjinn",
                      "Frankenstein: The 1818 Text",
+                     "Frankenstein or, The Modern Prometheus",
                      "Hard to Be a God",
                      "R.U.R.: Rossum's Universal Robots",
                      "Rama Revealed: The Ultimate Encounter",
                      "Simulacron 3",
                      "Simulacron Three",
+                     "The Island of Dr Moreau",
                      "Fiction 2000: Cyberpunk and the Future of Narrative",
                      "GURPS Reign of Steel: The War Is Over, The Robots Won",
                      "The Third Time Travel MEGAPACK ®: 18 Classic Trips Through Time",
@@ -261,7 +271,8 @@ def delete_books(row):
                      "Alliance Space",
                      "A World Divided",
                      "The Forbidden Circle",
-                     "To Save a World",]
+                     "To Save a World",
+                     "20000 Leagues Under the Sea",]
     
     # Authors to be deleted
     authors_to_del = ["Iain M. Banks",
@@ -369,11 +380,13 @@ unwanted_genres = ['Graphic Novels',
                    'Literary Criticism', 
                    'Essays', 
                    'Criticism',
-                   "Role Playing Games",
                    'High Fantasy',
                    'Epic Fantasy',
                    'Magic',
-                   'Angels']
+                   'Angels',
+                   'Gaming',
+                   'Role Playing Games',
+                   'Games']
 unwanted_genres = [genre.lower() for genre in unwanted_genres]
 
 #required_genres = ['Short Stories', 'Anthologies']
