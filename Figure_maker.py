@@ -253,18 +253,18 @@ print("\ngenders",df_top_AI_new["genders"].unique())
 # Variance in Answers
 
 # Reading test answers
-df1 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_1.csv", sep=";", encoding="utf-8-sig")
-df2 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_2.csv", sep=";", encoding="utf-8-sig")
-df3 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_3.csv", sep=";", encoding="utf-8-sig")
-df4 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_4.csv", sep=";", encoding="utf-8-sig")
-df5 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_5.csv", sep=";", encoding="utf-8-sig")
-df6 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_6.csv", sep=";", encoding="utf-8-sig")
-df7 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_7.csv", sep=";", encoding="utf-8-sig")
-df8 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_8.csv", sep=";", encoding="utf-8-sig")
-df9 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_9.csv", sep=";", encoding="utf-8-sig")
-df10 = pd.read_csv("./Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST_10.csv", sep=";", encoding="utf-8-sig")
+df1 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_1.csv", sep=";", encoding="utf-8-sig")
+df2 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_2.csv", sep=";", encoding="utf-8-sig")
+df3 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_3.csv", sep=";", encoding="utf-8-sig")
+df4 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_4.csv", sep=";", encoding="utf-8-sig")
+df5 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_5.csv", sep=";", encoding="utf-8-sig")
+df6 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_6.csv", sep=";", encoding="utf-8-sig")
+df7 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_7.csv", sep=";", encoding="utf-8-sig")
+df8 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_8.csv", sep=";", encoding="utf-8-sig")
+df9 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_9.csv", sep=";", encoding="utf-8-sig")
+df10 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_10.csv", sep=";", encoding="utf-8-sig")
 
-# Setting novel id as index
+# social political novel id as index
 df1['year'] = df1['year'].astype('string')
 df2['year'] = df2['year'].astype('string')
 df3['year'] = df3['year'].astype('string')
@@ -304,7 +304,7 @@ column_order = ['1 soft hard',
                 '2 light heavy',
                 '3 time',
                 '4 mood',
-                '5 setting',
+                '5 social political',
                 '6 on Earth',
                 '7 post apocalyptic',
                 '8 aliens',
@@ -361,18 +361,9 @@ for i in range(len(dfs)):
 # Calculate the mean difference for each cell
 df_mean_difference = comparison_sum / num_comparisons
 
-print("num_comparisons =", num_comparisons)
-
-# Calculate the mean of all cells
-overall_mean = df_mean_difference.values.mean()
-print("Mean of all cells:", overall_mean)
-
 # Add column and row of means
 df_mean_difference['Mean'] = df_mean_difference.mean(axis=1)
 df_mean_difference.loc['Mean'] = df_mean_difference.mean(axis=0)
-
-# Display the resulting mean difference dataframe
-print(df_mean_difference)
 
 #-----------------------------
 # Percent Agreement / Mode Consistency
@@ -399,13 +390,13 @@ df_percent_agreement = pd.DataFrame(percent_agreement, index=df1.index, columns=
 # Add column and row of means
 df_percent_agreement['Mean'] = df_percent_agreement.mean(axis=1)
 df_percent_agreement.loc['Mean'] = df_percent_agreement.mean(axis=0)
-
+print(df_percent_agreement)
 #-----------------------------
 # Shannon Entropy (Diversity Index)
 def shannon_entropy(values):
     _, counts = np.unique(values, return_counts=True) # values, counts
     probabilities = counts / counts.sum()
-    return -np.sum(probabilities * np.log2(probabilities + 1e-9)) # Avoid log(0)
+    return -np.sum(probabilities * np.log2(probabilities))
 
 # Apply the entropy function along the last axis (runs)
 entropy_values = np.apply_along_axis(shannon_entropy, 2, data_array)
@@ -1127,7 +1118,7 @@ plt.savefig("./Figures/04 mood.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/04 mood.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 9 - 5 setting
+# Figure 9 - 5 social political
 print("  Making 5 social political...")
 
 #-------------------------------------------
@@ -1172,7 +1163,7 @@ category_percent_5.plot(kind = 'bar',
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("What is the social and political scenario depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("What is the social political scenario depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -2413,8 +2404,8 @@ plt.savefig("./Figures/00 author and protagonist gender.png", bbox_inches = 'tig
 #plt.savefig("./Figures/00 author and protagonist gender.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 24 - Author and protagonist gender
-print("  Making Variance in Answers...")
+# Figure 24 - Variation in Answer
+print("  Making Variation in Answers...")
 
 #----------------------------------------------------------------------------------
 # Creates a figure object with size 10x14 inches
@@ -2445,21 +2436,35 @@ if var_flag == 1:
 elif var_flag == 2:
     sns.heatmap(df_percent_agreement, 
                 annot=True, 
-                cmap="coolwarm_r", # coolwarm_r:reversed coolwarm
-                fmt=".0f", 
-                cbar_kws={'label': 'Percent Agreement'},
+                cmap="coolwarm_r", # coolwarm_r: reversed coolwarm
+                fmt=".3g",
+                cbar_kws={'label': 'Percent agreement for the main answer'},
                 annot_kws={"size": 8})
-    #annot=True, fmt=".1%", cmap="YlGnBu", cbar_kws={'format': '%.0f%%'}
 
 # 3 Shannon Entropy (Diversity Index)
 elif var_flag == 3:
+    # Define tolerance for near-zero values
+    TOLERANCE = 1e-6
+
+    # Custom format function for your specific rule
+    def custom_format(val):
+        # Treat values within the tolerance as zero
+        if abs(val) < TOLERANCE:
+            return 0
+        elif abs(val) >= 100:
+            return f"{val:.0f}"  # No decimals for numbers >= 100
+        elif abs(val) >= 10:
+            return f"{val:.1f}"  # One decimal for numbers >= 10 and < 100
+        else:
+            return f"{val:.2f}"  # Two decimals for numbers < 10
+
+    # Apply the function to each cell
     sns.heatmap(df_entropy, 
-                annot=True, 
+                annot=df_entropy.applymap(custom_format), 
                 cmap="coolwarm",
-                fmt=".2f", 
-                cbar_kws={'label': 'Shannon Index'},
+                fmt="", 
+                cbar_kws={'label': 'Shannon index'},
                 annot_kws={"size": 8})
-    #annot=True, fmt=".1%", cmap="YlGnBu", cbar_kws={'format': '%.0f%%'}
 
 # Add thicker lines to separate the last row and column
 """
@@ -2497,6 +2502,15 @@ ax1.spines['top'].set_visible(False)
 #ax1.spines['left'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
+
+# Move x-axis labels to the top
+ax1.xaxis.tick_top()
+
+# Rotate and align the labels
+for tick in ax1.get_xticklabels():
+    tick.set_rotation(45)
+    tick.set_ha('left')  # Horizontal alignment (left aligns better for rotated labels)
+    tick.set_va('bottom')  # Vertical alignment to ensure no overlap
 
 # Saving image-------------------------------------------
 plt.savefig("./Figures/00 variation.png", bbox_inches = 'tight')

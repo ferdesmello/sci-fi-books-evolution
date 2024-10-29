@@ -76,13 +76,13 @@ def analyze_book(title, author, year, synopsis, review, genres): # Function to a
         Balanced: mix of positive and negative moods without leaning towards one; 
         Pessimistic: negative outlook but with moments of optimism; 
         Very pessimistic: overwhelmingly negative, bleak, hopeless.
-    5. What is the social and political scenario depicted in the story?
+    5. What is the social political scenario depicted in the story?
         Utopic: ideal or perfect society;
         Leaning utopic: significant prosperity and desirable elements but with some flaws;
         Balanced: mix of both strengths and flaws elements, or an ordinary view of society;
         Leaning dystopic: significant problems and undesirable elements but with some strengths;
         Dystopic: bleak, deeply flawed, authoritarian, and oppressive;
-        Uncertain: the social and political scenario is either unclear or not a major focus of the story.
+        Uncertain: the social political scenario is either unclear or not a major focus of the story.
     6. Is most of the story set on Earth?
         Yes;
         No.
@@ -198,7 +198,7 @@ def ask_to_AI(df, output_file):
     protagonist = []
     protagonist_is = []
     virtual = []
-    tech_sci = []
+    tech_science = []
     social = []
     enviromental = []
     
@@ -217,7 +217,7 @@ def ask_to_AI(df, output_file):
     protagonist_just = []
     protagonist_is_just = []
     virtual_just = []
-    tech_sci_just = []
+    tech_science_just = []
     social_just = []
     enviromental_just = []
 
@@ -353,8 +353,8 @@ def ask_to_AI(df, output_file):
                 virtual.append(answers[13])
                 virtual_just.append(justifications[13])
 
-                tech_sci.append(answers[14])
-                tech_sci_just.append(justifications[14])
+                tech_science.append(answers[14])
+                tech_science_just.append(justifications[14])
 
                 social.append(answers[15])
                 social_just.append(justifications[15])
@@ -409,8 +409,8 @@ def ask_to_AI(df, output_file):
                 virtual.append(None)
                 virtual_just.append(None)
 
-                tech_sci.append(None)
-                tech_sci_just.append(None)
+                tech_science.append(None)
+                tech_science_just.append(None)
 
                 social.append(None)
                 social_just.append(None)
@@ -469,8 +469,8 @@ def ask_to_AI(df, output_file):
                 '14 virtual': [virtual[-1]],
                 'justifying virtual': [virtual_just[-1]],
 
-                '15 tech and science': [tech_sci[-1]],
-                'justifying tech and science': [tech_sci_just[-1]],
+                '15 tech and science': [tech_science[-1]],
+                'justifying tech and science': [tech_science_just[-1]],
 
                 '16 social issues': [social[-1]],
                 'justifying social issues': [social_just[-1]],
@@ -511,7 +511,7 @@ def ask_to_AI(df, output_file):
 input_file = './Data/sci-fi_books_TOP.csv'
 
 # Name of the output file
-#output_file = './Data/Variability in Answers/sci-fi_books_AI_ANSWERS_TEST.csv'
+#output_file = './Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST.csv'
 output_file = './Data/sci-fi_books_AI_ANSWERS.csv'
 
 #------------------------------------------
