@@ -152,6 +152,7 @@ def analyze_book(title, author, year, synopsis, review, genres): # Function to a
     
     # Call the OpenAI API with the crafted prompt
     ChatCompletion = client.chat.completions.create(
+    #response = openai.ChatCompletion.create(
         messages = [
             {"role": "system", "content": "You are a helpful assistant and scholar of comparative sci-fi literature who analyzes book plots based on your own knowledge and provided information."},
             {"role": "user", "content": prompt}
@@ -162,7 +163,7 @@ def analyze_book(title, author, year, synopsis, review, genres): # Function to a
         max_tokens = 700, # Adjust based on the detail needed
         temperature = 0.2 # Adjust for factual response vs. creativity balance
     )
-    
+
     # Extract and print the response
     answer = ChatCompletion.choices[0].message.content
     print(f'\n"{title}" by {author}, {year}')
@@ -511,7 +512,7 @@ def ask_to_AI(df, output_file):
 input_file = './Data/sci-fi_books_TOP.csv'
 
 # Name of the output file
-#output_file = './Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST.csv'
+#output_file = './Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_15.csv'
 output_file = './Data/sci-fi_books_AI_ANSWERS.csv'
 
 #------------------------------------------
@@ -532,7 +533,6 @@ df_processed['ratings'] = df_processed['ratings'].astype(int)
 # This will exclude wrong rows (a null paragraph or null on some other column just to be sure)
 # You will need to rerun the program at least once to get all the books/rows but it will keep the progress until then
 df_processed = df_processed.dropna(axis=0, subset=['paragraph', 'justifying on Earth', '12 protagonist', 'justifying enviromental'], how = 'any', ignore_index=True)
-
 df_processed = df_processed.sort_values(by = ['decade', 'year', 'author', 'title'], ascending=True)
 
 #------------------------------------------
@@ -543,7 +543,7 @@ size_in = df.shape[0] # Number of rows
 size_out = df_processed.shape[0] # Number of rows
 missing_books = size_in - size_out # Difference in number of rows
 
-print(f"If the number of missing books ({missing_books}) is higher than 0, rerun this program until it is 0 AND there are no more WARNINGS.")
+print(f"Book(s) missing: {missing_books}. If this number is higher than 0, rerun this program until it is 0 AND there are no more WARNINGS.")
 
 #------------------------------------------
 df_processed.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig')

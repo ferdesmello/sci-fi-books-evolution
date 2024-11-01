@@ -263,6 +263,11 @@ df7 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_7.
 df8 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_8.csv", sep=";", encoding="utf-8-sig")
 df9 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_9.csv", sep=";", encoding="utf-8-sig")
 df10 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_10.csv", sep=";", encoding="utf-8-sig")
+df11 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_11.csv", sep=";", encoding="utf-8-sig")
+df12 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_12.csv", sep=";", encoding="utf-8-sig")
+df13 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_13.csv", sep=";", encoding="utf-8-sig")
+df14 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_14.csv", sep=";", encoding="utf-8-sig")
+df15 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_15.csv", sep=";", encoding="utf-8-sig")
 
 # social political novel id as index
 df1['year'] = df1['year'].astype('string')
@@ -275,6 +280,11 @@ df7['year'] = df7['year'].astype('string')
 df8['year'] = df8['year'].astype('string')
 df9['year'] = df9['year'].astype('string')
 df10['year'] = df10['year'].astype('string')
+df11['year'] = df11['year'].astype('string')
+df12['year'] = df12['year'].astype('string')
+df13['year'] = df13['year'].astype('string')
+df14['year'] = df14['year'].astype('string')
+df15['year'] = df15['year'].astype('string')
 
 df1['id'] = df1['title'] + " (" + df1['year'] + ") " + df1['author']
 df2['id'] = df2['title'] + " (" + df2['year'] + ") " + df2['author']
@@ -286,6 +296,11 @@ df7['id'] = df7['title'] + " (" + df7['year'] + ") " + df7['author']
 df8['id'] = df8['title'] + " (" + df8['year'] + ") " + df8['author']
 df9['id'] = df9['title'] + " (" + df9['year'] + ") " + df9['author']
 df10['id'] = df10['title'] + " (" + df10['year'] + ") " + df10['author']
+df11['id'] = df11['title'] + " (" + df11['year'] + ") " + df11['author']
+df12['id'] = df12['title'] + " (" + df12['year'] + ") " + df12['author']
+df13['id'] = df13['title'] + " (" + df13['year'] + ") " + df13['author']
+df14['id'] = df14['title'] + " (" + df14['year'] + ") " + df14['author']
+df15['id'] = df15['title'] + " (" + df15['year'] + ") " + df15['author']
 
 df1 = df1.set_index('id')
 df2 = df2.set_index('id')
@@ -297,6 +312,11 @@ df7 = df7.set_index('id')
 df8 = df8.set_index('id')
 df9 = df9.set_index('id')
 df10 = df10.set_index('id')
+df11 = df11.set_index('id')
+df12 = df12.set_index('id')
+df13 = df13.set_index('id')
+df14 = df14.set_index('id')
+df15 = df15.set_index('id')
 
 #-------------------------------------------
 # Selecting columns
@@ -328,10 +348,15 @@ df7 = df7.reindex(columns=column_order)
 df8 = df8.reindex(columns=column_order)
 df9 = df9.reindex(columns=column_order)
 df10 = df10.reindex(columns=column_order)
+df11 = df11.reindex(columns=column_order)
+df12 = df12.reindex(columns=column_order)
+df13 = df13.reindex(columns=column_order)
+df14 = df14.reindex(columns=column_order)
+df15 = df15.reindex(columns=column_order)
 
 #-------------------------------------------
 # List of dataframes
-dfs = [df1, df2, df3, df4, df5, df6, df7, df8, df9, df10]
+dfs = [df1, df2, df3, df4, df5, df6, df7, df8, df9, df10, df11, df12, df13, df14, df15]
 
 #-----------------------------
 # Stack DataFrames to create a 3D array (rows x columns x runs)
@@ -2420,7 +2445,7 @@ ax1 = figure_t3.add_subplot(gs[0])
 # 1 Difference two by two of the answers
 # 2 Percent Agreement / Mode Consistency
 # 3 Shannon Entropy (Diversity Index)
-var_flag = 3
+var_flag = 2
 
 # 1 Difference two by two of the answers
 if var_flag == 1:

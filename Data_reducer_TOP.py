@@ -19,7 +19,6 @@ column_order = ['title',
                 'author', 
                 'year',
                 'decade', 
-                #'pages', 
                 'rate', 
                 'ratings', 
                 'series', 
@@ -32,7 +31,7 @@ df_top_books = df_top_books.reindex(columns=column_order)
 df_top_books = df_top_books.sort_values(by=['decade', 'year', 'author', 'title'], ascending=True)
 
 #----------------------------------------------------------------------------------
-
+# Saving the datafrme
 df_top_books.to_csv('./Data/sci-fi_books_TOP.csv', index=False, sep=';', encoding='utf-8-sig')
 
 print("\nTOP 200 BOOKS PER DECADE Dataframe")

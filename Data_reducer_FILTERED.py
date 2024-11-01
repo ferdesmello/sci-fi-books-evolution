@@ -213,6 +213,9 @@ df['author_lower'] = df['author'].str.lower()
 df = df.drop_duplicates(subset=['title_lower', 'author_lower'], keep='first')
 df = df.drop_duplicates(subset=['url'], keep='first')
 
+# I can't drop in function of equal reviews alone because some reviews are empty. I need to use more columns.
+df = df.drop_duplicates(subset=['review', 'author_lower', 'year'], keep='first')
+
 # Drop the temporary lowercase columns
 df = df.drop(columns=['title_lower', 'author_lower'])
 
@@ -224,91 +227,41 @@ df['author'] = df['author'].replace(pattern_1, names)
 df['author'] = df['author'].replace(pattern_2, names)
 
 #----------------------------------------------------------------------------------
-# Deleting some left over duplicates, unwanted non-fiction, and collections
+# Deleting some left over duplicates, unwanted non-fiction, and collections.
+# Maybe some of these are not necessary anymore because of the drop of duplicates using the reviews.
 
 def delete_books(row):
     # Titles to be deleted
     titles_to_del = ["Feersum Endjinn",
-                     "Frankenstein: The 1818 Text",
-                     "Frankenstein or, The Modern Prometheus",
-                     "Hard to Be a God",
-                     "R.U.R.: Rossum's Universal Robots",
-                     "Rama Revealed: The Ultimate Encounter",
-                     "Simulacron 3",
-                     "Simulacron Three",
-                     "The Island of Dr Moreau",
                      "Fiction 2000: Cyberpunk and the Future of Narrative",
-                     "GURPS Reign of Steel: The War Is Over, The Robots Won",
-                     "The Third Time Travel MEGAPACK ®: 18 Classic Trips Through Time",
-                     "The Zombie Survival Guide: Complete Protection from the Living Dead",
-                     "Mickey 7",
                      "From the Earth to the Moon and 'Round the Moon",
-                     "Shards of Honour",
                      "The Men From P.I.G. And R.O.B.O.T.",
                      "H.G. Wells: Seven Novels",
-                     "A Handful of Darkness",
-                     "Time Patrolman",
-                     "Apocalypses",
-                     "The Island of Doctor Moreau",
                      "Future Bright, Future Grimm: Transhumanist Tales for Mother Nature's Offspring",
-                     "Diaspora: The dark, post-apocalyptic thriller perfect for fans of BLACK MIRROR and Philip K. Dick",
                      "Fahrenheit 451; The Illustrated Man; Dandelion Wine; The Golden Apples of the Sun; The Martian Chronicles",
                      r"Vorkosigan's Game: The Vor Game \ Borders of Infinity",
-                     "Miles Errant",
-                     "Miles in Love",
-                     "Miles, Mutants, and Microbes",
-                     "Miles, Mystery & Mayhem",
-                     "Miles, Mystery, and Mayhem",
-                     "A City in the North: reconsidered",
-                     "Second Stage Lesmam",
-                     "This Star Shall Abide: aka Heritage of the Star",
-                     "Fairyland",
-                     "Gunner Cade & Takeoff",
-                     "Null States: Book Two of the Centenal Cycle",
-                     "Omnitopia: Dawn",
-                     "Time and Mr. Bass: A Mushroom Planet Book",
-                     "Wool Omnibus",
-                     "Alliance Space",
-                     "A World Divided",
-                     "The Forbidden Circle",
-                     "To Save a World",
-                     "20000 Leagues Under the Sea",]
+                     "Divergent Series Ultimate Four-Book Collection: Divergent; Insurgent; Allegiant; Four",
+                     "The Hitchhiker's Guide to the Galaxy: Tertiary Phase",
+                     "The Island of Dr. Moreau",
+                     "R.U.R.: Rossum's Universal Robots",	
+                     "Eternal Light",
+                     "Hard to Be a God"]
     
     # Authors to be deleted
     authors_to_del = ["Iain M. Banks",
-                      "Mary Wollstonecraft Shelley",
-                      "Arkadi Strugatski",
-                      "Josef/Karel Capek",
-                      "Arthur C. Clarke",
-                      "Daniel F. Galouye",
                       "George Edgar Slusser",
-                      "David L. Pulver",
-                      "Philip K. Dick",
-                      "Max Brooks",
-                      "Edward Ashton",
                       "Jules Verne",
-                      "Lois McMaster Bujold",
                       "Harry Harrison",
                       "H.G. Wells",
-                      "Philip K. Dick",
-                      "Poul Anderson",
-                      "R.A. Lafferty",
                       "D.J. MacLennan",
-                      "Greg Egan",
                       "Ray Bradbury",
                       "Lois McMaster Bujold",
-                      "Marta Randall",
-                      'E.E. "Doc" Smith',
-                      "Star	Sylvia Engdahl",
-                      "Paul McAuley",
-                      "Cyril Judd",
-                      "Malka Ann Older",
-                      "Diane Duane",
-                      "Eleanor Cameron",
-                      "Hugh Howey",
-                      "C.J. Cherryh",
-                      "Marion Zimmer Bradley"]
-    
+                      "Veronica Roth",
+                      "Douglas Adams",
+                      "Josef/Karel Capek",
+                      "Paul J. McAuley",
+                      "Arkadi Strugatski"]
+
     # Extract title and author from the row
     title = row['title']
     author = row['author']
@@ -386,7 +339,8 @@ unwanted_genres = ['Graphic Novels',
                    'Angels',
                    'Gaming',
                    'Role Playing Games',
-                   'Games']
+                   'Games',
+                   'Poetry']
 unwanted_genres = [genre.lower() for genre in unwanted_genres]
 
 #required_genres = ['Short Stories', 'Anthologies']
@@ -420,6 +374,23 @@ for index, row in df.iterrows():
 # Create the filtered DataFrame using the indices of rows to keep
 df_filtered = df.loc[indices_to_keep_2]
 
+#-----------------------------------------
+# Reordering the dataframe
+df_filtered = df_filtered.drop(labels="pages", axis=1)
+
+column_order = ['title', 
+                'author', 
+                'year',
+                'decade', 
+                'rate', 
+                'ratings', 
+                'series', 
+                'genres', 
+                'synopsis',
+                'review',
+                'url']
+
+df_filtered = df_filtered.reindex(columns=column_order)
 df_filtered = df_filtered.sort_values(by=['decade', 'year', 'author', 'title'], axis=0, ascending=True)
 
 #----------------------------------------------------------------------------------
