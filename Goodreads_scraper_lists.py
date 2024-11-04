@@ -270,7 +270,8 @@ def main():
             "https://www.goodreads.com/list/show/114349.Best_Forgotten_Science_Fiction_of_the_20th_Century",
             "https://www.goodreads.com/list/show/47.Best_Dystopian_and_Post_Apocalyptic_Fiction",
             "https://www.goodreads.com/list/show/7239.Best_Utopian_Dystopian_Fiction",
-            "https://www.goodreads.com/list/show/25823"]
+            "https://www.goodreads.com/list/show/25823",
+            "https://www.goodreads.com/list/show/154763.The_Amazing_Colossal_Science_Fiction_Ketchup_Pre_1900s"]
 
     books = scrape_goodreads_lists(urls, max_pages=30)
 

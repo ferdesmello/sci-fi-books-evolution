@@ -543,7 +543,7 @@ size_in = df.shape[0] # Number of rows
 size_out = df_processed.shape[0] # Number of rows
 missing_books = size_in - size_out # Difference in number of rows
 
-print(f"Book(s) missing: {missing_books}. If this number is higher than 0, rerun this program until it is 0 AND there are no more WARNINGS.")
+print(f"Book(s) missing: {missing_books}. If that number is higher than 0, rerun this program until it is 0 AND there are no more WARNINGS.")
 
 #------------------------------------------
 df_processed.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig')

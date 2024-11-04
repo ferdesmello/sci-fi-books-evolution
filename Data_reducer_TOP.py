@@ -28,7 +28,7 @@ column_order = ['title',
                 'url']
 
 df_top_books = df_top_books.reindex(columns=column_order)
-df_top_books = df_top_books.sort_values(by=['decade', 'year', 'author', 'title'], ascending=True)
+df_top_books = df_top_books.sort_values(by=['year', 'author', 'title'], ascending=True)
 
 #----------------------------------------------------------------------------------
 # Saving the datafrme

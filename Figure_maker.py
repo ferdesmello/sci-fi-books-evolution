@@ -5,7 +5,6 @@ from matplotlib.ticker import PercentFormatter
 from scipy.stats import chi2_contingency
 import seaborn as sns
 import numpy as np
-from scipy.stats import mode
 
 #----------------------------------------------------------------------------------
 print("Reading and processing tha data...")
@@ -250,76 +249,42 @@ print("\ngenders",df_top_AI_new["genders"].unique())
 #print("\n")
 
 #----------------------------------------------------------------------------------
-# Variance in Answers
+# Variation in Answers
 
-# Reading test answers
-df1 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_1.csv", sep=";", encoding="utf-8-sig")
-df2 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_2.csv", sep=";", encoding="utf-8-sig")
-df3 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_3.csv", sep=";", encoding="utf-8-sig")
-df4 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_4.csv", sep=";", encoding="utf-8-sig")
-df5 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_5.csv", sep=";", encoding="utf-8-sig")
-df6 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_6.csv", sep=";", encoding="utf-8-sig")
-df7 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_7.csv", sep=";", encoding="utf-8-sig")
-df8 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_8.csv", sep=";", encoding="utf-8-sig")
-df9 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_9.csv", sep=";", encoding="utf-8-sig")
-df10 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_10.csv", sep=";", encoding="utf-8-sig")
-df11 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_11.csv", sep=";", encoding="utf-8-sig")
-df12 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_12.csv", sep=";", encoding="utf-8-sig")
-df13 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_13.csv", sep=";", encoding="utf-8-sig")
-df14 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_14.csv", sep=";", encoding="utf-8-sig")
-df15 = pd.read_csv("./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_15.csv", sep=";", encoding="utf-8-sig")
+# File names in the normally ordered alternatives
+file_names = ["./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_1.csv",
+              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_2.csv",
+              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_3.csv",
+              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_4.csv",
+              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_5.csv",
+              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_6.csv",
+              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_7.csv",
+              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_8.csv",
+              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_9.csv",
+              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_10.csv",
+              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_11.csv",
+              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_12.csv",
+              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_13.csv",
+              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_14.csv",
+              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_15.csv"]
 
-# social political novel id as index
-df1['year'] = df1['year'].astype('string')
-df2['year'] = df2['year'].astype('string')
-df3['year'] = df3['year'].astype('string')
-df4['year'] = df4['year'].astype('string')
-df5['year'] = df5['year'].astype('string')
-df6['year'] = df6['year'].astype('string')
-df7['year'] = df7['year'].astype('string')
-df8['year'] = df8['year'].astype('string')
-df9['year'] = df9['year'].astype('string')
-df10['year'] = df10['year'].astype('string')
-df11['year'] = df11['year'].astype('string')
-df12['year'] = df12['year'].astype('string')
-df13['year'] = df13['year'].astype('string')
-df14['year'] = df14['year'].astype('string')
-df15['year'] = df15['year'].astype('string')
+# File names in the scrambled ordered alternatives
+file_names_s = ["./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_1 a.csv",
+                "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_2 a.csv",
+                "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_3 a.csv",
+                "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_4 a.csv",
+                "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_5 a.csv",
+                "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_6 a.csv",
+                "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_7 a.csv",
+                "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_8 a.csv",
+                "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_9 a.csv",
+                "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_10 a.csv",
+                "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_11 a.csv",
+                "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_12 a.csv",
+                "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_13 a.csv",
+                "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_14 a.csv",
+                "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_15 a.csv"]
 
-df1['id'] = df1['title'] + " (" + df1['year'] + ") " + df1['author']
-df2['id'] = df2['title'] + " (" + df2['year'] + ") " + df2['author']
-df3['id'] = df3['title'] + " (" + df3['year'] + ") " + df3['author']
-df4['id'] = df4['title'] + " (" + df4['year'] + ") " + df4['author']
-df5['id'] = df5['title'] + " (" + df5['year'] + ") " + df5['author']
-df6['id'] = df6['title'] + " (" + df6['year'] + ") " + df6['author']
-df7['id'] = df7['title'] + " (" + df7['year'] + ") " + df7['author']
-df8['id'] = df8['title'] + " (" + df8['year'] + ") " + df8['author']
-df9['id'] = df9['title'] + " (" + df9['year'] + ") " + df9['author']
-df10['id'] = df10['title'] + " (" + df10['year'] + ") " + df10['author']
-df11['id'] = df11['title'] + " (" + df11['year'] + ") " + df11['author']
-df12['id'] = df12['title'] + " (" + df12['year'] + ") " + df12['author']
-df13['id'] = df13['title'] + " (" + df13['year'] + ") " + df13['author']
-df14['id'] = df14['title'] + " (" + df14['year'] + ") " + df14['author']
-df15['id'] = df15['title'] + " (" + df15['year'] + ") " + df15['author']
-
-df1 = df1.set_index('id')
-df2 = df2.set_index('id')
-df3 = df3.set_index('id')
-df4 = df4.set_index('id')
-df5 = df5.set_index('id')
-df6 = df6.set_index('id')
-df7 = df7.set_index('id')
-df8 = df8.set_index('id')
-df9 = df9.set_index('id')
-df10 = df10.set_index('id')
-df11 = df11.set_index('id')
-df12 = df12.set_index('id')
-df13 = df13.set_index('id')
-df14 = df14.set_index('id')
-df15 = df15.set_index('id')
-
-#-------------------------------------------
-# Selecting columns
 column_order = ['1 soft hard',
                 '2 light heavy',
                 '3 time',
@@ -338,35 +303,31 @@ column_order = ['1 soft hard',
                 '16 social issues',
                 '17 enviromental',]
 
-df1 = df1.reindex(columns=column_order)
-df2 = df2.reindex(columns=column_order)
-df3 = df3.reindex(columns=column_order)
-df4 = df4.reindex(columns=column_order)
-df5 = df5.reindex(columns=column_order)
-df6 = df6.reindex(columns=column_order)
-df7 = df7.reindex(columns=column_order)
-df8 = df8.reindex(columns=column_order)
-df9 = df9.reindex(columns=column_order)
-df10 = df10.reindex(columns=column_order)
-df11 = df11.reindex(columns=column_order)
-df12 = df12.reindex(columns=column_order)
-df13 = df13.reindex(columns=column_order)
-df14 = df14.reindex(columns=column_order)
-df15 = df15.reindex(columns=column_order)
+dfs = [] # List of DataFrames
 
-#-------------------------------------------
-# List of dataframes
-dfs = [df1, df2, df3, df4, df5, df6, df7, df8, df9, df10, df11, df12, df13, df14, df15]
+# Processing the DataFrames for variation in answers
+#for file_name in file_names_s:
+for file_name in file_names:
+    df_file_name = pd.read_csv(file_name, sep=";", encoding="utf-8-sig")
 
-#-----------------------------
-# Stack DataFrames to create a 3D array (rows x columns x runs)
+    df_file_name['year'] = df_file_name['year'].astype('string')
+    df_file_name['id'] = df_file_name['title'] + " (" + df_file_name['year'] + ") " + df_file_name['author']
+    df_file_name = df_file_name.set_index('id')
+
+    df_file_name = df_file_name.reindex(columns=column_order)
+
+    #print(df_file_name.iloc[18,4])
+
+    dfs.append(df_file_name)
+
+ # Create a 3D array (rows x columns x runs)
 data_array = np.stack([df.to_numpy() for df in dfs], axis=-1) # Shape: (rows, columns, runs)
 
 #-------------------------
 # Difference two by two of the answers
 
 # Initialize a dataframe to store the sum of differences
-comparison_sum = pd.DataFrame(0, index=df1.index, columns=df1.columns)
+comparison_sum = pd.DataFrame(0, index=dfs[0].index, columns=dfs[0].columns)
 
 # Count the number of comparisons made (for averaging later)
 num_comparisons = 0
@@ -408,9 +369,9 @@ for i in range(rows):
         percent_agreement[i, j] = (counts[mode_index] / len(dfs)) * 100 # Agreement as a percentage
 
 # Convert modes and percent_agreement back to DataFrames for easier interpretation
-df_modes = pd.DataFrame(modes, columns=df1.columns, index=df1.index)
+df_modes = pd.DataFrame(modes, columns=dfs[0].columns, index=dfs[0].index)
 # Convert to DataFrames
-df_percent_agreement = pd.DataFrame(percent_agreement, index=df1.index, columns=df1.columns)
+df_percent_agreement = pd.DataFrame(percent_agreement, index=dfs[0].index, columns=dfs[0].columns)
 
 # Add column and row of means
 df_percent_agreement['Mean'] = df_percent_agreement.mean(axis=1)
@@ -427,7 +388,7 @@ def shannon_entropy(values):
 entropy_values = np.apply_along_axis(shannon_entropy, 2, data_array)
 
 # Convert to DataFrames
-df_entropy = pd.DataFrame(entropy_values, index=df1.index, columns=df1.columns)
+df_entropy = pd.DataFrame(entropy_values, index=dfs[0].index, columns=dfs[0].columns)
 
 # Add column and row of means
 df_entropy['Mean'] = df_entropy.mean(axis=1)
@@ -452,39 +413,43 @@ gs = figure_c1.add_gridspec(ncols = 1, nrows = 1)
 ax1 = figure_c1.add_subplot(gs[0])
 
 # Bar plot all sample
-ax1.bar(x = df_all['decade'],
-        height = df_all['quantity'], 
-        width = 9, 
-        #bottom = None, 
-        align = 'center', 
-        #data = None,
-        color = "#385AC2",
-        #hatch = '\\',
-        alpha = 1.0,
-        edgecolor = custom_dark_gray,
-        linewidth = 0.0,
-        # #tick_label = 0,
-        label = "Filtered sample")
+bars = ax1.bar(x = df_all['decade'],
+               height = df_all['quantity'],
+               width = 9, 
+               align = 'center',
+               color = "#385AC2",
+               alpha = 1.0,
+               edgecolor = custom_dark_gray,
+               linewidth = 0.0,
+               label = "Filtered sample")
 
 # Bar plot top 200
 ax1.bar(x = df_all_200['decade'],
         height = df_all_200['quantity'], 
         width = 9, 
-        #bottom = None, 
         align = 'center', 
-        #data = None,
-        color = "#AE305D",
-        #hatch = '/',
-        alpha = 1.0,
-        edgecolor = custom_dark_gray,
+        color="none",
+        edgecolor="#AE305D", 
+        hatch="//////",
         linewidth = 0.0,
-        # #tick_label = 0,
         label = "Top sample")
+
+# Add the count labels above each bar
+for bar in bars:
+    height = bar.get_height()
+    plt.text(
+        bar.get_x() + bar.get_width() / 2,
+        height,
+        f'{int(height)}',
+        ha='center',
+        va='bottom',
+        color=custom_dark_gray
+    )
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-ax1.set_ylabel("Quantity", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Sci-fi Books per Decade", fontsize = 14, pad = 5, color = custom_dark_gray)
+#ax1.set_ylabel("Quantity", fontsize = 12, color = custom_dark_gray)
+ax1.set_title("Number of Sci-fi Books per Decade In The Samples", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Legend-------------------------------------------
@@ -496,16 +461,22 @@ ax1.legend(frameon = False,
 ax1.minorticks_on()
 ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
 ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
+ax1.tick_params(which = "both", bottom = True, top = False, left = False, right = False, color = custom_dark_gray)
+ax1.tick_params(labelbottom = True, labeltop = False, labelleft = False, labelright = False, color = custom_dark_gray)
 ax1.tick_params(axis = 'both', colors = custom_dark_gray)
 
 ax1.spines['right'].set_visible(False)
 ax1.spines['top'].set_visible(False)
+ax1.spines['left'].set_visible(False)
 #ax1.spines['right'].set_color(custom_dark_gray)
 #ax1.spines['top'].set_color(custom_dark_gray)
-ax1.spines['left'].set_color(custom_dark_gray)
+#ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
+
+# Get all decades between the minimum and maximum
+all_decades = np.arange(df_all['decade'].min(), df_all['decade'].max() + 10, 10)
+# Set x-ticks to show each decade
+plt.xticks(all_decades, rotation=90)
 
 # Saving image-------------------------------------------
 plt.savefig("./Figures/00 Quantities.png", bbox_inches = 'tight')
@@ -2445,8 +2416,9 @@ ax1 = figure_t3.add_subplot(gs[0])
 # 1 Difference two by two of the answers
 # 2 Percent Agreement / Mode Consistency
 # 3 Shannon Entropy (Diversity Index)
-var_flag = 2
+var_flag = 3
 
+#-----------------------------
 # 1 Difference two by two of the answers
 if var_flag == 1:
     sns.heatmap(df_mean_difference, 
@@ -2455,8 +2427,8 @@ if var_flag == 1:
                 fmt=".2f", 
                 cbar_kws={'label': 'Mean Difference Score'},
                 annot_kws={"size": 8})
-    #annot=True, fmt=".1%", cmap="YlGnBu", cbar_kws={'format': '%.0f%%'}
 
+#-----------------------------
 # 2 Percent Agreement / Mode Consistency
 elif var_flag == 2:
     sns.heatmap(df_percent_agreement, 
@@ -2466,6 +2438,7 @@ elif var_flag == 2:
                 cbar_kws={'label': 'Percent agreement for the main answer'},
                 annot_kws={"size": 8})
 
+#-----------------------------
 # 3 Shannon Entropy (Diversity Index)
 elif var_flag == 3:
     # Define tolerance for near-zero values
@@ -2491,6 +2464,7 @@ elif var_flag == 3:
                 cbar_kws={'label': 'Shannon index'},
                 annot_kws={"size": 8})
 
+#-----------------------------
 # Add thicker lines to separate the last row and column
 """
 ax.get_xlim() returns a tuple with the x-axis limits, like (0.0, 4.0).
@@ -2538,7 +2512,14 @@ for tick in ax1.get_xticklabels():
     tick.set_va('bottom')  # Vertical alignment to ensure no overlap
 
 # Saving image-------------------------------------------
-plt.savefig("./Figures/00 variation.png", bbox_inches = 'tight')
+if var_flag == 1:
+    plt.savefig("./Figures/00 variation difference.png", bbox_inches = 'tight')
+elif var_flag == 2:
+    plt.savefig("./Figures/00 variation mode.png", bbox_inches = 'tight')
+elif var_flag == 3:
+    plt.savefig("./Figures/00 variation entropy.png", bbox_inches = 'tight')
+
+#plt.savefig("./Figures/00 variation.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/00 variation.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
 #plt.savefig("./Figures/00 variation.svg", format = 'svg', transparent = True, bbox_inches = 'tight')

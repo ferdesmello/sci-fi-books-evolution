@@ -25,20 +25,20 @@ print(f"{counter} book(s) have been excluded from sci-fi_books_FILTERED.csv.")
 #----------------------------------------------------------------------------------
 # Cleaning the sci-fi_books_AI_ANSWERS_GENDER.csv file, so it has only sci-fi_books_TOP.csv authors.
 
-column_names = df_AI_gender.columns
-df_gender_cleaned = pd.DataFrame(columns = column_names)
+column_names_gender = df_AI_gender.columns
+df_cleaned_gender = pd.DataFrame(columns = column_names_gender)
 names = set(df_top['author'])
-counter = 0
+counter_gender = 0
 
-for index, row in df_AI_gender.iterrows():
-    if row['author'] in names:
-        df_gender_cleaned = pd.concat([df_gender_cleaned, row.to_frame().T], ignore_index=True)
+for index_gender, row_gender in df_AI_gender.iterrows():
+    if row_gender['author'] in names:
+        df_cleaned_gender = pd.concat([df_cleaned_gender, row_gender.to_frame().T], ignore_index=True)
     else:
-        counter += 1
+        counter_gender += 1
         continue
 
-print(f"{counter} name(s) have been excluded from sci-fi_books_AI_ANSWERS_GENDER.csv.")
+print(f"{counter_gender} name(s) have been excluded from sci-fi_books_AI_ANSWERS_GENDER.csv.")
 
 #----------------------------------------------------------------------------------
 df_cleaned.to_csv('./Data/sci-fi_books_AI_ANSWERS.csv', index=False, sep=';', encoding='utf-8-sig')
-df_gender_cleaned.to_csv('./Data/sci-fi_books_AI_ANSWERS_GENDER.csv', index=False, sep=';', encoding='utf-8-sig')
+df_cleaned_gender.to_csv('./Data/sci-fi_books_AI_ANSWERS_GENDER.csv', index=False, sep=';', encoding='utf-8-sig')

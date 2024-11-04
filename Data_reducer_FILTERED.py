@@ -245,7 +245,8 @@ def delete_books(row):
                      "The Island of Dr. Moreau",
                      "R.U.R.: Rossum's Universal Robots",	
                      "Eternal Light",
-                     "Hard to Be a God"]
+                     "Hard to Be a God",
+                     "Flatland / Sphereland"]
     
     # Authors to be deleted
     authors_to_del = ["Iain M. Banks",
@@ -260,7 +261,8 @@ def delete_books(row):
                       "Douglas Adams",
                       "Josef/Karel Capek",
                       "Paul J. McAuley",
-                      "Arkadi Strugatski"]
+                      "Arkadi Strugatski",
+                      "Edwin A. Abbott"]
 
     # Extract title and author from the row
     title = row['title']
