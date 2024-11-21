@@ -430,7 +430,7 @@ ax1.bar(x = df_all_200['decade'],
         align = 'center', 
         color="none",
         edgecolor="#AE305D", 
-        hatch="//////",
+        hatch="////",
         linewidth = 0.0,
         label = "Top sample")
 
@@ -642,7 +642,7 @@ category_percent_series.plot(kind = 'bar',
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Is the book part of a series?", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("Is the novel part of a series?", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
