@@ -4,7 +4,7 @@
 
 Inspired by this project ([video](https://www.youtube.com/watch?v=nRQ2vMpw-n8), [page](https://pudding.cool/2024/07/scifi/)) about the evolution in the plot of sci-fi movies and series and this [comment](https://www.youtube.com/watch?v=nRQ2vMpw-n8&lc=UgyRg89P8kRYQ2SdXrV4AaABAg) I decided to do a similar analysis but for sci-fi _novels_.
 
-You can read in detail all the process and analysis of results [here](https://fdesmello.wordpress.com/2024/11/21/a-journey-through-170-years-of-sci-fi-novels-a-study-using-data-and-ai/).
+You can read in detail all the process of the data and analysis of the results [here](https://fdesmello.wordpress.com/2024/11/21/a-journey-through-170-years-of-sci-fi-novels-a-study-using-data-and-ai/).
 
 But, in short, I scraped data about thousands of sci-fi books from [Goodreads](https://www.goodreads.com/) lists and shelves, cleaned and reduced the data, selected the top 200 novels per decade (or all the novels if fewer than 200 per decade), and fed that into GPT-4o via the OpenAI API, asking about many plot-related things. Then, I aggregated the results in figures to see how things changed over time.
 
@@ -28,7 +28,7 @@ All data recovered and processed is stored in the **Data** folder.
 
 If this is your first time running everything, you can proceed to the next step. But if you have already run everything to the end and are just adding some books from the scraper, that may change which books are in the top 200 per decade. Some rows from the AI answers' CSV may need to be excluded, and/or new ones may need to be processed. For this, run **Data_fixer.py** _before_ the next step.
 
-### 3. Using the AI
+### 3. Prompting the LLM
 
 **AI_asker_AI_ANSWERS.py** reads the **sci-fi_books_TOP.csv** file (or **sci-fi_books_TEST.csv**) and, for every novel in the file, sends the prompt with the novel's data to OpenAI's API for GPT-4o and receives a text answer, parses it and saves it in the **sci-fi_books_AI_ANSWERS.csv** file.
 
