@@ -1,8 +1,4 @@
 # Ignore
-*.txt
 *.html
 *.env
 *.env.*
-*.docx
-*.gif
-*.png
