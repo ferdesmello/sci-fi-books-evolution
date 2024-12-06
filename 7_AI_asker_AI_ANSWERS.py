@@ -227,7 +227,6 @@ def ask_to_AI(df, output_file):
     # Load existing progress if the file exists
     if os.path.exists(output_file):
         df_processed = pd.read_csv(output_file, sep=';', encoding='utf-8-sig')
-
         processed_books = set(df_processed['url goodreads'])
     else:
         df_processed = pd.DataFrame()
@@ -505,7 +504,7 @@ def ask_to_AI(df, output_file):
 
             # Concatenate the one-row dataframe with the big dataframe with all anterior books/rows
             df_processed = pd.concat([df_processed, df_progress], ignore_index=True)
-            df_processed.to_csv(output_file, index=False, sep=';')
+            df_processed.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig')
             logging.info(f"Progress saved for book: {title}")
 
         except Exception as e:
@@ -515,50 +514,55 @@ def ask_to_AI(df, output_file):
     return df_processed
 
 #----------------------------------------------------------------------------------
-# Main execution
+# Main execution function
+def main():
+    #------------------------------------------
+    # Name of the input file
+    input_file = './Data/sci-fi_books_TEST1.csv'
+    #input_file = './Data/sci-fi_books_TOP.csv'
+    #input_file = './Data/sci-fi_books_TOP_Wiki.csv'
 
-#------------------------------------------
-# Name of the input file
-input_file = './Data/sci-fi_books_TEST2.csv'
-#input_file = './Data/sci-fi_books_TOP.csv'
-#input_file = './Data/sci-fi_books_TOP_Wiki.csv'
+    # Name of the output file
+    #output_file = './Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_15.csv'
+    output_file = './Data/sci-fi_books_AI_ANSWERS_TEST1.csv'
+    #output_file = './Data/sci-fi_books_AI_ANSWERS.csv'
+    #output_file = './Data/sci-fi_books_AI_ANSWERS_w.csv'
 
-# Name of the output file
-#output_file = './Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_15.csv'
-output_file = './Data/sci-fi_books_AI_ANSWERS_TEST2.csv'
-#output_file = './Data/sci-fi_books_AI_ANSWERS.csv'
-#output_file = './Data/sci-fi_books_AI_ANSWERS_w.csv'
+    #------------------------------------------
+    # Load book data to send to the AI
+    df = pd.read_csv(input_file, sep=';', encoding="utf-8-sig")
 
-#------------------------------------------
-# Load book data to send to the AI
-df = pd.read_csv(input_file, sep=';', encoding="utf-8-sig")
+    # Ask the AI about ALL the books
+    df_processed = ask_to_AI(df, output_file)
 
-# Ask the AI about ALL the books
-df_processed = ask_to_AI(df, output_file)
+    # Retyping columns of the processed dataframe
+    df_processed['year'] = df_processed['year'].astype(int)
+    df_processed['decade'] = df_processed['decade'].astype(int)
+    df_processed['rate'] = df_processed['rate'].astype(float)
+    df_processed['ratings'] = df_processed['ratings'].astype(int)
 
-# Retyping columns of the processed dataframe
-df_processed['year'] = df_processed['year'].astype(int)
-df_processed['decade'] = df_processed['decade'].astype(int)
-df_processed['rate'] = df_processed['rate'].astype(float)
-df_processed['ratings'] = df_processed['ratings'].astype(int)
+    #------------------------------------------
+    # Sometimes the AI output is not formatted right
+    # This will exclude wrong rows (a null paragraph or null on some other column just to be sure)
+    # You will need to rerun the program at least once to get all the books/rows but it will keep the progress until then
+    df_processed = df_processed.dropna(axis=0, subset=['paragraph', 'justifying on Earth', '12 protagonist', 'justifying enviromental'], how = 'any', ignore_index=True)
+    df_processed = df_processed.sort_values(by = ['decade', 'year', 'author', 'title'], ascending=True)
 
-#------------------------------------------
-# Sometimes the AI output is not formatted right
-# This will exclude wrong rows (a null paragraph or null on some other column just to be sure)
-# You will need to rerun the program at least once to get all the books/rows but it will keep the progress until then
-df_processed = df_processed.dropna(axis=0, subset=['paragraph', 'justifying on Earth', '12 protagonist', 'justifying enviromental'], how = 'any', ignore_index=True)
-df_processed = df_processed.sort_values(by = ['decade', 'year', 'author', 'title'], ascending=True)
+    #------------------------------------------
+    print('\n',df_processed.info())
+    #print(df_processed.head())
 
-#------------------------------------------
-print('\n',df_processed.info())
-#print(df_processed.head())
+    size_in = df.shape[0] # Number of rows
+    size_out = df_processed.shape[0] # Number of rows
+    missing_books = size_in - size_out # Difference in number of rows
 
-size_in = df.shape[0] # Number of rows
-size_out = df_processed.shape[0] # Number of rows
-missing_books = size_in - size_out # Difference in number of rows
+    print(f"Book(s) missing: {missing_books}. If that number is higher than 0, rerun this program until it is 0 AND there are no more WARNINGS.")
 
-print(f"Book(s) missing: {missing_books}. If that number is higher than 0, rerun this program until it is 0 AND there are no more WARNINGS.")
+    #------------------------------------------
+    df_processed.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig')
+    print(f"Data saved to {output_file}")
 
-#------------------------------------------
-df_processed.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig')
-print(f"Data saved to {output_file}")
+#----------------------------------------------------------------------------------
+# Execution
+if __name__ == "__main__":
+    main()

@@ -1,15 +1,22 @@
 import pandas as pd
 import wikipedia
-import wikipediaapi
 import re
 import requests
 from bs4 import BeautifulSoup
+from tenacity import retry, stop_after_attempt, wait_exponential
+from typing import Dict, Any
+import os
 
 #----------------------------------------------------------------------------------
-def clean_text(text):
+def clean_text(text: str) -> str:
     """
     Clean up the retrieved Wikipedia text by removing references, 
     external links, and other unwanted formatting.
+    Args:
+        text (str): text to be cleaned
+
+    Returns:
+        text (str): cleaned text
     """
     # Remove reference markers like [1], [2], etc.
     text = re.sub(r'\[.*?\]', '', text)
@@ -23,13 +30,31 @@ def clean_text(text):
     return text
 
 #----------------------------------------------------------------------------------
-def get_book_summary(title, author=None):
+@retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=4, max=10))
+def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
+    """
+    Fetch book summary from Wikipedia.
+
+    Args:
+        title (str): Title of the book
+        author (str): Author of the book
+        year (int): Publication year of the book
+
+    Returns:
+        Dict[str, Any]: A dictionary containing:
+        - 'summary': Plot summary text
+        - 'page_title': Wikipedia page title
+        - 'page_url': Wikipedia page URL
+        - 'success': Boolean indicating if summary was found
+        - 'error': Error message if retrieval failed
+    """
+
+    # Book being processed
+    print(f'-- {title} ({year}) {author} --')
+
     try:
         # Construct search query
-        if author:
-            search_query = f'"{title}" {author} (novel)'
-        else:
-            search_query = f'"{title}" (novel)'
+        search_query = f'"{title}" (novel) {author}'
         
         #------------------------------------------
         # Search for pages
@@ -45,7 +70,8 @@ def get_book_summary(title, author=None):
                           'adaptation)', 
                           'franchise)',
                           '(disambiguation)',
-                          '(comics)']
+                          '(comics)',
+                          'miniseries)']
         
         separated_author_name = author.replace(".", ". ").replace(".  ", ". ").lower()
         unwanted_terms.append(separated_author_name)
@@ -55,15 +81,15 @@ def get_book_summary(title, author=None):
         shorter_author_name = first_name + " " + last_name
         unwanted_terms.append(shorter_author_name.lower())
 
-        print("search_query:", search_query)#--------------------------------------
-        print("search_results:", search_results)#--------------------------------------
+        print("Search query:", search_query)
+        print("Search results:", search_results)
                 
         filtered_results = [
             result for result in search_results 
             if not any(term in result.lower() for term in unwanted_terms)
         ]
 
-        print("Filtered results:", filtered_results)#--------------------------------------
+        print("Filtered results:", filtered_results)
 
         #------------------------------------------
         # Choose the right result
@@ -82,7 +108,18 @@ def get_book_summary(title, author=None):
             else:
                 chosen_result = filtered_results[0]  # Otherwise, get the first result
 
-        if chosen_result.split()[0].lower() != title.split()[0].lower():
+        #------------------------------------------
+        # Simple test to check if the chosen result at least starts with the same word as the novel's title
+        
+        # Exception for 1984 by George Orwell (1949)
+        if title == "1984":
+            title = "Nineteen Eighty-Four"
+        
+        first_word_of_the_result = chosen_result.split()[0].lower().replace(":", "")
+        first_word_of_the_title = title.split()[0].lower().replace(":", "")
+        print(f'Is "{first_word_of_the_result}" == "{first_word_of_the_title}"?')
+        
+        if first_word_of_the_result != first_word_of_the_title:
             chosen_result = None
 
         if not chosen_result:
@@ -93,9 +130,8 @@ def get_book_summary(title, author=None):
                 'success': False,
                 'error': "No suitable articles found."
             }
-        print(chosen_result.split()[0].lower())
-        print(title.split()[0].lower())
-        print("chosen_result:", chosen_result)#--------------------------------------
+                
+        print("Chosen result:", chosen_result)
 
         #------------------------------------------
         # Try to get the information
@@ -135,7 +171,7 @@ def get_book_summary(title, author=None):
                     plot_heading = heading
                     break
 
-            print("plot_heading:", plot_heading)#--------------------------------------
+            print("Plot heading:", plot_heading)
             
             if not plot_heading:
                 return {
@@ -198,56 +234,152 @@ def get_book_summary(title, author=None):
         }
 
 #----------------------------------------------------------------------------------
-# Read the CSV file
-#df = pd.read_csv('./Data/sci-fi_books_TEST.csv', sep = ';', encoding="utf-8-sig")
-df = pd.read_csv('./Data/sci-fi_books_TOP.csv', sep = ';', encoding="utf-8-sig")
-print(df.info())
+# Main execution function
+def main():
+    #------------------------------------------
+    # Read the CSV files
+    input_file = './Data/sci-fi_books_TOP.csv'
+    input_file_TEST = './Data/sci-fi_books_TEST.csv'
+    output_file = './Data/sci-fi_books_TOP_Wiki.csv'
+    output_file_TEST = './Data/sci-fi_books_TEST_Wiki.csv'
 
-list_plots = []
-list_urls = []
+    df_TOP = pd.read_csv(input_file, sep = ';', encoding="utf-8-sig")
+    df_TEST = pd.read_csv(input_file_TEST, sep = ';', encoding="utf-8-sig")
 
-# Add a new column for the plot text
-for _, book in df.iterrows():
-    # Extract book details
-    title = book['title']
-    author = book['author']
+    df_TOP = df_TOP.rename(columns={"url": "url goodreads"})
+    df_TOP['plot'] = ""
+    df_TOP['url wikipedia'] = ""
 
-    returned_dict = get_book_summary(title, author)
-    returned_title = returned_dict.get('page_title')
-    returned_url = returned_dict.get('page_url')
-    returned_text = returned_dict.get('summary')
+    print(df_TOP.info())
+
+    #----------------------------------------
+    # Load existing progress if the file exists
+    if os.path.exists(output_file):
+        df_processed = pd.read_csv(output_file, sep=';', encoding='utf-8-sig')
+        processed_books = set(df_processed['url goodreads'])
+    else:
+        df_processed = pd.DataFrame()
+        processed_books = set()
+
+    #------------------------------------------
+    counter = 0
+
+    # Add a new column for the plot text
+    for _, book in df_TOP.iterrows():
+
+        # Skip already processed books
+        if book['url goodreads'] in processed_books:
+            continue
+
+        # Extract book details
+        title = book['title']
+        author = book['author']
+        year = int(book['year'])
+        decade = int(book['decade'])
+        rate = float(book['rate'])
+        ratings = int(book['ratings'])
+        series = book['series']
+        genres = book['genres']
+        synopsis = book['synopsis']
+        review = book['review']
+        url_g = book['url goodreads']
+
+        # Querying Wikipedia
+        returned_dict = get_book_summary(title, author, year)
+        returned_title = returned_dict.get('page_title')
+        returned_text = returned_dict.get('summary')
+        returned_url = returned_dict.get('page_url')
+        
+        #print(title, author)
+        print("Returned title:", returned_title)
+        print("Returned url:", returned_url)
+        #print(returned_text)
+        print()
+
+        #----------------------------------------
+        # One-row dataframe to save the progress in the present book/row
+        df_progress = pd.DataFrame({
+            'title': [title],
+            'author': [author],
+            'year': [year],
+            'decade': [decade],
+            'rate': [rate],
+            'ratings': [ratings],
+            'series': [series],
+            'genres': [genres],
+            'synopsis': [synopsis],
+            'review': [review],
+            'url goodreads': [url_g],
+            'plot': [returned_text],
+            'url wikipedia': [returned_url]
+        })
+        
+        # Concatenate the one-row dataframe with the big dataframe with all anterior books/rows
+        df_processed = pd.concat([df_processed, df_progress], ignore_index=True)
+        df_processed.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig')
+
+        counter += 1
     
-    #print(title, author)
-    print(returned_title)
-    print(returned_url)
-    #print(returned_text)
-    print()
-    list_plots.append(returned_text)
-    list_urls.append(returned_url)
+    print(f"Added {counter} book plots to the file.")
 
-df["plot"] = list_plots
-df["url wikipedia"] = list_urls
+    #----------------------------------------------------------------------------------
+    #df_TOP = df_TOP.rename(columns={"url": "url goodreads"})
+    df_TEST = df_TEST.rename(columns={"url": "url goodreads"})
+
+    # Include two columns in sci-fi_books_TEST.csv
+    df_TEST_merged = pd.merge(df_TEST, df_processed, 
+                              how='left', 
+                              on='url goodreads', 
+                              suffixes=('_test', '_processed'))
+    
+    #------------------------------------------
+    # Order of the columns
+    column_order = ['title', 
+                    'author', 
+                    'year',
+                    'decade', 
+                    'rate', 
+                    'ratings', 
+                    'series', 
+                    'genres', 
+                    'synopsis',
+                    'review',
+                    'url goodreads',
+                    'plot',
+                    'url wikipedia']
+
+    # Select and rename columns
+    df_TEST_merged = df_TEST_merged[['title_test',
+                                     'author_test',
+                                     'year_test',
+                                     'decade_test',
+                                     'rate_test',
+                                     'ratings_test',
+                                     'series_test',
+                                     'genres_test',
+                                     'synopsis_test',
+                                     'review_test',
+                                     'url goodreads',
+                                     'plot',
+                                     'url wikipedia']]
+    df_TEST_merged.columns = column_order
+
+    # Reorder columns
+    df_processed = df_processed.reindex(columns=column_order)
+    df_processed = df_processed.sort_values(by=['year', 'author', 'title'], ascending=True)
+
+    df_TEST_merged = df_TEST_merged.reindex(columns=column_order)
+    df_TEST_merged = df_TEST_merged.sort_values(by=['year', 'author', 'title'], ascending=True)
+
+    #------------------------------------------
+    # Save the CSV file
+    df_processed.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig')
+    df_TEST_merged.to_csv(output_file_TEST, index=False, sep=';', encoding='utf-8-sig')
+
+    print(f"Data saved to {output_file}")
+    print(f"Data saved to {output_file_TEST}")
 
 #----------------------------------------------------------------------------------
-df = df.rename(columns={"url": "url goodreads"})
-
-# Reordering columns
-column_order = ['title', 
-                'author', 
-                'year',
-                'decade', 
-                'rate', 
-                'ratings', 
-                'series', 
-                'genres', 
-                'synopsis',
-                'review',
-                'url goodreads',
-                'plot',
-                'url wikipedia']
-
-df = df.reindex(columns=column_order)
-df = df.sort_values(by=['year', 'author', 'title'], ascending=True)
-
-#df.to_csv('./Data/sci-fi_books_TEST_Wiki.csv', index=False, sep=';', encoding='utf-8-sig')
-df.to_csv('./Data/sci-fi_books_TOP_Wiki.csv', index=False, sep=';', encoding='utf-8-sig')
+# Execution
+if __name__ == "__main__":
+    main()
