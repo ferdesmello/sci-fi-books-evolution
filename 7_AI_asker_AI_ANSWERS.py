@@ -21,8 +21,11 @@ client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
     wait=wait_exponential(multiplier=1, min=4, max=60), # Exponential backoff: starts at 4 seconds, max 60 seconds
     stop=stop_after_attempt(10) # Stop after 10 attempts
 )
-def analyze_book(title, author, year, synopsis, review, plot, genres): # Function to analyse every book
-    # Create the prompt with the gathered data
+def analyze_book(title, author, year, synopsis, review, plot, genres): 
+    """
+    Function to analyse every book
+    Create the prompt with the gathered data
+    """
     prompt = f"""
     Carefully consider the plot of the book "{title}" by {author}, published in {year}, focusing on key elements that will help answer the following questions. 
     

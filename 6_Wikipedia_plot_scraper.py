@@ -76,8 +76,17 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
         separated_author_name = author.replace(".", ". ").replace(".  ", ". ").lower()
         unwanted_terms.append(separated_author_name)
 
+        separated_author_name = author.replace("Jr.", "").replace(".", ". ").replace(".  ", ". ").lower()
+        unwanted_terms.append(separated_author_name)
+
         first_name = author.split()[0]
         last_name = author.split()[-1]
+        shorter_author_name = first_name + " " + last_name
+        unwanted_terms.append(shorter_author_name.lower())
+
+        author_name_without = author.replace("Jr.", "")
+        first_name = author_name_without.split()[0]
+        last_name = author_name_without.split()[-1]
         shorter_author_name = first_name + " " + last_name
         unwanted_terms.append(shorter_author_name.lower())
 
@@ -127,6 +136,7 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
                 'summary': None,
                 'page_title': None,
                 'page_url': None,
+                'counter_plot': 0,
                 'success': False,
                 'error': "No suitable articles found."
             }
@@ -146,17 +156,33 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
             soup = BeautifulSoup(html_content, 'html.parser')
             
             #------------------------------------------
-            plot_headers = ['plot',
-                            'the plot',
-                            'plot summary', 
-                            'synopsis', 
-                            'summary', 
-                            'book plot', 
-                            'story', 
-                            'storyline', 
-                            'narrative',
-                            'species of humans',
-                            'outline']
+            list_plot_headers = ['plot',
+                                 'the plot',
+                                 'plot summary',
+                                 'plot synopsis',
+                                 'plot introduction',
+                                 'plot outline',
+                                 'plot and storyline',
+                                 'synopsis',
+                                 'summary',
+                                 'book plot',
+                                 'setting and plot',
+                                 'setting and synopsis'
+                                 'story and significance',
+                                 'story overview',
+                                 'premise and plot',
+                                 'narrative',
+                                 'storyline',
+                                 'story',
+                                 'outline',
+                                 'content',
+                                 'overview',
+                                 'premise',
+                                 'introduction',
+                                 'description',
+                                 'fictional premise',
+                                 'characters and story',
+                                 'species of humans',]
         
             page_title = page.title
             page_url = page.url
@@ -164,11 +190,14 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
             # Find all section headings
             section_headings = soup.find_all(['h2'])
 
-            # Locate the correct section
+            # Locate the correct section, checking top-priority headers first
             plot_heading = None
             for heading in section_headings:
-                if heading.get_text(strip=True).lower() in plot_headers:
-                    plot_heading = heading
+                for header in list_plot_headers:  # Original order
+                    if heading.get_text(strip=True).lower() == header:
+                        plot_heading = heading
+                        break
+                if plot_heading:  # Exit outer loop once a match is found
                     break
 
             print("Plot heading:", plot_heading)
@@ -178,6 +207,7 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
                     'summary': None,
                     'page_title': page_title,
                     'page_url': page_url,
+                    'counter_plot': 0,
                     'success': False,
                     'error': "Plot section not found."
                 }
@@ -198,17 +228,29 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
 
             #------------------------------------------
             if plot_paragraphs:
-                return {
-                    'summary': plot_text,
-                    'page_title': page_title,
-                    'page_url': page_url,
-                    'success': True
-                }
+                if len(plot_text) > 20000: # Some plot summaries are unnecessarily long
+                    return {
+                        'summary': None,
+                        'page_title': page_title,
+                        'page_url': page_url,
+                        'counter_plot': 0,
+                        'success': False,
+                        'error': "Plot section is too long."
+                    }
+                else:
+                    return {
+                        'summary': plot_text,
+                        'page_title': page_title,
+                        'page_url': page_url,
+                        'counter_plot': 1,
+                        'success': True
+                    }
             else:
                 return {
                     'summary': None,
                     'page_title': page_title,
                     'page_url': page_url,
+                    'counter_plot': 0,
                     'success': False,
                     'error': "No content found in Plot section."
                 }
@@ -219,6 +261,7 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
                 'summary': None,
                 'page_title': None,
                 'page_url': None,
+                'counter_plot': 0,
                 'success': False,
                 'error': str(e)
             }
@@ -229,13 +272,16 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
             'summary': None,
             'page_title': None,
             'page_url': None,
+            'counter_plot': 0,
             'success': False,
             'error': str(e)
         }
 
 #----------------------------------------------------------------------------------
-# Main execution function
 def main():
+    """
+    Main execution function
+    """
     #------------------------------------------
     # Read the CSV files
     input_file = './Data/sci-fi_books_TOP.csv'
@@ -262,7 +308,8 @@ def main():
         processed_books = set()
 
     #------------------------------------------
-    counter = 0
+    counter_books = 0
+    counter_plots = 0
 
     # Add a new column for the plot text
     for _, book in df_TOP.iterrows():
@@ -286,6 +333,7 @@ def main():
 
         # Querying Wikipedia
         returned_dict = get_book_summary(title, author, year)
+        counter_plot = returned_dict.get('counter_plot')
         returned_title = returned_dict.get('page_title')
         returned_text = returned_dict.get('summary')
         returned_url = returned_dict.get('page_url')
@@ -318,9 +366,10 @@ def main():
         df_processed = pd.concat([df_processed, df_progress], ignore_index=True)
         df_processed.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig')
 
-        counter += 1
+        counter_books += 1
+        counter_plots = counter_plots + counter_plot
     
-    print(f"Added {counter} book plots to the file.")
+    print(f"Analyzed {counter_books} books and added {counter_plots} plots to the file.")
 
     #----------------------------------------------------------------------------------
     #df_TOP = df_TOP.rename(columns={"url": "url goodreads"})

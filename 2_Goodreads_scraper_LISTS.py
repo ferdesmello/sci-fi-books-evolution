@@ -17,22 +17,54 @@ import re
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 #----------------------------------------------------------------------------------
-# Function to load data from the JSON file
+
 def load_progress():
+    """
+    Load scraping progress data from a JSON file.
+
+    Returns:
+        Dict[str, Dict[str, Any]]: A dictionary containing progress data.
+        If the file exists, returns its contents. 
+        If the file doesn't exist, returns a default dictionary with an empty 'urls' key.
+        
+    Example:
+        Returns: {'urls': {}} or {'urls': {'http://example.com': {...}}}
+    """
+
     if os.path.exists('./Data/scraping_progress.json'):
         with open('./Data/scraping_progress.json', 'r') as f:
             return json.load(f)
     return {'urls': {}}
 
 #----------------------------------------------------------------------------------
-# Function to dump data in the JSON file
 def save_progress(progress):
+    """
+    Save scraping progress data to a JSON file.
+
+    Args:
+        progress (Dict[str, Dict[str, Any]]): The progress dictionary to be saved.
+        Typically contains information about scraped URLs and their status.
+
+    Note:
+        Overwrites the existing file at './Data/scraping_progress.json'.
+    """
+
     with open('./Data/scraping_progress.json', 'w') as f:
         json.dump(progress, f)
 
 #----------------------------------------------------------------------------------
-# Function to make session as a browser
 def get_session():
+    """
+    Create a configured requests Session with retry mechanisms and custom headers.
+
+    Returns:
+        requests.Session: A session object configured with:
+        - Retry mechanism for specific HTTP status codes
+        - 10 total retries with an exponential backoff
+        - Custom User-Agent header
+        - HTTPS connection adapter with retry support
+    """
+
     session = requests.Session()
     retries = Retry(total=10, backoff_factor=0.2, status_forcelist=[413, 429, 500, 502, 503, 504])
     session.mount('https://', HTTPAdapter(max_retries=retries))
@@ -42,9 +74,10 @@ def get_session():
     return session
 
 #----------------------------------------------------------------------------------
-# Function to retry scraping
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
 def make_request(session, url, timeout=30):
+    """Function to retry scraping"""
+
     try:
         response = session.get(url, timeout=timeout)
         response.raise_for_status()
@@ -57,8 +90,22 @@ def make_request(session, url, timeout=30):
         raise
 
 #----------------------------------------------------------------------------------
-# Function to scrape data from the lists
-def scrape_shelf(session, url, page):
+def scrape_list(session, url, page):
+    """
+    Scrapes data from a Goodreads list page.
+
+    Args:
+        session (requests.Session)
+        url (str): address for the list on Goodreads
+        page (int): number of the present page at the list
+
+    Returns:
+        books (List[str]): list of dictionaries of book data containing:
+        - 'title': book title
+        - 'author': book author
+        - 'url': book page address on Goodreads
+    """
+
     full_url = f"{url}?page={page}"
     response = make_request(session, full_url)
     soup = BeautifulSoup(response.content, 'html.parser')
@@ -93,8 +140,26 @@ def scrape_shelf(session, url, page):
     return books
 
 #----------------------------------------------------------------------------------
-# Function to scrape data from book pages
 def scrape_book_page(session, url):
+    """
+    Scrapes data from a Goodreads book page.
+
+    Args:
+        session (requests.Session)
+        url (str): address for the book page on Goodreads
+
+    Returns:
+        book_data (Dict[str, float, int]): A dictionary containing:
+        - 'series': simple data whether the book is part of a series
+        - 'pages': number of pages of that edition
+        - 'year': first year published
+        - 'rate': average rate
+        - 'ratings': number of ratings
+        - 'genres': listed genres
+        - 'synopsis': synopses text
+        - 'review': longer review of the first three
+    """
+
     try:
         response = session.get(url, timeout=10)
         response.raise_for_status()
@@ -154,19 +219,22 @@ def scrape_book_page(session, url):
         # Find all review sections
         review_sections = soup.find_all('section', class_='ReviewText')
 
-        # Extract first and second reviews if they exist
+        """We use if len(review_sections) > n to check if the list 
+        has at least n+1 elements before accessing the nth index. 
+        This ensures we don't try to access an index that doesn't exist."""
+        # Extract the first review, if it exists
         review_1 = review_sections[0].find('span', class_='Formatted').text.strip() if len(review_sections) > 0 else "No review available"
+        # Extract the second review, if it exists
         review_2 = review_sections[1].find('span', class_='Formatted').text.strip() if len(review_sections) > 1 else "No review available"
-
-        # Get the longer review
-        if len(review_2) > len(review_1):
-            review = review_2
-        else:
-            review = review_1
+        # Extract the third review, if it exists
+        review_3 = review_sections[2].find('span', class_='Formatted').text.strip() if len(review_sections) > 2 else "No review available"
+        # Get the longest review
+        review = max([review_1, review_2, review_3], key=len)
 
         # Display the extracted reviews
         #print(f"\nFirst review: {review_1}")
         #print(f"\nSecond review: {review_2}")
+        #print(f"\nThird review: {review_3}")
         #print(f"\nChosen review: {review}")
 
         #-----------------------------------------
@@ -192,8 +260,18 @@ def scrape_book_page(session, url):
         return None
 
 #----------------------------------------------------------------------------------
-# Main scraping function
-def scrape_goodreads_lists(urls, max_pages=30):
+def scrape_goodreads_lists(urls, max_pages=50):
+    """
+    Main scraping function that calls the other scraping functions.
+
+    Args:
+        urls (List): list of URL Goodreads lists to use
+        max_pages (int): maximun number os pages to use per Goodreads list
+
+    Returns:
+        all_books (List): list of dictionaries with book data
+    """
+
     progress = load_progress()
     session = get_session()
     all_books = []
@@ -205,7 +283,7 @@ def scrape_goodreads_lists(urls, max_pages=30):
         for page in range(last_page + 1, max_pages + 1):
             logging.info(f"Scraping:\n{url} - page {page}")
             try:
-                page_books = scrape_shelf(session, url, page)
+                page_books = scrape_list(session, url, page)
                 
                 if not page_books:
                     logging.info(f"No more books found on:\n{url} - page {page}\nMoving to next URL.----------------")
@@ -235,8 +313,8 @@ def scrape_goodreads_lists(urls, max_pages=30):
     return all_books
 
 #----------------------------------------------------------------------------------
-# Main execution function
 def main():
+    """Main execution function"""
 
     # Webpages to start the scraping
     urls = ["https://www.goodreads.com/list/show/43374.Classic_Science_Fiction_1930_1939",
@@ -272,12 +350,13 @@ def main():
             "https://www.goodreads.com/list/show/7239.Best_Utopian_Dystopian_Fiction",
             "https://www.goodreads.com/list/show/25823",
             "https://www.goodreads.com/list/show/154763.The_Amazing_Colossal_Science_Fiction_Ketchup_Pre_1900s",
+            "https://www.goodreads.com/list/show/101755.Radium_Age_Sci_Fi",
             "https://www.goodreads.com/list/show/113093.Golden_Age_and_New_Wave_Science_Fiction_novels"]
 
-    books = scrape_goodreads_lists(urls, max_pages=30)
+    all_books = scrape_goodreads_lists(urls, max_pages=50)
 
     # Create DataFrame with specified column order
-    df = pd.DataFrame(books)
+    df = pd.DataFrame(all_books)
 
     column_order = ['title', 
                     'author', 
@@ -294,7 +373,7 @@ def main():
     
     df.to_csv('./Data/sci-fi_books_PARTIAL_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
     
-    logging.info(f"Scraped {len(books)} books. Data saved to ./Data/sci-fi_books_PARTIAL_LISTS.csv")
+    logging.info(f"Scraped {len(all_books)} books. Data saved to ./Data/sci-fi_books_PARTIAL_LISTS.csv")
 
     #----------------------------------------------------------------------------------
     # Reading the complete json file and saving it as a CSV file
@@ -317,7 +396,8 @@ def main():
     df_books = pd.json_normalize(books_data)
     
     # Inspect the DataFrame structure
-    print("\n",df_books.head()) # View the first few rows to understand the layout
+    print("\n",df_books.head())
+    print(df_books.info())
     
     #--------------------------------------------
     # Chose the right columns and their order

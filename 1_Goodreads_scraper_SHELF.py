@@ -14,8 +14,18 @@ import re
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 #----------------------------------------------------------------------------------
-# Function to make session as a browser
 def get_session():
+    """
+    Create a configured requests Session with retry mechanisms and custom headers.
+
+    Returns:
+        requests.Session: A session object configured with:
+        - Retry mechanism for specific HTTP status codes
+        - 10 total retries with an exponential backoff
+        - Custom User-Agent header
+        - HTTPS connection adapter with retry support
+    """
+
     session = requests.Session()
     retries = Retry(total=10, backoff_factor=0.2, status_forcelist=[413, 429, 500, 502, 503, 504])
     session.mount('https://', HTTPAdapter(max_retries=retries))
@@ -25,8 +35,20 @@ def get_session():
     return session
 
 #----------------------------------------------------------------------------------
-# Function to scrape data from the local shelf HTML files
 def scrape_shelf_from_html(file_path):
+    """
+    Scrapes data using the local HTML file of a Goodreads shelf page.
+
+    Args:
+        file_path (str): path to file
+
+    Returns:
+        books (List[str]): list of dictionaries of book data containing:
+        - 'title': book title
+        - 'author': book author
+        - 'url': book page address on Goodreads
+    """
+
     books = []
     with open(file_path, 'r', encoding='utf-8-sig') as file:
         content = file.read()
@@ -61,8 +83,26 @@ def scrape_shelf_from_html(file_path):
     return books
 
 #----------------------------------------------------------------------------------
-# Function to scrape data from book pages
 def scrape_book_page(session, url):
+    """
+    Scrapes data from a Goodreads book page.
+
+    Args:
+        session (requests.Session)
+        url (str): address for book page on Goodreads
+
+    Returns:
+        book_data (Dict[str, float, int]): A dictionary containing:
+        - 'series': simple data whether the book is part of a series
+        - 'pages': number of pages of that edition
+        - 'year': first year published
+        - 'rate': average rate
+        - 'ratings': number of ratings
+        - 'genres': listed genres
+        - 'synopsis': synopses text
+        - 'review': longer review of the first three
+    """
+
     try:
         response = session.get(url, timeout=10)
         response.raise_for_status()
@@ -122,19 +162,22 @@ def scrape_book_page(session, url):
         # Find all review sections
         review_sections = soup.find_all('section', class_='ReviewText')
 
-        # Extract first and second reviews if they exist
+        """We use if len(review_sections) > n to check if the list 
+        has at least n+1 elements before accessing the nth index. 
+        This ensures we don't try to access an index that doesn't exist."""
+        # Extract the first review, if it exists
         review_1 = review_sections[0].find('span', class_='Formatted').text.strip() if len(review_sections) > 0 else "No review available"
+        # Extract the second review, if it exists
         review_2 = review_sections[1].find('span', class_='Formatted').text.strip() if len(review_sections) > 1 else "No review available"
-
-        # Get the longer review
-        if len(review_2) > len(review_1):
-            review = review_2
-        else:
-            review = review_1
+        # Extract the third review, if it exists
+        review_3 = review_sections[2].find('span', class_='Formatted').text.strip() if len(review_sections) > 2 else "No review available"
+        # Get the longest review
+        review = max([review_1, review_2, review_3], key=len)
 
         # Display the extracted reviews
         #print(f"\nFirst review: {review_1}")
         #print(f"\nSecond review: {review_2}")
+        #print(f"\nThird review: {review_3}")
         #print(f"\nChosen review: {review}")
 
         #-----------------------------------------
@@ -160,8 +203,17 @@ def scrape_book_page(session, url):
         return None
 
 #----------------------------------------------------------------------------------
-# Main scraping function
 def scrape_goodreads_books_from_files(folder_path):
+    """
+    Main scraping function that calls the other scraping functions.
+
+    Args:
+        folder_path (str): path to the folder of HTMLs
+
+    Returns:
+        all_books (List[Dict[...]]): list of dictionaries with book data
+    """
+
     session = get_session()
     all_books = []
 
@@ -186,11 +238,14 @@ def scrape_goodreads_books_from_files(folder_path):
     return all_books
 
 #----------------------------------------------------------------------------------
-# Main execution function
 def main():
+    """
+    Main execution function.
+    """
+
     folder_path = './Saved_pages'
-    books = scrape_goodreads_books_from_files(folder_path)
-    df = pd.DataFrame(books)
+    all_books = scrape_goodreads_books_from_files(folder_path)
+    df = pd.DataFrame(all_books)
 
     #--------------------------------------------
     # Chose the right columns and their order
@@ -208,11 +263,15 @@ def main():
     
     df = df.reindex(columns=column_order)
 
+    # Inspect the DataFrame structure
+    print("\n",df.head())
+    print(df.info())
+
     #--------------------------------------------
     # Save the final DataFrame to a CSV file
     df.to_csv('./Data/sci-fi_books_SHELF.csv', index=False, sep=';', encoding='utf-8-sig')
 
-    logging.info(f"Scraped {len(books)} books.\nData saved to ./Data/sci-fi_books_SHELF.csv")
+    logging.info(f"Scraped {len(all_books)} books.\nData saved to ./Data/sci-fi_books_SHELF.csv")
 
 #----------------------------------------------------------------------------------
 # Execution
