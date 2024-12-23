@@ -1,3 +1,16 @@
+"""
+This script uses GPT-4o, via the OPNEAI API, to answer questions about the gender 
+of the authors of the books scraped before, parses the answers and saves it.
+
+Modules:
+    - os
+    - pandas
+    - openai
+    - dotenv
+"""
+
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 import os
 import pandas as pd
 from openai import OpenAI
@@ -9,8 +22,16 @@ load_dotenv(dotenv_path='../KEYs/My_OPENAI_API_Key.env')
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 #----------------------------------------------------------------------------------
-def analyze_author(author):
-    """Function to query the AI about author gender"""
+def analyze_author(author: str) -> str:
+    """
+    Prompts GPT-4o to analyse the author gender of each book.
+
+    Args:
+        author (str): Book author.
+
+    Returns:
+        answer (str): GPT-4o processed gender answer.
+    """
 
     # Create the prompt with the gathered data
     prompt = f"""
@@ -44,7 +65,10 @@ def analyze_author(author):
 
 #----------------------------------------------------------------------------------
 def main():
-    """Main execution function"""
+    """
+    Main execution function for the script.
+    Calls the AI asker function, orders the data, and saves it in a CSV file.
+    """
     
     # Name of the input file
     input_file = './Data/sci-fi_books_TOP.csv'

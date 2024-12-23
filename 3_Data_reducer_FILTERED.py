@@ -1,10 +1,26 @@
+"""
+This script reads the data scraped from the Goodreads website and parses 
+it (transform, reduce) to be used in the next phase.
+
+Modules:
+    - pandas
+    - datetime
+    - re
+    - typing
+"""
+
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 import pandas as pd
 import datetime
 import re
+from typing import Union
 
 #----------------------------------------------------------------------------------
-# Main execution function
 def main():
+    """
+    Big main function with all the reduction, cleaning, and transformation of the data.
+    """
 
     df_shelf = pd.read_csv('./Data/sci-fi_books_SHELF.csv', sep = ';', encoding='utf-8-sig')
     df_lists = pd.read_csv('./Data/sci-fi_books_LISTS.csv', sep = ';', encoding='utf-8-sig')
@@ -13,7 +29,6 @@ def main():
     df = pd.concat(frames, ignore_index=True)
     df.to_csv('./Data/sci-fi_books_BRUTE.csv', index=False, sep=';', encoding='utf-8-sig')
 
-    #df = df_shelf
     print("\nBRUTE Dataframe")
     print(df.info())
 
@@ -22,14 +37,34 @@ def main():
 
     # Cleaning null synopsis and review fields
     #-------------------------------------------
-    def clean_synopsis(row):
+    def clean_synopsis(row: Union[str, None]) -> str:
+        """
+        Replaces NaN values in synopses with a default message.
+
+        Args:
+            row (str or None): The synopsis text to analyze.
+
+        Returns:
+            (str): Either the original synopsis or a default message if NaN.
+        """
+
         if pd.isna(row):
             return "No synopsis available"
         else:
             return row
-        
+    
     #-------------------------------------------
-    def clean_review(row):
+    def clean_review(row: Union[str, None]) -> str:
+        """
+        Replaces NaN values in reviews with a default message.
+
+        Args:
+            row (str or None): The review text to analyze.
+
+        Returns:
+            str: Either the original review or a default message if NaN.
+        """
+
         if pd.isna(row):
             return "No review available"
         else:
@@ -51,7 +86,7 @@ def main():
     df = df[synopsis_mask | review_mask]
 
     #-----------------------------------------
-    # Dropping books without publishing year
+    # Drop books without publishing year
     df = df.dropna(axis=0, subset=['year'])
 
     # Exclude books resulted of "time travel" (just use books with year until the current year)
@@ -97,24 +132,33 @@ def main():
     # Deleting parentheses from titles
     # (must be done after excluding series together in a volume, as some info is in the parentheses)
 
-    # Deletes open and closed parentheses
+    # Delete open and closed parentheses
     df.loc[:, "title"] = df["title"].str.replace(r' \(.*\)', '', regex=True)
 
-    # Deletes special case of digit error with only open parenthesis
+    # Delete special case of digit error with only open parenthesis
     df.loc[:, "title"] = df["title"].str.replace(r' \(.*', '', regex=True)
 
-    # Including series value in the case of square brackes in title (2 cases)
+    # Including series value in the case of brackes in title (2 cases)
     #-------------------------------------------
-    def update_series(row):
+    def update_series(row: pd.DataFrame) -> Union[str, None]:
+        """
+        Adds the text inside of the field reserved to specify a series to a new column of data.
+
+        Args:
+            row (pandas.DataFrame): A single row of the DataFrame containing book-related information.
+
+        Returns:
+            (str or None): The determined string of data or None if not applicable.
+        """
+
         # Check for existing content
         existing_value = row['series']
         
-        # Search for the pattern and capture only the content inside the square brackets
-        match = re.search(r'\[(.*?)\]', row['title']) # Captures content inside square brackets
+        # Search for the pattern and capture only the content inside the brackets
+        match = re.search(r'\[(.*?)\]', row['title']) # Captures content inside brackets
         
-        # Update only if a match is found and existing_value is None (or any placeholder you use)
+        # Update only if a match is found and existing_value is None
         if match and pd.isna(existing_value):
-            #print(match.group(1))
             return match.group(1) # Return only the content inside the brackets
         else:
             return existing_value # Keep the existing value unchanged
@@ -123,7 +167,7 @@ def main():
     # Apply the function to update the 'bracket_content' column
     df['series'] = df.apply(update_series, axis=1)
 
-    # Deletes special case of square brackets
+    # Deletes special case of brackets
     df.loc[:, "title"] = df["title"].str.replace(r' \[.*', '', regex=True)
 
     #----------------------------------------------------------------------------------
@@ -131,13 +175,25 @@ def main():
     # Some collections have just "/" separating titles, but some titles use "/" right and I want to keep those
     # (must be done after excluding parentheses, as some series have " / " in the parentheses)
 
-    def filter_bar(title):
+    def filter_bar(title: str) -> bool:
+        """
+        Excludes colections of books.
+        Checks if the book title is in a desired format and returns True for that 
+        or False if it is in an undesired format.
+
+        Args:
+            title (str): A single string, the book title.
+
+        Returns:
+            (bool): The determined desirability of the title format.
+        """
+
         # Exceptions for exclusion (some books use "/" properly)
         # Use a set for faster lookups
         exceptions = {"11/22/63", 
-                    "The After/Life",
-                    "The Mighty Thor, Vol. 3: The Asgard/Shi'ar War",
-                    "The 7 1/2 Deaths of Evelyn Hardcastle"} 
+                      "The After/Life",
+                      "The Mighty Thor, Vol. 3: The Asgard/Shi'ar War",
+                      "The 7 1/2 Deaths of Evelyn Hardcastle"} 
 
         # Normalize title by stripping extra spaces
         title = title.strip()
@@ -160,6 +216,7 @@ def main():
         # Include titles without slashes
         return True
 
+    #-------------------------------------------
     # Apply the filter to exclude undesired titles
     mask = df['title'].apply(filter_bar)
     df = df[mask]
@@ -180,8 +237,17 @@ def main():
     #----------------------------------------------------------------------------------
     # Fixing the many spaces in some author names
 
-    # Function to normalize whitespace in the author names
-    def clean_whitespace(text):
+    def clean_whitespace(text: str) -> str:
+        """
+        Normalizes whitespace in the author names.
+
+        Args:
+            text (str): Author name.
+
+        Returns:
+            author_clean (str): Processed author name.
+        """
+
         if isinstance(text, str):
             # Split the string into words and join with a single space
             author_clean = ' '.join(text.split())
@@ -194,8 +260,17 @@ def main():
     #----------------------------------------------------------------------------------
     # Excluding duplicates (some duplicates differ just by capitalization or apostrophe type: ’ or ')
 
-    # Function to normalize titles by replacing typographic quotes with standard ones
-    def normalize_apostrophe(title):
+    def normalize_apostrophe(title: str) -> str:
+        """
+        Normalizes titles by replacing typographic quotes with standard ones.
+
+        Args:
+            title (str): Book title.
+
+        Returns:
+            normalized_title (str): Processed book title.
+        """
+                
         # Replace right single quotation mark with a straight apostrophe
         normalized_title = title.replace('’', "'")
         return normalized_title
@@ -233,49 +308,68 @@ def main():
     # Deleting some left over duplicates, unwanted non-fiction, and collections.
     # Maybe some of these are not necessary anymore because of the drop of duplicates using the reviews.
 
-    def delete_books(row):
+    def delete_books(row: pd.DataFrame) -> bool:
+        """
+        Creates a boolean mask to be used in the dataframe.
+        Checks if the book title and author are in the lists of undesirable books and authors.
+        If yes, returns False for that.
+        If no, returns True.
+
+        Args:
+            row (pandas.DataFrame): A single row of the DataFrame containing book-related information.
+
+        Returns:
+            (bool): The determined desirability of the book.
+        """
+
         # Titles to be deleted
-        titles_to_del = ["Feersum Endjinn",
-                         "Fiction 2000: Cyberpunk and the Future of Narrative",
-                         "From the Earth to the Moon and 'Round the Moon",
-                         "The Men From P.I.G. And R.O.B.O.T.",
-                         "H.G. Wells: Seven Novels",
-                         "Future Bright, Future Grimm: Transhumanist Tales for Mother Nature's Offspring",
-                         "Fahrenheit 451; The Illustrated Man; Dandelion Wine; The Golden Apples of the Sun; The Martian Chronicles",
-                         r"Vorkosigan's Game: The Vor Game \ Borders of Infinity",
-                         "Divergent Series Ultimate Four-Book Collection: Divergent; Insurgent; Allegiant; Four",
-                         "The Hitchhiker's Guide to the Galaxy: Tertiary Phase",
-                         "The Island of Dr. Moreau",
-                         "R.U.R.: Rossum's Universal Robots",	
-                         "Eternal Light",
-                         "Hard to Be a God",
-                         "Flatland / Sphereland",
-                         "Shadow Children Complete Set, Books 1-7: Among the Hidden, Among the Impostors, Among the Betrayed, Among the Barons, Among the Brave, Among the Enemy, and Among the Free",
-                         "Professor Jameson's Interstellar Adventures #1: The Jameson Satellite & Planet of the Double Sun",
-                         "The Zombie Survival Guide: Complete Protection from the Living Dead",
-                         "Three Science Fiction Novellas: From Prehistory to the End of Mankind",
-                         "Artemis Fowl"]
+        titles_to_del = [
+            "Feersum Endjinn",
+            "Fiction 2000: Cyberpunk and the Future of Narrative",
+            "From the Earth to the Moon and 'Round the Moon",
+            "The Men From P.I.G. And R.O.B.O.T.",
+            "H.G. Wells: Seven Novels",
+            "Future Bright, Future Grimm: Transhumanist Tales for Mother Nature's Offspring",
+            "Fahrenheit 451; The Illustrated Man; Dandelion Wine; The Golden Apples of the Sun; The Martian Chronicles",
+            r"Vorkosigan's Game: The Vor Game \ Borders of Infinity",
+            "Divergent Series Ultimate Four-Book Collection: Divergent; Insurgent; Allegiant; Four",
+            "The Hitchhiker's Guide to the Galaxy: Tertiary Phase",
+            "The Island of Dr. Moreau",
+            "R.U.R.: Rossum's Universal Robots",	
+            "Eternal Light",
+            "Hard to Be a God",
+            "Flatland / Sphereland",
+            "Shadow Children Complete Set, Books 1-7: Among the Hidden, Among the Impostors, Among the Betrayed, Among the Barons, Among the Brave, Among the Enemy, and Among the Free",
+            "Professor Jameson's Interstellar Adventures #1: The Jameson Satellite & Planet of the Double Sun",
+            "The Zombie Survival Guide: Complete Protection from the Living Dead",
+            "Three Science Fiction Novellas: From Prehistory to the End of Mankind",
+            "Artemis Fowl",
+            "John Carter of Mars"
+        ]
         
         # Authors to be deleted
-        authors_to_del = ["Iain M. Banks",
-                          "George Edgar Slusser",
-                          "Jules Verne",
-                          "Harry Harrison",
-                          "H.G. Wells",
-                          "D.J. MacLennan",
-                          "Ray Bradbury",
-                          "Lois McMaster Bujold",
-                          "Veronica Roth",
-                          "Douglas Adams",
-                          "Josef/Karel Capek",
-                          "Paul J. McAuley",
-                          "Arkadi Strugatski",
-                          "Edwin A. Abbott",
-                          "Margaret Peterson Haddix",
-                          "Neil R. Jones",
-                          "Max Brooks",
-                          "J.-H. Rosny aîné",
-                          "Eoin Colfer"]
+        authors_to_del = [
+            "Iain M. Banks",
+            "George Edgar Slusser",
+            "Jules Verne",
+            "Harry Harrison",
+            "H.G. Wells",
+            "D.J. MacLennan",
+            "Ray Bradbury",
+            "Lois McMaster Bujold",
+            "Veronica Roth",
+            "Douglas Adams",
+            "Josef/Karel Capek",
+            "Paul J. McAuley",
+            "Arkadi Strugatski",
+            "Edwin A. Abbott",
+            "Margaret Peterson Haddix",
+            "Neil R. Jones",
+            "Max Brooks",
+            "J.-H. Rosny aîné",
+            "Eoin Colfer",
+            "Edgar Rice Burroughs"
+        ]
 
         # Extract title and author from the row
         title = row['title']
@@ -335,27 +429,29 @@ def main():
 
     #-----------------------------------------
     # Define unwanted and required genres
-    unwanted_genres = ['Graphic Novels', 
-                    'Comics', 
-                    'Graphic Novels Comics', 
-                    'Comic Book', 
-                    'Manga', 
-                    'Short Stories', 
-                    'Anthologies', 
-                    'Nonfiction', 
-                    'Art', 
-                    'Reference',
-                    'Literary Criticism', 
-                    'Essays', 
-                    'Criticism',
-                    'High Fantasy',
-                    'Epic Fantasy',
-                    'Magic',
-                    'Angels',
-                    'Gaming',
-                    'Role Playing Games',
-                    'Games',
-                    'Poetry']
+    unwanted_genres = [
+        'Graphic Novels',
+        'Comics',
+        'Graphic Novels Comics',
+        'Comic Book',
+        'Manga',
+        'Short Stories',
+        'Anthologies',
+        'Nonfiction',
+        'Art',
+        'Reference',
+        'Literary Criticism',
+        'Essays',
+        'Criticism',
+        'High Fantasy',
+        'Epic Fantasy',
+        'Magic',
+        'Angels',
+        'Gaming',
+        'Role Playing Games',
+        'Games',
+        'Poetry'
+    ]
     unwanted_genres = [genre.lower() for genre in unwanted_genres]
 
     #required_genres = ['Short Stories', 'Anthologies']
@@ -393,17 +489,19 @@ def main():
     # Reordering the dataframe
     df_filtered = df_filtered.drop(labels="pages", axis=1)
 
-    column_order = ['title', 
-                    'author', 
-                    'year',
-                    'decade', 
-                    'rate', 
-                    'ratings', 
-                    'series', 
-                    'genres', 
-                    'synopsis',
-                    'review',
-                    'url']
+    column_order = [
+        'title', 
+        'author', 
+        'year',
+        'decade', 
+        'rate', 
+        'ratings', 
+        'series', 
+        'genres', 
+        'synopsis',
+        'review',
+        'url'
+    ]
 
     df_filtered = df_filtered.reindex(columns=column_order)
     df_filtered = df_filtered.sort_values(by=['decade', 'year', 'author', 'title'], axis=0, ascending=True)

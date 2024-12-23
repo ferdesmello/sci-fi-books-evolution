@@ -1,8 +1,21 @@
+"""
+This script reads the filtered data scraped from the Goodreads website and select 
+just the data of interest to be used in the next phase.
+
+Modules:
+    - pandas
+"""
+
+#----------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------
 import pandas as pd
 
 #----------------------------------------------------------------------------------
 # Main execution function
 def main():
+    """
+    Big main function with all the selection of the top and test data.
+    """
 
     df_filtered = pd.read_csv('./Data/sci-fi_books_FILTERED.csv', sep = ';', encoding="utf-8-sig")
     df_filtered['decade_gb'] = df_filtered['decade'] # To use in the groupby below and keep the original decade
@@ -18,17 +31,19 @@ def main():
     #----------------------------------------------------------------------------------
     # Reordering columns
 
-    column_order = ['title', 
-                    'author', 
-                    'year',
-                    'decade', 
-                    'rate', 
-                    'ratings', 
-                    'series', 
-                    'genres', 
-                    'synopsis',
-                    'review',
-                    'url']
+    column_order = [
+        'title', 
+        'author', 
+        'year',
+        'decade', 
+        'rate', 
+        'ratings', 
+        'series', 
+        'genres', 
+        'synopsis',
+        'review',
+        'url'
+    ]
 
     df_top_books = df_top_books.reindex(columns=column_order)
     df_top_books = df_top_books.sort_values(by=['year', 'author', 'title'], ascending=True)

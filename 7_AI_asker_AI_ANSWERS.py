@@ -1,3 +1,20 @@
+"""
+This script uses GPT-4o, via the OPNEAI API, to answer questions about the plot 
+of the books scraped before, parses the answers and saves it.
+
+Modules:
+    - os
+    - pandas
+    - openai
+    - dotenv
+    - tenacity
+    - requests
+    - logging
+    - typing
+"""
+
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 import os
 import pandas as pd
 from openai import OpenAI
@@ -5,6 +22,7 @@ from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type, wait_fixed
 from requests.exceptions import RequestException
 import logging
+from typing import List
 
 #----------------------------------------------------------------------------------
 # Set up logging
@@ -15,17 +33,28 @@ load_dotenv(dotenv_path='../KEYs/My_OPENAI_API_Key.env')
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 #----------------------------------------------------------------------------------
-# Function to call OpenAI API with retry logic
 @retry(
     retry=retry_if_exception_type((RequestException, Exception)), # Retry on API errors or network issues
     wait=wait_exponential(multiplier=1, min=4, max=60), # Exponential backoff: starts at 4 seconds, max 60 seconds
     stop=stop_after_attempt(10) # Stop after 10 attempts
 )
-def analyze_book(title, author, year, synopsis, review, plot, genres): 
+def analyze_book(title: str , author: str, year: int, synopsis: str, review: str, plot: str, genres: List[str]) -> str: 
     """
-    Function to analyse every book
-    Create the prompt with the gathered data
+    Prompts GPT-4o to analyse the data of each book and answers questions about it.
+
+    Args:
+        title (str): Book title.
+        author (str): Book author.
+        year (int): Book publishing year.
+        synopsis (str): Goodreads synopsis for the book.
+        review (str): Chosen Goodreads review for the book.
+        plot (str): Wikipedia plot for the book.
+        genres (List[str]): Goodreads list of genres.
+
+    Returns:
+        answer (str): GPT-4o processed entire answer.
     """
+
     prompt = f"""
     Carefully consider the plot of the book "{title}" by {author}, published in {year}, focusing on key elements that will help answer the following questions. 
     
@@ -177,9 +206,20 @@ def analyze_book(title, author, year, synopsis, review, plot, genres):
     return answer
 
 #----------------------------------------------------------------------------------
-# Function to process each book, save progress incrementally, and retry after parsing errors
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(5))
-def ask_to_AI(df, output_file):
+def ask_to_AI(df: pd.DataFrame, output_file: str) -> pd.DataFrame:
+    """
+    Sends book data to the prompt function, parses the returned answers, and merges everything together.
+
+    Args:
+        df (pandas.DataFrame): Dataframe with all books information.
+        output_file (str): Output file name to save the progress.
+
+    Returns:
+        df_processed (pandas.DataFrame): Dataframe with all original books information and 
+            processed answers about them from GPT-4o.
+    """
+        
     # Lists to store the complete answer the AI give and its parts for each book
 
     # Complete AI answer
@@ -258,9 +298,9 @@ def ask_to_AI(df, output_file):
         if len(plot) > len(synopsis):
             synopsis = 'No synopsis available.'
             review = 'No review available.'
-        print(plot)
-        print(synopsis)
-        print(review)
+        #print(plot)
+        #print(synopsis)
+        #print(review)
          #----------------------------------------
         try:
             # Get the AI's answers for the book
@@ -517,8 +557,12 @@ def ask_to_AI(df, output_file):
     return df_processed
 
 #----------------------------------------------------------------------------------
-# Main execution function
 def main():
+    """
+    Main execution function for the script.
+    Calls the AI asker function, orders the data, and saves it in a CSV file.
+    """
+        
     #------------------------------------------
     # Name of the input file
     input_file = './Data/sci-fi_books_TEST1.csv'

@@ -1,3 +1,16 @@
+"""
+This script process all of the data gathered in the previous steps and makes figures to present the data.
+
+Modules:
+    - pandas
+    - matplotlib.pyplot
+    - seaborn
+    - scipy.stats
+    - numpy
+"""
+
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -9,7 +22,7 @@ import numpy as np
 #----------------------------------------------------------------------------------
 print("Reading and processing tha data...")
 
-# Reading the data
+# Read the data
 df_filtered = pd.read_csv("./Data/sci-fi_books_FILTERED.csv", sep=";", encoding="utf-8-sig")
 df_top = pd.read_csv("./Data/sci-fi_books_TOP.csv", sep=";", encoding="utf-8-sig")
 df_top_AI = pd.read_csv("./Data/sci-fi_books_AI_ANSWERS.csv", sep=";", encoding="utf-8-sig")
@@ -19,7 +32,7 @@ df_top_AI_gender = pd.read_csv("./Data/sci-fi_books_AI_ANSWERS_GENDER.csv", sep=
 #print(df.head())
 
 #----------------------------------------------------------------------------------
-# Excluding books of before 1860 (allmost none)
+# Exclud books of before 1860 (allmost none)
 
 mask_all = df_filtered['decade'] >= 1860
 df_filtered = df_filtered[mask_all]
@@ -31,7 +44,7 @@ mask_top_AI = df_top_AI['decade'] >= 1860
 df_top_AI = df_top_AI[mask_top_AI]
 
 #----------------------------------------------------------------------------------
-# Including author gender to data
+# Include author gender to data
 
 # Create a dictionary from df_top_AI_gender
 author_gender_dict = df_top_AI_gender.set_index('author')['gender'].to_dict()
@@ -60,14 +73,14 @@ sdv_per_decade = df_filtered.groupby('decade')[['rate', 'ratings']].std()
 
 print(book_per_decade.sort_index(ascending = False))
 
-# Creating a dictionary by passing Series objects as values
+# Create a dictionary by passing Series objects as values
 frame_1 = {'quantity': book_per_decade,
            'avr rate': mean_per_decade['rate'],
            'std rate': sdv_per_decade['rate'],
            'avr ratings': mean_per_decade['ratings'],
            'std ratings': sdv_per_decade['ratings']}
  
-# Creating DataFrame by passing Dictionary
+# Create DataFrame by passing Dictionary
 df_all = pd.DataFrame(frame_1)
 df_all = (df_all
           .reset_index(drop = False)
@@ -88,14 +101,14 @@ sdv_per_decade_200 = df_top.groupby('decade')[['rate', 'ratings']].std()
 
 print(book_per_decade_200.sort_index(ascending = False))
 
-# Creating a dictionary by passing Series objects as values
+# Create a dictionary by passing Series objects as values
 frame_2 = {'quantity': book_per_decade_200,
            'avr rate': mean_per_decade_200['rate'],
            'std rate': sdv_per_decade_200['rate'],
            'avr ratings': mean_per_decade_200['ratings'],
            'std ratings': sdv_per_decade_200['ratings']}
  
-# Creating DataFrame by passing Dictionary
+# Create DataFrame by passing Dictionary
 df_all_200 = pd.DataFrame(frame_2)
 df_all_200 = (df_all_200
               .reset_index(drop = False)
@@ -115,7 +128,7 @@ category_counts_gender = pd.crosstab(df_top_AI['decade'], df_top_AI['gender'])
 category_percent_gender = category_counts_gender.div(category_counts_gender.sum(axis = 1), axis = 0) * 100
 
 #----------------------------------------------------------------------------------
-# Processing for the questions/answers
+# Process for the questions/answers
 
 # 1 soft hard------------------------------------------
 # Count the occurrences of each category per decade
@@ -250,7 +263,7 @@ category_counts_17 = pd.crosstab(df_top_AI['decade'], df_top_AI['17 enviromental
 category_percent_17 = category_counts_17.div(category_counts_17.sum(axis = 1), axis = 0) * 100
 
 #----------------------------------------------------------------------------------
-# Processing for the complex figures
+# Process for the complex figures
 #----------------------------------------------------------------------------------
 # Author and protagonist gender
 
@@ -335,7 +348,7 @@ column_order = ['1 soft hard',
 
 dfs = [] # List of DataFrames
 
-# Processing the DataFrames for variation in answers
+# Process the DataFrames for variation in answers
 #for file_name in file_names_s:
 for file_name in file_names:
     df_file_name = pd.read_csv(file_name, sep=";", encoding="utf-8-sig")
@@ -426,7 +439,7 @@ df_entropy.loc['Mean'] = df_entropy.mean(axis=0)
 
 #----------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------
-# Making figures
+# Make figures
 print("Making the figures...")
 #----------------------------------------------------------------------------------
 # Custom dark gray color
@@ -508,7 +521,7 @@ all_decades = np.arange(df_all['decade'].min(), df_all['decade'].max() + 10, 10)
 # Set x-ticks to show each decade
 plt.xticks(all_decades, rotation=90)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/00 Quantities.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/00 Quantities.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -630,7 +643,7 @@ ax2.spines['left'].set_visible(False)
 #ax2.spines['left'].set_color(custom_dark_gray)
 ax2.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/00 Rates and Ratings.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/00 Rates and Ratings.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -708,7 +721,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/00 series.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/00 series.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -788,7 +801,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/00 author gender.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/00 author gender.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -875,7 +888,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/01 soft hard.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/01 soft hard.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -959,7 +972,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/02 light heavy.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/02 light heavy.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -1053,7 +1066,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/03 time.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/03 time.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -1137,7 +1150,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/04 mood.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/04 mood.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -1225,7 +1238,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/05 social political.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/05 social political.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -1303,7 +1316,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/06 on Earth.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/06 on Earth.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -1383,7 +1396,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/07 post apocalyptic.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/07 post apocalyptic.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -1461,7 +1474,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/08 aliens.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/08 aliens.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -1550,7 +1563,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/09a aliens are.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/09a aliens are.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -1637,7 +1650,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/09b aliens are.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/09b aliens are.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -1715,7 +1728,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/10 robots and AI.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/10 robots and AI.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -1805,7 +1818,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/11a robots and AI are.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/11a robots and AI are.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -1893,7 +1906,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/11b robots and AI are.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/11b robots and AI are.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -1970,7 +1983,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/12 protagonist.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/12 protagonist.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -2057,7 +2070,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/13a protagonist is.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/13a protagonist is.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -2140,7 +2153,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/13b protagonist is.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/13b protagonist is.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -2219,7 +2232,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/14 virtual.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/14 virtual.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -2306,7 +2319,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/15 tech and science.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/15 tech and science.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -2390,7 +2403,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/16 social issues.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/16 social issues.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -2474,7 +2487,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/17 enviromental.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/17 enviromental.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -2573,7 +2586,7 @@ if p_value < 0.05:
 else:
     print("There is no significant correlation between Author Gender and Protagonist Gender.")
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/00 author and protagonist heatmap.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/00 author and protagonist heatmap.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -2680,7 +2693,7 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 plt.savefig("./Figures/00 author and protagonist gender.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/00 author and protagonist gender.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
@@ -2798,7 +2811,7 @@ for tick in ax1.get_xticklabels():
     tick.set_ha('left')  # Horizontal alignment (left aligns better for rotated labels)
     tick.set_va('bottom')  # Vertical alignment to ensure no overlap
 
-# Saving image-------------------------------------------
+# Save image-------------------------------------------
 if var_flag == 1:
     plt.savefig("./Figures/00 variation difference.png", bbox_inches = 'tight')
 elif var_flag == 2:
@@ -2814,5 +2827,5 @@ elif var_flag == 3:
 #----------------------------------------------------------------------------------
 print("All done.")
 
-# Showing figures-------------------------------------------------------------------------------------------
+# Show figures-------------------------------------------------------------------------------------------
 plt.show() # You must call plt.show() to make graphics appear.

@@ -1,3 +1,24 @@
+"""
+This script scrapes data from book pages on the Goodreads website using a list of 
+bookshelf URLs as a starting point.
+
+Modules:
+    - requests
+    - BeautifulSoup
+    - pandas
+    - time
+    - json
+    - os
+    - urllib3
+    - random
+    - logging
+    - tenacity
+    - re
+    - typing
+"""
+
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -11,20 +32,21 @@ import random
 import logging
 from tenacity import retry, stop_after_attempt, wait_exponential
 import re
+from typing import List, Dict, Any, Union
+from requests import Session
 
 #----------------------------------------------------------------------------------
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 #----------------------------------------------------------------------------------
-
-def load_progress():
+def load_progress() -> Dict[str, Dict[str, Any]]:
     """
-    Load scraping progress data from a JSON file.
+    Loads scraping progress data from a JSON file.
 
     Returns:
         Dict[str, Dict[str, Any]]: A dictionary containing progress data.
-        If the file exists, returns its contents. 
+        If the file exists, returns its contents;
         If the file doesn't exist, returns a default dictionary with an empty 'urls' key.
         
     Example:
@@ -37,25 +59,25 @@ def load_progress():
     return {'urls': {}}
 
 #----------------------------------------------------------------------------------
-def save_progress(progress):
+def save_progress(progress: Dict[str, Dict[str, Any]]):
     """
-    Save scraping progress data to a JSON file.
+    Saves scraping progress data to a JSON file.
 
     Args:
         progress (Dict[str, Dict[str, Any]]): The progress dictionary to be saved.
         Typically contains information about scraped URLs and their status.
 
     Note:
-        Overwrites the existing file at './Data/scraping_progress.json'.
+        Overwrites the existing file at './Data/scraping_progress.json'
     """
 
     with open('./Data/scraping_progress.json', 'w') as f:
         json.dump(progress, f)
 
 #----------------------------------------------------------------------------------
-def get_session():
+def get_session() -> Session:
     """
-    Create a configured requests Session with retry mechanisms and custom headers.
+    Creates a configured requests Session with retry mechanisms and custom headers.
 
     Returns:
         requests.Session: A session object configured with:
@@ -75,8 +97,18 @@ def get_session():
 
 #----------------------------------------------------------------------------------
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
-def make_request(session, url, timeout=30):
-    """Function to retry scraping"""
+def make_request(session: Session, url: str, timeout: int) -> requests.Response:
+    """
+    Makes an HTTP GET request with error handling and logging.
+
+    Args:
+        session (requests.Session): Configured requests session to use for the request.
+        url (str): The URL to send the GET request to.
+        timeout (int): Maximum time in seconds to wait for the request to complete.
+
+    Returns:
+        requests.Response: The response object from the successful request.
+    """
 
     try:
         response = session.get(url, timeout=timeout)
@@ -90,24 +122,24 @@ def make_request(session, url, timeout=30):
         raise
 
 #----------------------------------------------------------------------------------
-def scrape_list(session, url, page):
+def scrape_list(session: Session, url: str, page: int) -> List[Dict[str, Any]]:
     """
     Scrapes data from a Goodreads list page.
 
     Args:
-        session (requests.Session)
-        url (str): address for the list on Goodreads
-        page (int): number of the present page at the list
+        session (requests.Session): Configured requests session to use for the request.
+        url (str): The URL for the list on Goodreads.
+        page (int): Number of the present page at the list.
 
     Returns:
-        books (List[str]): list of dictionaries of book data containing:
+        books (List[Dict[str, Any]]): list of dictionaries of book data containing:
         - 'title': book title
         - 'author': book author
         - 'url': book page address on Goodreads
     """
 
     full_url = f"{url}?page={page}"
-    response = make_request(session, full_url)
+    response = make_request(session=session, url=full_url, timeout=30)
     soup = BeautifulSoup(response.content, 'html.parser')
     books = []
 
@@ -140,13 +172,13 @@ def scrape_list(session, url, page):
     return books
 
 #----------------------------------------------------------------------------------
-def scrape_book_page(session, url):
+def scrape_book_page(session: Session, url: str) -> Union[Dict[str, Any], None]:
     """
     Scrapes data from a Goodreads book page.
 
     Args:
-        session (requests.Session)
-        url (str): address for the book page on Goodreads
+        session (requests.Session): Configured requests session to use for the request.
+        url (str): address for the book page on Goodreads.
 
     Returns:
         book_data (Dict[str, float, int]): A dictionary containing:
@@ -158,6 +190,7 @@ def scrape_book_page(session, url):
         - 'genres': listed genres
         - 'synopsis': synopses text
         - 'review': longer review of the first three
+        None: Error scraping the data.
     """
 
     try:
@@ -219,9 +252,9 @@ def scrape_book_page(session, url):
         # Find all review sections
         review_sections = soup.find_all('section', class_='ReviewText')
 
-        """We use if len(review_sections) > n to check if the list 
-        has at least n+1 elements before accessing the nth index. 
-        This ensures we don't try to access an index that doesn't exist."""
+        """len(review_sections) > n is used to check if the list has at least n+1 
+        elements before accessing the nth index. This ensures we don't try to access 
+        an index that doesn't exist."""
         # Extract the first review, if it exists
         review_1 = review_sections[0].find('span', class_='Formatted').text.strip() if len(review_sections) > 0 else "No review available"
         # Extract the second review, if it exists
@@ -260,16 +293,16 @@ def scrape_book_page(session, url):
         return None
 
 #----------------------------------------------------------------------------------
-def scrape_goodreads_lists(urls, max_pages=50):
+def scrape_goodreads_lists(urls: List[str], max_pages: int) -> List[Dict[str, Any]]:
     """
     Main scraping function that calls the other scraping functions.
 
     Args:
-        urls (List): list of URL Goodreads lists to use
-        max_pages (int): maximun number os pages to use per Goodreads list
+        urls (List[str]): List of URL Goodreads lists to use.
+        max_pages (int): Maximun number os pages to use per Goodreads list.
 
     Returns:
-        all_books (List): list of dictionaries with book data
+        all_books (List[Dict[str, Any]]): List of dictionaries with book data.
     """
 
     progress = load_progress()
@@ -314,61 +347,68 @@ def scrape_goodreads_lists(urls, max_pages=50):
 
 #----------------------------------------------------------------------------------
 def main():
-    """Main execution function"""
+    """
+    Main execution function for the scraping script.
+    Calls the main scraping function, transforms the JSON file in a CSV, and saves the data.
+    """
 
     # Webpages to start the scraping
-    urls = ["https://www.goodreads.com/list/show/43374.Classic_Science_Fiction_1930_1939",
-            "https://www.goodreads.com/list/show/40744.Classic_Science_Fiction_1940_1949",
-            "https://www.goodreads.com/list/show/5152.Classic_Science_Fiction_1950_1959",
-            "https://www.goodreads.com/list/show/5158.Classic_Science_Fiction_1960_1969",
-            "https://www.goodreads.com/list/show/42069.Classic_Science_Fiction_1970_1979",
-            "https://www.goodreads.com/list/show/42417.Classic_Science_Fiction_1980_1989",
-            "https://www.goodreads.com/list/show/42875.Classic_Science_Fiction_1990_1999",
-            "https://www.goodreads.com/list/show/43319.Classic_Science_Fiction_2000_2009",
-            "https://www.goodreads.com/list/show/75182.Science_Fiction_2010_2019",
-            "https://www.goodreads.com/list/show/146613.Science_Fiction_2020_2029",
-            "https://www.goodreads.com/list/show/79670.Best_Science_Fiction_on_Goodreads_with_fewer_than_100_ratings",
-            "https://www.goodreads.com/list/show/78128.Best_Science_Fiction_on_Goodreads_with_between_100_and_999_ratings",
-            "https://www.goodreads.com/list/show/77875.Best_Science_Fiction_on_Goodreads_with_between_1000_and_9999_ratings",
-            "https://www.goodreads.com/list/show/46769.Popular_Science_Fiction_on_GoodReads_with_between_10000_and_24999_ratings",
-            "https://www.goodreads.com/list/show/39287.Popular_Science_Fiction_on_GoodReads_with_between_25000_and_50000_ratings",
-            "https://www.goodreads.com/list/show/138257.Popular_Science_Fiction_on_Goodreads_with_between_50000_and_99999_ratings",
-            "https://www.goodreads.com/list/show/35776.Most_Popular_Science_Fiction_on_Goodreads",
-            "https://www.goodreads.com/list/show/115331.Nineteenth_Century_Science_Fiction",
-            "https://www.goodreads.com/list/show/18864.Genetics_in_Science_Fiction",
-            "https://www.goodreads.com/list/show/549.Most_Under_rated_Science_Fiction",
-            "https://www.goodreads.com/list/show/6228.SF_Masterworks",
-            "https://www.goodreads.com/list/show/6934.Science_Fiction_Books_by_Female_Authors",
-            "https://www.goodreads.com/list/show/9951.best_hard_science_fiction",
-            "https://www.goodreads.com/list/show/17148.Space_Horror",
-            "https://www.goodreads.com/list/show/6032.Best_Aliens",
-            "https://www.goodreads.com/list/show/485.Best_Books_on_Artificial_Intelligence_",
-            "https://www.goodreads.com/list/show/487.Best_of_Cyberpunk",
-            "https://www.goodreads.com/list/show/17324.Transhuman_Science_Fiction_",
-            "https://www.goodreads.com/list/show/114349.Best_Forgotten_Science_Fiction_of_the_20th_Century",
-            "https://www.goodreads.com/list/show/47.Best_Dystopian_and_Post_Apocalyptic_Fiction",
-            "https://www.goodreads.com/list/show/7239.Best_Utopian_Dystopian_Fiction",
-            "https://www.goodreads.com/list/show/25823",
-            "https://www.goodreads.com/list/show/154763.The_Amazing_Colossal_Science_Fiction_Ketchup_Pre_1900s",
-            "https://www.goodreads.com/list/show/101755.Radium_Age_Sci_Fi",
-            "https://www.goodreads.com/list/show/113093.Golden_Age_and_New_Wave_Science_Fiction_novels"]
+    urls = [
+        "https://www.goodreads.com/list/show/43374.Classic_Science_Fiction_1930_1939",
+        "https://www.goodreads.com/list/show/40744.Classic_Science_Fiction_1940_1949",
+        "https://www.goodreads.com/list/show/5152.Classic_Science_Fiction_1950_1959",
+        "https://www.goodreads.com/list/show/5158.Classic_Science_Fiction_1960_1969",
+        "https://www.goodreads.com/list/show/42069.Classic_Science_Fiction_1970_1979",
+        "https://www.goodreads.com/list/show/42417.Classic_Science_Fiction_1980_1989",
+        "https://www.goodreads.com/list/show/42875.Classic_Science_Fiction_1990_1999",
+        "https://www.goodreads.com/list/show/43319.Classic_Science_Fiction_2000_2009",
+        "https://www.goodreads.com/list/show/75182.Science_Fiction_2010_2019",
+        "https://www.goodreads.com/list/show/146613.Science_Fiction_2020_2029",
+        "https://www.goodreads.com/list/show/79670.Best_Science_Fiction_on_Goodreads_with_fewer_than_100_ratings",
+        "https://www.goodreads.com/list/show/78128.Best_Science_Fiction_on_Goodreads_with_between_100_and_999_ratings",
+        "https://www.goodreads.com/list/show/77875.Best_Science_Fiction_on_Goodreads_with_between_1000_and_9999_ratings",
+        "https://www.goodreads.com/list/show/46769.Popular_Science_Fiction_on_GoodReads_with_between_10000_and_24999_ratings",
+        "https://www.goodreads.com/list/show/39287.Popular_Science_Fiction_on_GoodReads_with_between_25000_and_50000_ratings",
+        "https://www.goodreads.com/list/show/138257.Popular_Science_Fiction_on_Goodreads_with_between_50000_and_99999_ratings",
+        "https://www.goodreads.com/list/show/35776.Most_Popular_Science_Fiction_on_Goodreads",
+        "https://www.goodreads.com/list/show/115331.Nineteenth_Century_Science_Fiction",
+        "https://www.goodreads.com/list/show/18864.Genetics_in_Science_Fiction",
+        "https://www.goodreads.com/list/show/549.Most_Under_rated_Science_Fiction",
+        "https://www.goodreads.com/list/show/6228.SF_Masterworks",
+        "https://www.goodreads.com/list/show/6934.Science_Fiction_Books_by_Female_Authors",
+        "https://www.goodreads.com/list/show/9951.best_hard_science_fiction",
+        "https://www.goodreads.com/list/show/17148.Space_Horror",
+        "https://www.goodreads.com/list/show/6032.Best_Aliens",
+        "https://www.goodreads.com/list/show/485.Best_Books_on_Artificial_Intelligence_",
+        "https://www.goodreads.com/list/show/487.Best_of_Cyberpunk",
+        "https://www.goodreads.com/list/show/17324.Transhuman_Science_Fiction_",
+        "https://www.goodreads.com/list/show/114349.Best_Forgotten_Science_Fiction_of_the_20th_Century",
+        "https://www.goodreads.com/list/show/47.Best_Dystopian_and_Post_Apocalyptic_Fiction",
+        "https://www.goodreads.com/list/show/7239.Best_Utopian_Dystopian_Fiction",
+        "https://www.goodreads.com/list/show/25823",
+        "https://www.goodreads.com/list/show/154763.The_Amazing_Colossal_Science_Fiction_Ketchup_Pre_1900s",
+        "https://www.goodreads.com/list/show/101755.Radium_Age_Sci_Fi",
+        "https://www.goodreads.com/list/show/113093.Golden_Age_and_New_Wave_Science_Fiction_novels"
+    ]
 
     all_books = scrape_goodreads_lists(urls, max_pages=50)
 
     # Create DataFrame with specified column order
     df = pd.DataFrame(all_books)
 
-    column_order = ['title', 
-                    'author', 
-                    'year', 
-                    'pages', 
-                    'rate', 
-                    'ratings', 
-                    'series', 
-                    'genres', 
-                    'synopsis',
-                    'review',
-                    'url']
+    column_order = [
+        'title', 
+        'author', 
+        'year', 
+        'pages', 
+        'rate', 
+        'ratings', 
+        'series', 
+        'genres', 
+        'synopsis',
+        'review',
+        'url'
+    ]
     df = df.reindex(columns=column_order)
     
     df.to_csv('./Data/sci-fi_books_PARTIAL_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
@@ -386,7 +426,7 @@ def main():
     books_data = []
 
     # Navigate through the URLs dictionary and extract the "books" lists
-    for url_key, url_content in data['urls'].items():
+    for _, url_content in data['urls'].items(): # url_key, url_content
         # Check if "books" is present and is a list
         if 'books' in url_content and isinstance(url_content['books'], list):
             books_data.extend(url_content['books']) # Add the list of books to books_data

@@ -1,3 +1,22 @@
+"""
+This script scrapes data from book pages on the Goodreads website using local 
+bookshelf page HTML files as a starting point.
+
+Modules:
+    - requests
+    - BeautifulSoup
+    - pandas
+    - time
+    - os
+    - urllib3
+    - random
+    - logging
+    - re
+    - typing
+"""
+
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -8,15 +27,17 @@ from requests.adapters import HTTPAdapter
 import random
 import logging
 import re
+from typing import List, Dict, Any, Union
+from requests import Session
 
 #----------------------------------------------------------------------------------
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 #----------------------------------------------------------------------------------
-def get_session():
+def get_session() -> Session:
     """
-    Create a configured requests Session with retry mechanisms and custom headers.
+    Creates a configured request Session with retry mechanisms and custom headers.
 
     Returns:
         requests.Session: A session object configured with:
@@ -35,15 +56,15 @@ def get_session():
     return session
 
 #----------------------------------------------------------------------------------
-def scrape_shelf_from_html(file_path):
+def scrape_shelf_from_html(file_path: str) -> List[Dict[str, str]]:
     """
     Scrapes data using the local HTML file of a Goodreads shelf page.
 
     Args:
-        file_path (str): path to file
+        file_path (str): Path to file in local diretory.
 
     Returns:
-        books (List[str]): list of dictionaries of book data containing:
+        books (List[Dict[str, str]]): List of dictionaries of book data containing:
         - 'title': book title
         - 'author': book author
         - 'url': book page address on Goodreads
@@ -83,16 +104,16 @@ def scrape_shelf_from_html(file_path):
     return books
 
 #----------------------------------------------------------------------------------
-def scrape_book_page(session, url):
+def scrape_book_page(session: Session, url: str) -> Union[Dict[str, Any], None]:
     """
     Scrapes data from a Goodreads book page.
 
     Args:
-        session (requests.Session)
-        url (str): address for book page on Goodreads
+        session (requests.Session): Configured requests session to use for the request.
+        url (str): Address for the book page on Goodreads.
 
     Returns:
-        book_data (Dict[str, float, int]): A dictionary containing:
+        book_data (Dict[str, Any]): A dictionary containing:
         - 'series': simple data whether the book is part of a series
         - 'pages': number of pages of that edition
         - 'year': first year published
@@ -100,7 +121,8 @@ def scrape_book_page(session, url):
         - 'ratings': number of ratings
         - 'genres': listed genres
         - 'synopsis': synopses text
-        - 'review': longer review of the first three
+        - 'review': longer review of the first three reviews
+        None: Error scraping the data.
     """
 
     try:
@@ -162,7 +184,7 @@ def scrape_book_page(session, url):
         # Find all review sections
         review_sections = soup.find_all('section', class_='ReviewText')
 
-        """We use if len(review_sections) > n to check if the list 
+        """len(review_sections) > n is used to check if the list 
         has at least n+1 elements before accessing the nth index. 
         This ensures we don't try to access an index that doesn't exist."""
         # Extract the first review, if it exists
@@ -203,15 +225,15 @@ def scrape_book_page(session, url):
         return None
 
 #----------------------------------------------------------------------------------
-def scrape_goodreads_books_from_files(folder_path):
+def scrape_goodreads_books_from_files(folder_path: str) -> List[Dict[str, Any]]:
     """
     Main scraping function that calls the other scraping functions.
 
     Args:
-        folder_path (str): path to the folder of HTMLs
+        folder_path (str): Path to the folder of HTMLs.
 
     Returns:
-        all_books (List[Dict[...]]): list of dictionaries with book data
+        all_books (List[Dict[str, Any]]): List of dictionaries with books data.
     """
 
     session = get_session()
@@ -240,7 +262,8 @@ def scrape_goodreads_books_from_files(folder_path):
 #----------------------------------------------------------------------------------
 def main():
     """
-    Main execution function.
+    Main execution function for the scraping script.
+    Calls the main scraping function and saves the data.
     """
 
     folder_path = './Saved_pages'
@@ -249,17 +272,19 @@ def main():
 
     #--------------------------------------------
     # Chose the right columns and their order
-    column_order = ['title', 
-                    'author', 
-                    'year', 
-                    'pages', 
-                    'rate', 
-                    'ratings', 
-                    'series', 
-                    'genres', 
-                    'synopsis',
-                    'review',
-                    'url']
+    column_order = [
+        'title', 
+        'author', 
+        'year', 
+        'pages', 
+        'rate', 
+        'ratings', 
+        'series', 
+        'genres', 
+        'synopsis',
+        'review',
+        'url'
+    ]
     
     df = df.reindex(columns=column_order)
 

@@ -1,3 +1,21 @@
+
+"""
+This script scrapes plot data from book articles on Wikipedia using the data 
+scraped from the Goodreads website.
+
+Modules:
+    - pandas
+    - wikipedia
+    - re
+    - requests
+    - BeautifulSoup
+    - tenacity
+    - typing
+    - os
+"""
+
+#----------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------
 import pandas as pd
 import wikipedia
 import re
@@ -10,14 +28,15 @@ import os
 #----------------------------------------------------------------------------------
 def clean_text(text: str) -> str:
     """
-    Clean up the retrieved Wikipedia text by removing references, 
-    external links, and other unwanted formatting.
+    Cleans up the retrieved Wikipedia text by removing references, external links, and other unwanted formatting.
+
     Args:
-        text (str): text to be cleaned
+        text (str): Text to be cleaned.
 
     Returns:
-        text (str): cleaned text
+        text (str): Cleaned text.
     """
+
     # Remove reference markers like [1], [2], etc.
     text = re.sub(r'\[.*?\]', '', text)
     
@@ -33,12 +52,12 @@ def clean_text(text: str) -> str:
 @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=4, max=10))
 def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
     """
-    Fetch book summary from Wikipedia.
+    Fetches book plot/summary text from Wikipedia.
 
     Args:
-        title (str): Title of the book
-        author (str): Author of the book
-        year (int): Publication year of the book
+        title (str): Title of the book.
+        author (str): Author of the book.
+        year (int): Publication year of the book.
 
     Returns:
         Dict[str, Any]: A dictionary containing:
@@ -62,16 +81,21 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
         
         #------------------------------------------
         # Filter out author page and unwanted results
-        unwanted_terms = [' series', 
-                          '(series)',
-                          '(book series)',
-                          'film)',
-                          'movie)', 
-                          'adaptation)', 
-                          'franchise)',
-                          '(disambiguation)',
-                          '(comics)',
-                          'miniseries)']
+        unwanted_terms = [
+            ' series', 
+            '(series)',
+            '(book series)',
+            ' novels',
+            '(novels)',
+            ' trilogy',
+            'film)',
+            'movie)', 
+            'adaptation)', 
+            'franchise)',
+            '(disambiguation)',
+            '(comics)',
+            'miniseries)'
+        ]
         
         separated_author_name = author.replace(".", ". ").replace(".  ", ". ").lower()
         unwanted_terms.append(separated_author_name)
@@ -123,6 +147,9 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
         # Exception for 1984 by George Orwell (1949)
         if title == "1984":
             title = "Nineteen Eighty-Four"
+        # Exception for Thrawn by Timothy Zahn (2017) or it may get the 1990s trilogy
+        if title == "Thrawn":
+            title = "Star Wars: Thrawn"
         
         first_word_of_the_result = chosen_result.split()[0].lower().replace(":", "")
         first_word_of_the_title = title.split()[0].lower().replace(":", "")
@@ -156,45 +183,49 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
             soup = BeautifulSoup(html_content, 'html.parser')
             
             #------------------------------------------
-            list_plot_headers = ['plot',
-                                 'the plot',
-                                 'plot summary',
-                                 'plot synopsis',
-                                 'plot introduction',
-                                 'plot outline',
-                                 'plot and storyline',
-                                 'synopsis',
-                                 'summary',
-                                 'book plot',
-                                 'setting and plot',
-                                 'setting and synopsis'
-                                 'story and significance',
-                                 'story overview',
-                                 'premise and plot',
-                                 'narrative',
-                                 'storyline',
-                                 'story',
-                                 'outline',
-                                 'content',
-                                 'overview',
-                                 'premise',
-                                 'introduction',
-                                 'description',
-                                 'fictional premise',
-                                 'characters and story',
-                                 'species of humans',]
+            list_plot_headers = [
+                'plot',
+                'the plot',
+                'plot summary',
+                'plot synopsis',
+                'plot introduction',
+                'plot outline',
+                'plot and storyline',
+                'synopsis',
+                'summary',
+                'book plot',
+                'setting and plot',
+                'setting and synopsis',
+                'story and significance',
+                'story overview',
+                'premise and plot',
+                'narrative',
+                'storyline',
+                'story',
+                'outline',
+                'content',
+                'overview',
+                'premise',
+                'introduction',
+                'description',
+                'structure',
+                'fictional premise',
+                'characters and story',
+                'species of humans',
+            ]
         
             page_title = page.title
             page_url = page.url
             
             # Find all section headings
             section_headings = soup.find_all(['h2'])
-
             # Locate the correct section, checking top-priority headers first
             plot_heading = None
-            for heading in section_headings:
-                for header in list_plot_headers:  # Original order
-                    if heading.get_text(strip=True).lower() == header:
+            for header in list_plot_headers: # Original order
+                for heading in section_headings:
+                    header_text = header.lower()
+                    heading_text = heading.get_text(strip=True).lower()
+                    if header_text == heading_text:
                         plot_heading = heading
                         break
                 if plot_heading:  # Exit outer loop once a match is found
@@ -227,15 +258,14 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
             plot_text = clean_text(plot_text)
 
             #------------------------------------------
-            if plot_paragraphs:
+            if plot_text:
                 if len(plot_text) > 20000: # Some plot summaries are unnecessarily long
                     return {
-                        'summary': None,
+                        'summary': plot_text[:20000],
                         'page_title': page_title,
                         'page_url': page_url,
-                        'counter_plot': 0,
-                        'success': False,
-                        'error': "Plot section is too long."
+                        'counter_plot': 1,
+                        'success': True
                     }
                 else:
                     return {
@@ -254,7 +284,7 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
                     'success': False,
                     'error': "No content found in Plot section."
                 }
-            
+        
         #------------------------------------------
         except Exception as e:
             return {
@@ -280,7 +310,8 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
 #----------------------------------------------------------------------------------
 def main():
     """
-    Main execution function
+    Main execution function.
+    Reads the CSV data files, calls the functions to scrape Wikipedia, saves the progress, and saves the final CSV files.
     """
     #------------------------------------------
     # Read the CSV files
@@ -331,8 +362,9 @@ def main():
         review = book['review']
         url_g = book['url goodreads']
 
-        # Querying Wikipedia
+        # Query Wikipedia
         returned_dict = get_book_summary(title, author, year)
+        
         counter_plot = returned_dict.get('counter_plot')
         returned_title = returned_dict.get('page_title')
         returned_text = returned_dict.get('summary')
@@ -383,34 +415,38 @@ def main():
     
     #------------------------------------------
     # Order of the columns
-    column_order = ['title', 
-                    'author', 
-                    'year',
-                    'decade', 
-                    'rate', 
-                    'ratings', 
-                    'series', 
-                    'genres', 
-                    'synopsis',
-                    'review',
-                    'url goodreads',
-                    'plot',
-                    'url wikipedia']
+    column_order = [
+    'title', 
+    'author', 
+    'year',
+    'decade', 
+    'rate', 
+    'ratings', 
+    'series', 
+    'genres', 
+    'synopsis',
+    'review',
+    'url goodreads',
+    'plot',
+    'url wikipedia'
+]
 
     # Select and rename columns
-    df_TEST_merged = df_TEST_merged[['title_test',
-                                     'author_test',
-                                     'year_test',
-                                     'decade_test',
-                                     'rate_test',
-                                     'ratings_test',
-                                     'series_test',
-                                     'genres_test',
-                                     'synopsis_test',
-                                     'review_test',
-                                     'url goodreads',
-                                     'plot',
-                                     'url wikipedia']]
+    df_TEST_merged = df_TEST_merged[[
+        'title_test',
+        'author_test',
+        'year_test',
+        'decade_test',
+        'rate_test',
+        'ratings_test',
+        'series_test',
+        'genres_test',
+        'synopsis_test',
+        'review_test',
+        'url goodreads',
+        'plot',
+        'url wikipedia'
+    ]]
     df_TEST_merged.columns = column_order
 
     # Reorder columns

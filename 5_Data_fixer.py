@@ -1,8 +1,19 @@
+"""
+This script cleans the data if new data have been included tardily.
+
+Modules:
+    - pandas
+"""
+
+#----------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------
 import pandas as pd
 
 #----------------------------------------------------------------------------------
 def main():
-    """Main execution function"""
+    """
+    Big main function with all the cleaning of the data if new data was added.
+    """
 
     df_top = pd.read_csv('./Data/sci-fi_books_TOP.csv', sep = ';', encoding="utf-8-sig")
     df_AI = pd.read_csv('./Data/sci-fi_books_AI_ANSWERS.csv', sep = ';', encoding="utf-8-sig")
