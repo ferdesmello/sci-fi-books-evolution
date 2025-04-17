@@ -235,7 +235,7 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
             
             if not plot_heading:
                 return {
-                    'summary': None,
+                    'summary': "No plot available",
                     'page_title': page_title,
                     'page_url': page_url,
                     'counter_plot': 0,
@@ -277,7 +277,7 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
                     }
             else:
                 return {
-                    'summary': None,
+                    'summary': "No plot available",
                     'page_title': page_title,
                     'page_url': page_url,
                     'counter_plot': 0,
@@ -288,7 +288,7 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
         #------------------------------------------
         except Exception as e:
             return {
-                'summary': None,
+                'summary': "No plot available",
                 'page_title': None,
                 'page_url': None,
                 'counter_plot': 0,
@@ -299,7 +299,7 @@ def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
     #------------------------------------------
     except Exception as e:
         return {
-            'summary': None,
+            'summary': "No plot available",
             'page_title': None,
             'page_url': None,
             'counter_plot': 0,

@@ -388,8 +388,12 @@ def main():
         "https://www.goodreads.com/list/show/25823",
         "https://www.goodreads.com/list/show/154763.The_Amazing_Colossal_Science_Fiction_Ketchup_Pre_1900s",
         "https://www.goodreads.com/list/show/101755.Radium_Age_Sci_Fi",
-        "https://www.goodreads.com/list/show/113093.Golden_Age_and_New_Wave_Science_Fiction_novels"
-    ]
+        "https://www.goodreads.com/list/show/113093.Golden_Age_and_New_Wave_Science_Fiction_novels",
+        "https://www.goodreads.com/list/show/83753.Eclipse_Phase_Recommended_Reading",
+        "https://www.goodreads.com/list/show/1127.Excellent_Space_Opera",
+        "https://www.goodreads.com/list/show/47731.Best_HARD_SCIENCE_FICTION_of_the_21st_Century",
+        "https://www.goodreads.com/list/show/78971.Best_Space_Opera_of_the_21st_Century",
+        ]
 
     all_books = scrape_goodreads_lists(urls, max_pages=50)
 

@@ -283,6 +283,27 @@ def main():
     df['title'] = df['title'].apply(lambda x: x.strip())
     df['author'] = df['author'].apply(lambda x: x.strip())
 
+    #-----------------------
+    # Special case of author names
+    pattern_1 = "Anne; Lackey McCaffrey, Mercedes Lackey"
+    pattern_2 = "Anne; Lackey McCaffrey"
+    names = "Anne McCaffrey, Mercedes Lackey"
+    df['author'] = df['author'].replace(pattern_1, names)
+    df['author'] = df['author'].replace(pattern_2, names)
+
+    pattern_3 = "reynolds-alastair"
+    name = "Alastair Reynolds"
+    df['author'] = df['author'].replace(pattern_3, name)
+
+    pattern_4 = "Grant Naylor"
+    names = "Rob Grant, Doug Naylor"
+    df['author'] = df['author'].replace(pattern_4, names)
+
+    pattern_5 = "Pittacus Lore"
+    names = "James Frey, Jobie Hughes"
+    df['author'] = df['author'].replace(pattern_5, names)
+
+    #-----------------------
     # Create temporary lowercase columns for comparison
     df['title_lower'] = df['title'].str.lower()
     df['author_lower'] = df['author'].str.lower()
@@ -296,13 +317,6 @@ def main():
 
     # Drop the temporary lowercase columns
     df = df.drop(columns=['title_lower', 'author_lower'])
-
-    # Special case of author names
-    pattern_1 = "Anne; Lackey McCaffrey, Mercedes Lackey"
-    pattern_2 = "Anne; Lackey McCaffrey"
-    names = "Anne McCaffrey, Mercedes Lackey"
-    df['author'] = df['author'].replace(pattern_1, names)
-    df['author'] = df['author'].replace(pattern_2, names)
 
     #----------------------------------------------------------------------------------
     # Deleting some left over duplicates, unwanted non-fiction, and collections.
