@@ -50,4 +50,4 @@ For both programs, you will need to have a working API key set in your environme
 
 The figure below is one example of the output.
 
-![A final plot as an example.](./Figures/03%20time%20GPT.png "When does most of the story take place in relation to the year the book was published? Distant past: millennia or more before; Far past: centuries before; Near past: within a few decades before; Present: within a few years; Near future: within a few decades ahead; Far future: centuries ahead; Distant future: millennia or more ahead; Multiple timelines; Uncertain.")
+![A final plot as an example.](./Figures/Figures_GPT/03%20time%20GPT.png "When does most of the story take place in relation to the year the book was published? Distant past: millennia or more before; Far past: centuries before; Near past: within a few decades before; Present: within a few years; Near future: within a few decades ahead; Far future: centuries ahead; Distant future: millennia or more ahead; Multiple timelines; Uncertain.")
