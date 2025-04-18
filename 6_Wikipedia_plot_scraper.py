@@ -315,10 +315,10 @@ def main():
     """
     #------------------------------------------
     # Read the CSV files
-    input_file = './Data/sci-fi_books_TOP.csv'
-    input_file_TEST = './Data/sci-fi_books_TEST.csv'
-    output_file = './Data/sci-fi_books_TOP_Wiki.csv'
-    output_file_TEST = './Data/sci-fi_books_TEST_Wiki.csv'
+    input_file = './Data/Filtered/sci-fi_books_TOP.csv'
+    input_file_TEST = './Data/Filtered/sci-fi_books_TEST.csv'
+    output_file = './Data/Answers/sci-fi_books_TOP_Wiki.csv'
+    output_file_TEST = './Data/Answers/sci-fi_books_TEST_Wiki.csv'
 
     df_TOP = pd.read_csv(input_file, sep = ';', encoding="utf-8-sig")
     df_TEST = pd.read_csv(input_file_TEST, sep = ';', encoding="utf-8-sig")

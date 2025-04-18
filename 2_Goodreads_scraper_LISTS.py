@@ -415,9 +415,9 @@ def main():
     ]
     df = df.reindex(columns=column_order)
     
-    df.to_csv('./Data/sci-fi_books_PARTIAL_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
+    df.to_csv('./Data/Brute/sci-fi_books_PARTIAL_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
     
-    logging.info(f"Scraped {len(all_books)} books. Data saved to ./Data/sci-fi_books_PARTIAL_LISTS.csv")
+    logging.info(f"Scraped {len(all_books)} books. Data saved to ./Data/Brute/sci-fi_books_PARTIAL_LISTS.csv")
 
     #----------------------------------------------------------------------------------
     # Reading the complete json file and saving it as a CSV file
@@ -449,9 +449,9 @@ def main():
 
     #--------------------------------------------
     # Save the flattened and final DataFrame to a CSV file
-    df_books.to_csv('./Data/sci-fi_books_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
+    df_books.to_csv('./Data/Brute/sci-fi_books_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
 
-    logging.info(f"Data saved to ./Data/sci-fi_books_LISTS.csv")
+    logging.info(f"Data saved to ./Data/Brute/sci-fi_books_LISTS.csv")
 
 #----------------------------------------------------------------------------------
 # Execution

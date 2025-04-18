@@ -17,7 +17,7 @@ def main():
     Big main function with all the selection of the top and test data.
     """
 
-    df_filtered = pd.read_csv('./Data/sci-fi_books_FILTERED.csv', sep = ';', encoding="utf-8-sig")
+    df_filtered = pd.read_csv('./Data/Filtered/sci-fi_books_FILTERED.csv', sep = ';', encoding="utf-8-sig")
     df_filtered['decade_gb'] = df_filtered['decade'] # To use in the groupby below and keep the original decade
 
     #----------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ def main():
 
     #----------------------------------------------------------------------------------
     # Saving the datafrme
-    df_top_books.to_csv('./Data/sci-fi_books_TOP.csv', index=False, sep=';', encoding='utf-8-sig')
+    df_top_books.to_csv('./Data/Filtered/sci-fi_books_TOP.csv', index=False, sep=';', encoding='utf-8-sig')
 
     print("\nTOP 200 BOOKS PER DECADE Dataframe")
     print(df_top_books.info())
@@ -109,7 +109,7 @@ def main():
     #df_test_books = df_test_books.sort_values(by=['ratings'], axis=0, ascending=False)
     df_test_books = df_test_books.sort_values(by=['decade', 'year', 'author', 'title'], axis=0, ascending=True)
 
-    df_test_books.to_csv('./Data/sci-fi_books_TEST.csv', index=False, sep=';', encoding='utf-8-sig')
+    df_test_books.to_csv('./Data/Filtered/sci-fi_books_TEST.csv', index=False, sep=';', encoding='utf-8-sig')
 
 #----------------------------------------------------------------------------------
 # Execution

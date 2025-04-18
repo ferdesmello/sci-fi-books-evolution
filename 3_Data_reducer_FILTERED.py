@@ -22,12 +22,12 @@ def main():
     Big main function with all the reduction, cleaning, and transformation of the data.
     """
 
-    df_shelf = pd.read_csv('./Data/sci-fi_books_SHELF.csv', sep = ';', encoding='utf-8-sig')
-    df_lists = pd.read_csv('./Data/sci-fi_books_LISTS.csv', sep = ';', encoding='utf-8-sig')
+    df_shelf = pd.read_csv('./Data/Brute/sci-fi_books_SHELF.csv', sep = ';', encoding='utf-8-sig')
+    df_lists = pd.read_csv('./Data/Brute/sci-fi_books_LISTS.csv', sep = ';', encoding='utf-8-sig')
 
     frames = [df_shelf, df_lists]
     df = pd.concat(frames, ignore_index=True)
-    df.to_csv('./Data/sci-fi_books_BRUTE.csv', index=False, sep=';', encoding='utf-8-sig')
+    df.to_csv('./Data/Brute/sci-fi_books_BRUTE.csv', index=False, sep=';', encoding='utf-8-sig')
 
     print("\nBRUTE Dataframe")
     print(df.info())
@@ -526,8 +526,8 @@ def main():
     print("\nFILTERED Dataframe")
     print(df_filtered.info())
 
-    df_filtered.to_csv('./Data/sci-fi_books_FILTERED.csv', index=False, sep=';', encoding='utf-8-sig')
-    print(f"\nData saved to ./Data/sci-fi_books_FILTERED.csv")
+    df_filtered.to_csv('./Data/Filtered/sci-fi_books_FILTERED.csv', index=False, sep=';', encoding='utf-8-sig')
+    print(f"\nData saved to ./Data/Filtered/sci-fi_books_FILTERED.csv")
 
 #----------------------------------------------------------------------------------
 # Execution

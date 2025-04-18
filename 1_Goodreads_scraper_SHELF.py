@@ -266,7 +266,7 @@ def main():
     Calls the main scraping function and saves the data.
     """
 
-    folder_path = './Saved_pages'
+    folder_path = './Data/Saved_pages'
     all_books = scrape_goodreads_books_from_files(folder_path)
     df = pd.DataFrame(all_books)
 
@@ -294,9 +294,9 @@ def main():
 
     #--------------------------------------------
     # Save the final DataFrame to a CSV file
-    df.to_csv('./Data/sci-fi_books_SHELF.csv', index=False, sep=';', encoding='utf-8-sig')
+    df.to_csv('./Data/Brute/sci-fi_books_SHELF.csv', index=False, sep=';', encoding='utf-8-sig')
 
-    logging.info(f"Scraped {len(all_books)} books.\nData saved to ./Data/sci-fi_books_SHELF.csv")
+    logging.info(f"Scraped {len(all_books)} books.\nData saved to ./Data/Brute/sci-fi_books_SHELF.csv")
 
 #----------------------------------------------------------------------------------
 # Execution
