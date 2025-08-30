@@ -225,39 +225,69 @@ def scrape_book_page(session: Session, url: str) -> Union[Dict[str, Any], None]:
         return None
 
 #----------------------------------------------------------------------------------
-def scrape_goodreads_books_from_files(folder_path: str) -> List[Dict[str, Any]]:
+def scrape_goodreads_books_from_files(folder_path: str, csv_path: str, column_order: list[str]) -> bool:
     """
-    Main scraping function that calls the other scraping functions.
+    Main scraping function that calls the other scraping functions, now returning a boolean.
 
     Args:
         folder_path (str): Path to the folder of HTMLs.
+        csv_path (str): Path to the CSV file to save data.
+        column_order (list[str]): List of column names for the DataFrame.
 
     Returns:
-        all_books (List[Dict[str, Any]]): List of dictionaries with books data.
+        bool: True if the scraping process completes without major errors, False otherwise.
     """
+    try:
+        session = get_session()
+    
+        # Create the CSV file with the header if it doesn't exist
+        if not os.path.exists(csv_path):
+            header_df = pd.DataFrame(columns=column_order)
+            header_df.to_csv(csv_path, index=False, sep=';', encoding='utf-8-sig')
+            scraped_urls = set()  # No URLs to start with
+        else:
+            # Read existing URLs to prevent re-scraping
+            existing_df = pd.read_csv(csv_path, sep=';')
+            scraped_urls = set(existing_df['url'].tolist())
+            logging.info(f"Found {len(scraped_urls)} previously scraped books. Resuming progress...")
 
-    session = get_session()
-    all_books = []
+        # Read all HTML files from the folder
+        for file_name in os.listdir(folder_path):
+            if file_name.endswith('.html'):
+                file_path = os.path.join(folder_path, file_name)
+                logging.info(f"Scraping file:-----------------\n{file_path}")
+                books = scrape_shelf_from_html(file_path)
 
-    # Read all HTML files from the folder
-    for file_name in os.listdir(folder_path):
-        if file_name.endswith('.html'):
-            file_path = os.path.join(folder_path, file_name)
-            logging.info(f"Scraping file:-----------------\n{file_path}")
-            books = scrape_shelf_from_html(file_path)
-            for book in books:
-                book_data = scrape_book_page(session, book['url'])
-                if book_data:
-                    book.update(book_data)
-                    all_books.append(book)
-                    #print(book)
-                else:
-                    logging.warning(f"Failed to scrape book:\n!!!{book['url']}")
+                current_file_books = []
+                for book in books:
+                    book_url = book['url']
+                    
+                    # Check if the book has already been scraped
+                    if book_url in scraped_urls:
+                        logging.info(f"Skipping book: {book['title']} (already scraped)")
+                        continue  # Skip to the next book
 
-            # Implement a random delay between 5 to 15 seconds after every page (not book)
-            time.sleep(random.uniform(5, 15))
+                    book_data = scrape_book_page(session, book['url'])
+                    if book_data:
+                        book.update(book_data)
+                        current_file_books.append(book)
+                        scraped_urls.add(book_url) # Add the new URL to the set
+                    else:
+                        logging.warning(f"Failed to scrape book:\n!!!{book['url']}")
 
-    return all_books
+                if current_file_books:
+                    df = pd.DataFrame(current_file_books, columns=column_order)
+                    df.to_csv(csv_path, mode='a', header=False, index=False, sep=';', encoding='utf-8-sig')
+                    logging.info(f"Appended {len(current_file_books)} books from {file_name} to CSV.")
+
+                time.sleep(random.uniform(5, 15))
+
+        logging.info("Scraping process completed successfully.")
+        return True
+
+    except Exception as e:
+        logging.error(f"An unexpected error occurred during scraping: {e}")
+        return False
 
 #----------------------------------------------------------------------------------
 def main():
@@ -267,10 +297,8 @@ def main():
     """
 
     folder_path = './Data/Saved_pages'
-    all_books = scrape_goodreads_books_from_files(folder_path)
-    df = pd.DataFrame(all_books)
+    csv_path = './Data/Brute/sci-fi_books_SHELF.csv'
 
-    #--------------------------------------------
     # Chose the right columns and their order
     column_order = [
         'title', 
@@ -285,18 +313,26 @@ def main():
         'review',
         'url'
     ]
-    
-    df = df.reindex(columns=column_order)
+
+    # Scrappe the data
+    success = scrape_goodreads_books_from_files(folder_path, csv_path, column_order)
+    print(f"Success? {success}.\n")
+
+    all_books = pd.read_csv(csv_path, sep=';', encoding="utf-8-sig")
+
+    #--------------------------------------------
+    # Chose the right columns and their order
+    all_books = all_books.reindex(columns=column_order)
 
     # Inspect the DataFrame structure
-    print("\n",df.head())
-    print(df.info())
+    print("\n",all_books.head())
+    print(all_books.info())
 
     #--------------------------------------------
     # Save the final DataFrame to a CSV file
-    df.to_csv('./Data/Brute/sci-fi_books_SHELF.csv', index=False, sep=';', encoding='utf-8-sig')
+    all_books.to_csv(csv_path, index=False, sep=';', encoding='utf-8-sig')
 
-    logging.info(f"Scraped {len(all_books)} books.\nData saved to ./Data/Brute/sci-fi_books_SHELF.csv")
+    logging.info(f"Scraped {len(all_books)} books.\nData saved to {csv_path}.")
 
 #----------------------------------------------------------------------------------
 # Execution

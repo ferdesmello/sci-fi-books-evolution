@@ -190,10 +190,12 @@ def main():
 
         # Exceptions for exclusion (some books use "/" properly)
         # Use a set for faster lookups
-        exceptions = {"11/22/63", 
-                      "The After/Life",
-                      "The Mighty Thor, Vol. 3: The Asgard/Shi'ar War",
-                      "The 7 1/2 Deaths of Evelyn Hardcastle"} 
+        exceptions = {
+            "11/22/63", 
+            "The After/Life",
+            "The Mighty Thor, Vol. 3: The Asgard/Shi'ar War",
+            "The 7 1/2 Deaths of Evelyn Hardcastle"
+        } 
 
         # Normalize title by stripping extra spaces
         title = title.strip()
@@ -284,24 +286,51 @@ def main():
     df['author'] = df['author'].apply(lambda x: x.strip())
 
     #-----------------------
-    # Special case of author names
-    pattern_1 = "Anne; Lackey McCaffrey, Mercedes Lackey"
-    pattern_2 = "Anne; Lackey McCaffrey"
-    names = "Anne McCaffrey, Mercedes Lackey"
-    df['author'] = df['author'].replace(pattern_1, names)
-    df['author'] = df['author'].replace(pattern_2, names)
+    # Author corrections
+    author_corrections = {
+        "Anne; Lackey McCaffrey, Mercedes Lackey": "Anne McCaffrey, Mercedes Lackey",
+        "Anne; Lackey McCaffrey": "Anne McCaffrey, Mercedes Lackey",
+        "reynolds-alastair": "Alastair Reynolds",
+        "Grant Naylor": "Rob Grant, Doug Naylor",
+        "Pittacus Lore": "James Frey, Jobie Hughes",
+        "J.W. Lynne": "Jenny Lynne",
+        "Ilona Andrews": "Ilona Gordon, Andrew Gordon"
+    }
 
-    pattern_3 = "reynolds-alastair"
-    name = "Alastair Reynolds"
-    df['author'] = df['author'].replace(pattern_3, name)
+    df['author'] = df['author'].replace(author_corrections)
 
-    pattern_4 = "Grant Naylor"
-    names = "Rob Grant, Doug Naylor"
-    df['author'] = df['author'].replace(pattern_4, names)
+    # Title corrections
+    title_corrections = [
+        # (wrong_title, correct_title, optional_author)
+        ("if", "if [tribe] =: The Bridge Chronicles Book 3", "Gary Ballard"),
+        ("残次品", "残次品 [Can Ci Pin]", "Priest"),
+        ("Dr. Jekyll and Mr. Hyde", "Strange Case of Dr Jekyll and Mr Hyde", "Robert Louis Stevenson"),
+        ("Thrawn", "Star Wars: Thrawn", "Timothy Zahn"),
+        ("The Floating Island: The Pearl of the Pacific", "Propeller Island", None),
+        ("The Amphibian", "Amphibian Man", None),
+        ("After Many a Summer Dies the Swan: A Novel", "After Many a Summer", None),
+        ("The Futurological Congress: From the Memoirs of Ijon Tichy", "The Futurological Congress", None),
+        ("Frankenstein: The 1818 Text", "Frankenstein", None),
+        ("Round the Moon", "Around the Moon", "Jules Verne"),
+        ("The Last Man", "Le Dernier Homme", "Jean-Baptiste Cousin de Grainville"),
+        ("Tomorrow's Eve", "The Future Eve", "Auguste de Villiers de l'Isle-Adam"),
+        ("The Coming Race", "Vril: The Power of the Coming Race", "Edward Bulwer-Lytton"),
+        ("The Stars are Ours", "The Stars are Ours!", "Andre Norton"),
+    ]
 
-    pattern_5 = "Pittacus Lore"
-    names = "James Frey, Jobie Hughes"
-    df['author'] = df['author'].replace(pattern_5, names)
+    for wrong, correct, author in title_corrections:
+        mask = df["title"] == wrong
+
+        if author:
+            mask = mask & (df["author"] == author)
+
+        df.loc[mask, "title"] = correct
+    
+    # Year correction
+    mask_1 = df["title"] == "The Naked Sun"
+    mask_2 = df["author"] == "Isaac Asimov"
+    mask = mask_1 & mask_2
+    df.loc[mask, "year"] = 1957
 
     #-----------------------
     # Create temporary lowercase columns for comparison
@@ -358,7 +387,19 @@ def main():
             "The Zombie Survival Guide: Complete Protection from the Living Dead",
             "Three Science Fiction Novellas: From Prehistory to the End of Mankind",
             "Artemis Fowl",
-            "John Carter of Mars"
+            "John Carter of Mars",
+            "Have Tech Will Travel: Star Trek S.c.e.",
+            "The Reality Dysfunction 1: Emergence",
+            "The Star Wars Trilogy",
+            "Изобретения профессора Вагнера",
+            "The Spacer's Blade and Other Stories",
+            "SAMPLER ONLY: Catching Fire",
+            "The Girl With All the Gifts: Extended Free Preview",
+            "1984",
+            "A Handful of Darkness",
+            "Yesterday's Son",
+            "Гиперболоид инженера Гарина. Аэлита",
+            "Пикник на обочине. Отель «У погибшего альпиниста». Улитка на склоне",
         ]
         
         # Authors to be deleted
@@ -382,7 +423,19 @@ def main():
             "Max Brooks",
             "J.-H. Rosny aîné",
             "Eoin Colfer",
-            "Edgar Rice Burroughs"
+            "Edgar Rice Burroughs",
+            "Keith R.A. DeCandido",
+            "Peter F. Hamilton",
+            "George Lucas",
+            "Alexander Belyaev",
+            "Annie Bellet",
+            "Suzanne Collins",
+            "M.R. Carey",
+            "George Orwell",
+            "Philip K. Dick",
+            "Crispin",
+            "Aleksey Nikolayevich Tolstoy",
+            "Arkady Strugatsky",
         ]
 
         # Extract title and author from the row

@@ -20,6 +20,30 @@ def main():
     df_filtered = pd.read_csv('./Data/Filtered/sci-fi_books_FILTERED.csv', sep = ';', encoding="utf-8-sig")
     df_filtered['decade_gb'] = df_filtered['decade'] # To use in the groupby below and keep the original decade
 
+    # Reorder the columns
+    df_filtered = df_filtered.rename(columns={"url": "url goodreads"})
+    df_filtered['plot'] = ""
+    df_filtered['url wikipedia'] = ""
+
+    column_order = [
+        'title', 
+        'author', 
+        'year',
+        'decade_gb',
+        'decade', 
+        'rate', 
+        'ratings', 
+        'series', 
+        'genres', 
+        'synopsis',
+        'review',
+        'url goodreads',
+        'plot',
+        'url wikipedia'
+    ]
+
+    df_filtered = df_filtered.reindex(columns=column_order)
+
     #----------------------------------------------------------------------------------
     # Top 200 rating books for every decade
 
@@ -27,9 +51,6 @@ def main():
     df_top_books = (df_filtered.groupby('decade_gb', group_keys=False)
                     .apply((lambda x: x.sort_values('ratings', ascending=False).head(200)), 
                         include_groups=False))
-
-    #----------------------------------------------------------------------------------
-    # Reordering columns
 
     column_order = [
         'title', 
@@ -42,14 +63,17 @@ def main():
         'genres', 
         'synopsis',
         'review',
-        'url'
+        'url goodreads',
+        'plot',
+        'url wikipedia'
     ]
 
+    # Reorder the columns
     df_top_books = df_top_books.reindex(columns=column_order)
     df_top_books = df_top_books.sort_values(by=['year', 'author', 'title'], ascending=True)
 
     #----------------------------------------------------------------------------------
-    # Saving the datafrme
+    # Save the dataframe
     df_top_books.to_csv('./Data/Filtered/sci-fi_books_TOP.csv', index=False, sep=';', encoding='utf-8-sig')
 
     print("\nTOP 200 BOOKS PER DECADE Dataframe")
@@ -61,7 +85,7 @@ def main():
     test_books = [
         "Dune",
         "The Hitchhiker's Guide to the Galaxy",
-        "1984",
+        "Nineteen Eighty-Four",
         "Brave New World",
         "The Forever War",
         "Stranger in a Strange Land",

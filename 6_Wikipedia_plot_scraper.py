@@ -12,6 +12,10 @@ Modules:
     - tenacity
     - typing
     - os
+    - csv
+    - pathlib
+    - time
+    - winsound (only for Windows)
 """
 
 #----------------------------------------------------------------------------------
@@ -21,9 +25,18 @@ import wikipedia
 import re
 import requests
 from bs4 import BeautifulSoup
-from tenacity import retry, stop_after_attempt, wait_exponential
+from tenacity import (
+    retry, 
+    stop_after_attempt, 
+    wait_exponential, 
+    retry_if_exception_type
+)
 from typing import Dict, Any
 import os
+import csv
+from pathlib import Path
+import time
+import winsound
 
 #----------------------------------------------------------------------------------
 def clean_text(text: str) -> str:
@@ -44,259 +57,425 @@ def clean_text(text: str) -> str:
     text = re.sub(r'\n\s*\n', '\n\n', text)
     
     # Strip leading and trailing whitespace
-    text = text.strip()
-    
-    return text
+    return text.strip()
 
 #----------------------------------------------------------------------------------
-@retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=4, max=10))
+def build_unwanted_terms(author: str) -> list[str]:
+
+    """
+    Generate unwanted terms for filtering results, including author variations.
+    
+    Args:
+        author (str): Name of the author as given.
+
+    Returns:
+        unwanted_terms (list): List of unwanted terms to filter out from search results.
+    """
+    
+    terms = [
+        ' series', 
+        '(series)', 
+        '(book series)', 
+        ' novels', 
+        '(novels)', 
+        ' trilogy',
+        'film)', 
+        'movie)', 
+        'adaptation)', 
+        'franchise)', 
+        '(disambiguation)',
+        '(comics)', 
+        'miniseries)', 
+        '(author)',
+        '(disambiguation)',
+    ]
+
+    unwanted_terms = terms.copy()
+
+    separated_author_name = author.replace(".", ". ").replace(".  ", ". ").lower()
+    unwanted_terms.append(separated_author_name)
+
+    separated_author_name = author.replace("Jr.", "").replace(".", ". ").replace(".  ", ". ").lower()
+    unwanted_terms.append(separated_author_name)
+
+    first_name = author.split()[0]
+    last_name = author.split()[-1]
+    unwanted_terms.append((first_name + " " + last_name).lower())
+
+    author_name_without = author.replace("Jr.", "")
+    first_name = author_name_without.split()[0]
+    last_name = author_name_without.split()[-1]
+    unwanted_terms.append((first_name + " " + last_name).lower())
+
+    return unwanted_terms
+
+#----------------------------------------------------------------------------------
+def filter_results(search_results: list, unwanted_terms: list) -> list:
+
+    """
+    Remove unwanted search results.
+
+    Args:
+        search_results (list): List of search results from Wikipedia.
+        unwanted_terms (list): List of unwanted terms to filter out.
+
+    Returns:
+        filtered (list): Filtered list of search results.
+    """
+
+    filtered = []
+
+    for result in search_results:
+        result_lower = result.lower()
+        has_unwanted = False
+
+        for term in unwanted_terms:
+            if term in result_lower:
+                has_unwanted = True
+                break
+
+        if not has_unwanted:
+            filtered.append(result)
+
+    return filtered
+
+#----------------------------------------------------------------------------------
+def choose_result(title: str, filtered_results: list) -> str:
+
+    """
+    Choose the most appropriate result from the filtered list.
+
+    Args:
+        title (str): Title of the book.
+        filtered_results (list): List of filtered search results.
+
+    Returns:
+        chosen_result (str): Chosen result from the filtered list.
+    """
+
+    if not filtered_results:
+        return None
+
+    title_lower = title.lower()
+    novel_pattern_1 = re.compile(rf"^{re.escape(title_lower)}.*\(.*novel\)$", re.IGNORECASE)
+    novel_pattern_2 = re.compile(rf"^{re.escape(title_lower)}.*\(.*novella\)$", re.IGNORECASE)
+
+    # 1. Prefer results that look like "Title (novel)"
+    for result in filtered_results:
+        if novel_pattern_1.match(result.lower()):
+            return result
+
+    # 2. Prefer results that look like "Title (novella)"
+    for result in filtered_results:
+        if novel_pattern_2.match(result.lower()):
+            return result
+
+    # 3. Exact match
+    for result in filtered_results:
+        if result.lower() == title_lower:
+            return result
+    
+    # 4. Exact match ignoring colons
+    title_no_colon = title_lower.replace(":", "")
+    for result in filtered_results:
+        if result.lower().replace(":", "") == title_no_colon:
+            return result
+
+    # 5. Fallback to first
+    return filtered_results[0]
+
+#----------------------------------------------------------------------------------
+def validate_result(title: str, chosen_result: str, filtered_results: list) -> str:
+    """
+    Validate the chosen result by comparing the first two words of the title and the result.
+    Returns the best matching result or None if no validation passes.
+
+    Args:
+        title (str): Title of the book.
+        chosen_result (str): Chosen result from the filtered list.
+        filtered_results (list): List of filtered search results.
+
+    Returns:
+        validated_result (str): Validated result or None if validation fails.
+    """
+    
+    if not chosen_result:
+        return None
+
+    # Function to get the first two words, padded with "Blank" if needed
+    def get_first_two_words(text: str) -> list:
+        words = text.split()
+        words = [w.lower().replace(":", "") for w in words[:2]]
+        while len(words) < 2:
+            words.append("Blank")
+        return words
+
+    # Function to compare two texts based on first two words
+    def is_valid_match(text1: str, text2: str) -> bool:
+        words1 = get_first_two_words(text1)
+        words2 = get_first_two_words(text2)
+        
+        #print(f'Comparing "{text1}" vs "{text2}"')
+        print(f'  Words1: {words1}, Words2: {words2}')
+        
+        # First word must always match
+        if words1[0] != words2[0]:
+            print("  First words don't match - FAIL")
+            return False
+        
+        # If first words match, check second words
+        if words1[1] == words2[1]:
+            print("  Both first and second words match - PASS")
+            return True
+        elif (words1[1] == "Blank") or (words2[1] == "Blank"):
+            print("  First word matches, one second word is Blank - PASS")
+            return True
+        else:
+            print("  First words match but second words differ - FAIL")
+            return False
+
+    # Test the initially chosen result first
+    if is_valid_match(title, chosen_result):
+        print(f"  Chosen result '{chosen_result}' is valid")
+        return chosen_result
+    
+    print(f"  Chosen result '{chosen_result}' failed validation, trying alternatives...")
+    
+    # If chosen result fails, try the first two results from filtered list
+    for i, result in enumerate(filtered_results[:2]):
+        print(f"Testing alternative {i+1}: '{result}'")
+        if is_valid_match(title, result):
+            print(f"  Alternative result '{result}' is valid")
+            return result
+    
+    print("No valid results found")
+    return None
+
+#----------------------------------------------------------------------------------
+def extract_plot(page) -> tuple[str, str]:
+    """
+    Extracts the plot section from a Wikipedia page.
+
+    Args:
+        page: Wikipedia page object.
+
+    Returns:
+        (header, plot_text):
+            header (str): The actual header text of the plot section found.
+            plot_text (str): Extracted plot text, truncated to 20,000 characters if necessary.
+    """
+
+    # Try realistic headers
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+    }
+
+    session = requests.Session()
+    session.headers.update(headers)
+
+    # Add a delay before the HTML request (don't be too greedy!)
+    time.sleep(0.5) # Additional delay before HTML fetch
+
+    # Fetch the HTML content
+    html_content = session.get(page.url).text
+
+    # Parse HTML
+    soup = BeautifulSoup(html_content, 'html.parser')
+
+    #------------------------------------------
+    list_plot_headers = [
+        'plot', 
+        'the plot', 
+        'plot summary', 
+        'plot synopsis', 
+        'plot introduction',
+        'plot outline', 
+        'plot and storyline', 
+        'synopsis', 
+        'summary', 
+        'book plot',
+        'setting and plot', 
+        'setting and synopsis', 
+        'story and significance',
+        'story overview', 
+        'premise and plot', 
+        'narrative', 
+        'storyline', 
+        'story',
+        'outline', 
+        'content', 
+        'overview', 
+        'premise', 
+        'introduction', 
+        'description',
+        'structure', 
+        'fictional premise', 
+        'characters and story', 
+        'species of humans'
+    ]
+    
+    # Find all section headings
+    section_headings = soup.find_all(['h2'])
+    # Locate the correct section, checking top-priority headers first
+    plot_heading = None
+
+    for header in list_plot_headers: # Original order
+        for heading in section_headings:
+            header_text = header.lower()
+            heading_text = heading.get_text(strip=True).lower()
+            if header_text == heading_text:
+                plot_heading = heading
+                break
+        if plot_heading: # Exit outer loop once a match is found
+            break
+
+    if not plot_heading:
+        print("No plot heading found.")
+        return None, None
+
+    #------------------------------------------
+    # Collect paragraphs in the Plot section
+    list_brackets = ['p', 'ol','li']
+    plot_paragraphs = []
+    for sibling in plot_heading.find_all_next():
+        if sibling.name in ['h2']: # Stop at next section
+            break
+        if sibling.name in list_brackets: # Collect paragraphs or list of items
+            plot_paragraphs.append(sibling.get_text().strip())
+
+    #------------------------------------------
+    if not plot_paragraphs:
+        print("No plot paragraphs found.")
+        return None, None
+
+    # Combine paragraphs
+    plot_text = "\n\n".join(plot_paragraphs)
+    plot_text = clean_text(plot_text)
+
+    #------------------------------------------
+    if not plot_text:
+        print("No plot text found.")
+        return None, None
+    
+    return header, plot_text[:20000] # Truncate if very long
+
+#----------------------------------------------------------------------------------
+LOG_FILE = Path("./Data/Filtered/wikipedia_failed_books.csv")
+
+def log_failed_book(result: dict, title: str, author: str, year: int):
+
+    """
+    Append failed cases to a CSV log file.
+    
+    Args:
+        result (dict): Result dictionary from get_book_summary function.
+        title (str): Title of the book.
+        author (str): Name of the author as given.
+        year (int): Year of publication.
+
+    Returns:
+        None
+    """
+
+    if result.get("success", True):
+        return # only log failures
+
+    file_exists = LOG_FILE.exists()
+    with open(LOG_FILE, "a", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f, delimiter=";")
+
+        if not file_exists: # write header once
+            writer.writerow(["title", "author", "year", "error"])
+
+        writer.writerow([title, author, year, result.get("error", "")])
+
+#----------------------------------------------------------------------------------
+@retry(
+    stop=stop_after_attempt(5),
+    wait=wait_exponential(multiplier=2, min=4, max=20),
+    retry=retry_if_exception_type((requests.exceptions.RequestException, 
+                                   wikipedia.exceptions.WikipediaException))
+)
 def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
+
     """
     Fetches book plot/summary text from Wikipedia.
 
     Args:
         title (str): Title of the book.
-        author (str): Author of the book.
-        year (int): Publication year of the book.
+        author (str): Name of the author as given.
+        year (int): Year of publication.
 
     Returns:
-        Dict[str, Any]: A dictionary containing:
-        - 'summary': Plot summary text
-        - 'page_title': Wikipedia page title
-        - 'page_url': Wikipedia page URL
-        - 'success': Boolean indicating if summary was found
-        - 'error': Error message if retrieval failed
+        result (dict): Dictionary containing 
+            the plot text, 
+            page title, 
+            page URL, 
+            counter of plots found, 
+            success status, 
+            and error message if any.
     """
+    
+    # Add a delay at the start of each function call (don't be too greedy!)
+    time.sleep(3) # Wait 3 second between requests
 
-    # Book being processed
     print(f'-- {title} ({year}) {author} --')
 
+    # Before making the Wikipedia search, set the language
+    wikipedia.set_lang("en")
+
     try:
-        # Construct search query
-        search_query = f'"{title}" (novel) {author}'
-        
-        #------------------------------------------
-        # Search for pages
+        search_query = f'"{title}" {author} {year}'
         search_results = wikipedia.search(search_query, results=5)
-        
-        #------------------------------------------
-        # Filter out author page and unwanted results
-        unwanted_terms = [
-            ' series', 
-            '(series)',
-            '(book series)',
-            ' novels',
-            '(novels)',
-            ' trilogy',
-            'film)',
-            'movie)', 
-            'adaptation)', 
-            'franchise)',
-            '(disambiguation)',
-            '(comics)',
-            'miniseries)'
-        ]
-        
-        separated_author_name = author.replace(".", ". ").replace(".  ", ". ").lower()
-        unwanted_terms.append(separated_author_name)
-
-        separated_author_name = author.replace("Jr.", "").replace(".", ". ").replace(".  ", ". ").lower()
-        unwanted_terms.append(separated_author_name)
-
-        first_name = author.split()[0]
-        last_name = author.split()[-1]
-        shorter_author_name = first_name + " " + last_name
-        unwanted_terms.append(shorter_author_name.lower())
-
-        author_name_without = author.replace("Jr.", "")
-        first_name = author_name_without.split()[0]
-        last_name = author_name_without.split()[-1]
-        shorter_author_name = first_name + " " + last_name
-        unwanted_terms.append(shorter_author_name.lower())
-
-        print("Search query:", search_query)
-        print("Search results:", search_results)
-                
-        filtered_results = [
-            result for result in search_results 
-            if not any(term in result.lower() for term in unwanted_terms)
-        ]
-
+        unwanted_terms = build_unwanted_terms(author)
+        filtered_results = filter_results(search_results, unwanted_terms)
         print("Filtered results:", filtered_results)
 
-        #------------------------------------------
-        # Choose the right result
-
-        # Normalize the title for comparison (case-insensitive)
-        title_lower = title.lower()
-        
-        # Regex to match results like 'title (novel)' or 'title (author novel)'
-        novel_pattern = re.compile(rf"^{re.escape(title_lower)}.*\(.*novel\)$", re.IGNORECASE)
-        
-        # Prioritize results starting with the title and ending with 'novel)'
-        for result in filtered_results:
-            result_lower = result.lower()
-            if novel_pattern.match(result_lower):
-                chosen_result = result  # Match found
-            else:
-                chosen_result = filtered_results[0]  # Otherwise, get the first result
-
-        #------------------------------------------
-        # Simple test to check if the chosen result at least starts with the same word as the novel's title
-        
-        # Exception for 1984 by George Orwell (1949)
-        if title == "1984":
-            title = "Nineteen Eighty-Four"
-        # Exception for Thrawn by Timothy Zahn (2017) or it may get the 1990s trilogy
-        if title == "Thrawn":
-            title = "Star Wars: Thrawn"
-        
-        first_word_of_the_result = chosen_result.split()[0].lower().replace(":", "")
-        first_word_of_the_title = title.split()[0].lower().replace(":", "")
-        print(f'Is "{first_word_of_the_result}" == "{first_word_of_the_title}"?')
-        
-        if first_word_of_the_result != first_word_of_the_title:
-            chosen_result = None
-
-        if not chosen_result:
-            return {
-                'summary': None,
-                'page_title': None,
-                'page_url': None,
-                'counter_plot': 0,
-                'success': False,
-                'error': "No suitable articles found."
-            }
-                
+        chosen_result = choose_result(title, filtered_results)
         print("Chosen result:", chosen_result)
 
-        #------------------------------------------
-        # Try to get the information
-        try:
-            # Get the page
-            page = wikipedia.page(chosen_result, auto_suggest=False)
-            
-            # Fetch the HTML content
-            html_content = requests.get(page.url).text
-            
-            # Parse HTML
-            soup = BeautifulSoup(html_content, 'html.parser')
-            
-            #------------------------------------------
-            list_plot_headers = [
-                'plot',
-                'the plot',
-                'plot summary',
-                'plot synopsis',
-                'plot introduction',
-                'plot outline',
-                'plot and storyline',
-                'synopsis',
-                'summary',
-                'book plot',
-                'setting and plot',
-                'setting and synopsis',
-                'story and significance',
-                'story overview',
-                'premise and plot',
-                'narrative',
-                'storyline',
-                'story',
-                'outline',
-                'content',
-                'overview',
-                'premise',
-                'introduction',
-                'description',
-                'structure',
-                'fictional premise',
-                'characters and story',
-                'species of humans',
-            ]
-        
-            page_title = page.title
-            page_url = page.url
-            
-            # Find all section headings
-            section_headings = soup.find_all(['h2'])
-            # Locate the correct section, checking top-priority headers first
-            plot_heading = None
-            for header in list_plot_headers: # Original order
-                for heading in section_headings:
-                    header_text = header.lower()
-                    heading_text = heading.get_text(strip=True).lower()
-                    if header_text == heading_text:
-                        plot_heading = heading
-                        break
-                if plot_heading:  # Exit outer loop once a match is found
-                    break
+        validated = validate_result(title, chosen_result, filtered_results)
+        chosen_result = validated
 
-            print("Plot heading:", plot_heading)
-            
-            if not plot_heading:
-                return {
-                    'summary': "No plot available",
-                    'page_title': page_title,
-                    'page_url': page_url,
-                    'counter_plot': 0,
-                    'success': False,
-                    'error': "Plot section not found."
-                }
-            
-            #------------------------------------------
-            # Collect paragraphs in the Plot section
-            list_brackets = ['p', 'ol','li']
-            plot_paragraphs = []
-            for sibling in plot_heading.find_all_next():
-                if sibling.name in ['h2']:  # Stop at next section
-                    break
-                if sibling.name in list_brackets:  # Collect paragraphs or list of items
-                    plot_paragraphs.append(sibling.get_text().strip())
-
-            # Combine paragraphs
-            plot_text = '\n\n'.join(plot_paragraphs)
-            plot_text = clean_text(plot_text)
-
-            #------------------------------------------
-            if plot_text:
-                if len(plot_text) > 20000: # Some plot summaries are unnecessarily long
-                    return {
-                        'summary': plot_text[:20000],
-                        'page_title': page_title,
-                        'page_url': page_url,
-                        'counter_plot': 1,
-                        'success': True
-                    }
-                else:
-                    return {
-                        'summary': plot_text,
-                        'page_title': page_title,
-                        'page_url': page_url,
-                        'counter_plot': 1,
-                        'success': True
-                    }
-            else:
-                return {
-                    'summary': "No plot available",
-                    'page_title': page_title,
-                    'page_url': page_url,
-                    'counter_plot': 0,
-                    'success': False,
-                    'error': "No content found in Plot section."
-                }
-        
-        #------------------------------------------
-        except Exception as e:
+        if not chosen_result: # Chosen result after validation may be None (not validated)
             return {
                 'summary': "No plot available",
                 'page_title': None,
                 'page_url': None,
                 'counter_plot': 0,
                 'success': False,
-                'error': str(e)
+                'error': "No suitable articles found."
             }
-        
-    #------------------------------------------
+
+        page = wikipedia.page(chosen_result, auto_suggest=False)
+        header, plot_text = extract_plot(page)
+
+        print ("Chosen header:", header)
+        print ("Plot text:", '"' + plot_text[:60] + "..." + '"' if plot_text else "None")
+
+        if not plot_text:
+            return {
+                'summary': "No plot available",
+                'page_title': page.title,
+                'page_url': page.url,
+                'counter_plot': 0,
+                'success': False,
+                'error': "Plot section not found or empty."
+            }
+
+        return {
+            'summary': plot_text,
+            'page_title': page.title,
+            'page_url': page.url,
+            'counter_plot': 1,
+            'success': True
+        }
+
     except Exception as e:
         return {
             'summary': "No plot available",
@@ -315,19 +494,24 @@ def main():
     """
     #------------------------------------------
     # Read the CSV files
-    input_file = './Data/Filtered/sci-fi_books_TOP.csv'
     input_file_TEST = './Data/Filtered/sci-fi_books_TEST.csv'
-    output_file = './Data/Answers/sci-fi_books_TOP_Wiki.csv'
-    output_file_TEST = './Data/Answers/sci-fi_books_TEST_Wiki.csv'
+    #input_file_TEST = './Data/Filtered/sci-fi_books_TEST_small.csv'
+
+    df_TEST = pd.read_csv(input_file_TEST, sep = ';', encoding="utf-8-sig")
+    df_TEST['plot'] = df_TEST['plot'].astype(object)
+    df_TEST['url wikipedia'] = df_TEST['url wikipedia'].astype(object)
+
+    #----------------------
+    input_file = './Data/Filtered/sci-fi_books_TOP.csv'
+    #input_file = input_file_TEST
 
     df_TOP = pd.read_csv(input_file, sep = ';', encoding="utf-8-sig")
-    df_TEST = pd.read_csv(input_file_TEST, sep = ';', encoding="utf-8-sig")
+    df_TOP['plot'] = df_TOP['plot'].astype(object)
+    df_TOP['url wikipedia'] = df_TOP['url wikipedia'].astype(object)
 
-    df_TOP = df_TOP.rename(columns={"url": "url goodreads"})
-    df_TOP['plot'] = ""
-    df_TOP['url wikipedia'] = ""
-
-    print(df_TOP.info())
+    #----------------------
+    output_file_TEST = './Data/Filtered/sci-fi_books_TEST_Wiki.csv'
+    output_file = './Data/Filtered/sci-fi_books_TOP_Wiki.csv'
 
     #----------------------------------------
     # Load existing progress if the file exists
@@ -364,14 +548,17 @@ def main():
 
         # Query Wikipedia
         returned_dict = get_book_summary(title, author, year)
-        
+
+        if not returned_dict["success"]:
+            log_failed_book(returned_dict, title, author, year)
+
         counter_plot = returned_dict.get('counter_plot')
         returned_title = returned_dict.get('page_title')
         returned_text = returned_dict.get('summary')
         returned_url = returned_dict.get('page_url')
         
         #print(title, author)
-        print("Returned title:", returned_title)
+        #print("Returned title:", returned_title)
         print("Returned url:", returned_url)
         #print(returned_text)
         print()
@@ -404,67 +591,70 @@ def main():
     print(f"Analyzed {counter_books} books and added {counter_plots} plots to the file.")
 
     #----------------------------------------------------------------------------------
-    #df_TOP = df_TOP.rename(columns={"url": "url goodreads"})
-    df_TEST = df_TEST.rename(columns={"url": "url goodreads"})
+    # Add Wikipedia data to the test dataframe
 
-    # Include two columns in sci-fi_books_TEST.csv
-    df_TEST_merged = pd.merge(df_TEST, df_processed, 
-                              how='left', 
-                              on='url goodreads', 
-                              suffixes=('_test', '_processed'))
+    # Set new index for the dataframes
+    df_TEST = df_TEST.set_index("url goodreads")
+    df_processed = df_processed.set_index("url goodreads")
+
+    # Update test with the values from processed (only existing columns in test are affected)
+    df_TEST.update(df_processed[["plot", "url wikipedia"]])
+
+    # Reset index
+    df_TEST = df_TEST.reset_index()
+    df_processed = df_processed.reset_index()
     
     #------------------------------------------
     # Order of the columns
     column_order = [
-    'title', 
-    'author', 
-    'year',
-    'decade', 
-    'rate', 
-    'ratings', 
-    'series', 
-    'genres', 
-    'synopsis',
-    'review',
-    'url goodreads',
-    'plot',
-    'url wikipedia'
-]
-
-    # Select and rename columns
-    df_TEST_merged = df_TEST_merged[[
-        'title_test',
-        'author_test',
-        'year_test',
-        'decade_test',
-        'rate_test',
-        'ratings_test',
-        'series_test',
-        'genres_test',
-        'synopsis_test',
-        'review_test',
+        'title', 
+        'author', 
+        'year',
+        'decade', 
+        'rate', 
+        'ratings', 
+        'series', 
+        'genres', 
+        'synopsis',
+        'review',
         'url goodreads',
         'plot',
         'url wikipedia'
-    ]]
-    df_TEST_merged.columns = column_order
+    ]
 
     # Reorder columns
     df_processed = df_processed.reindex(columns=column_order)
     df_processed = df_processed.sort_values(by=['year', 'author', 'title'], ascending=True)
 
-    df_TEST_merged = df_TEST_merged.reindex(columns=column_order)
-    df_TEST_merged = df_TEST_merged.sort_values(by=['year', 'author', 'title'], ascending=True)
+    df_TEST = df_TEST.reindex(columns=column_order)
+    df_TEST = df_TEST.sort_values(by=['year', 'author', 'title'], ascending=True)
+
+    print(df_processed.info())
+    print(df_TEST.info())
 
     #------------------------------------------
     # Save the CSV file
     df_processed.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig')
-    df_TEST_merged.to_csv(output_file_TEST, index=False, sep=';', encoding='utf-8-sig')
+    df_TEST.to_csv(output_file_TEST, index=False, sep=';', encoding='utf-8-sig')
 
     print(f"Data saved to {output_file}")
     print(f"Data saved to {output_file_TEST}")
+
+    #------------------------------------------
+    # Final numbers
+    total_books = len(df_processed)
+    total_Wiki_url = df_processed['url wikipedia'].apply(lambda x: 1 if pd.notna(x) else 0).sum() 
+    total_plots = df_processed['plot'].apply(lambda x: 1 if pd.notna(x) and x != "No plot available" else 0).sum()
+
+    print(f"\nTotal number of books: {total_books}")
+    print(f"Total number of Wikipedia URLs: {total_Wiki_url}")
+    print(f"Total number of plots: {total_plots}")
 
 #----------------------------------------------------------------------------------
 # Execution
 if __name__ == "__main__":
     main()
+
+    winsound.Beep(800, 500) # Play a 800 Hz beep for 500 milliseconds
+    winsound.Beep(500, 500) # Play a 500 Hz beep for 500 milliseconds
+    winsound.Beep(300, 500) # Play a 300 Hz beep for 500 milliseconds

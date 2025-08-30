@@ -53,8 +53,8 @@ def load_progress() -> Dict[str, Dict[str, Any]]:
         Returns: {'urls': {}} or {'urls': {'http://example.com': {...}}}
     """
 
-    if os.path.exists('./Data/scraping_progress.json'):
-        with open('./Data/scraping_progress.json', 'r') as f:
+    if os.path.exists('./Data/Brute/scraping_progress.json'):
+        with open('./Data/Brute/scraping_progress.json', 'r') as f:
             return json.load(f)
     return {'urls': {}}
 
@@ -68,10 +68,10 @@ def save_progress(progress: Dict[str, Dict[str, Any]]):
         Typically contains information about scraped URLs and their status.
 
     Note:
-        Overwrites the existing file at './Data/scraping_progress.json'
+        Overwrites the existing file at './Data/Brute/scraping_progress.json'
     """
 
-    with open('./Data/scraping_progress.json', 'w') as f:
+    with open('./Data/Brute/scraping_progress.json', 'w') as f:
         json.dump(progress, f)
 
 #----------------------------------------------------------------------------------
@@ -364,6 +364,22 @@ def main():
         "https://www.goodreads.com/list/show/43319.Classic_Science_Fiction_2000_2009",
         "https://www.goodreads.com/list/show/75182.Science_Fiction_2010_2019",
         "https://www.goodreads.com/list/show/146613.Science_Fiction_2020_2029",
+        "https://www.goodreads.com/list/show/155483",
+        "https://www.goodreads.com/list/show/155401",
+        "https://www.goodreads.com/list/show/155391",
+        "https://www.goodreads.com/list/show/155378",
+        "https://www.goodreads.com/list/show/155343",
+        "https://www.goodreads.com/list/show/155307",
+        "https://www.goodreads.com/list/show/155296",
+        "https://www.goodreads.com/list/show/155261",
+        "https://www.goodreads.com/list/show/155402",
+        "https://www.goodreads.com/list/show/155440",
+        "https://www.goodreads.com/list/show/155447",
+        "https://www.goodreads.com/list/show/155799",
+        "https://www.goodreads.com/list/show/171985",
+        "https://www.goodreads.com/list/show/196123",
+        "https://www.goodreads.com/list/show/196124",
+        "https://www.goodreads.com/list/show/195299.Scifi_published_in_2024",
         "https://www.goodreads.com/list/show/79670.Best_Science_Fiction_on_Goodreads_with_fewer_than_100_ratings",
         "https://www.goodreads.com/list/show/78128.Best_Science_Fiction_on_Goodreads_with_between_100_and_999_ratings",
         "https://www.goodreads.com/list/show/77875.Best_Science_Fiction_on_Goodreads_with_between_1000_and_9999_ratings",
@@ -423,7 +439,7 @@ def main():
     # Reading the complete json file and saving it as a CSV file
 
     # Step 1: Load the JSON file into a Python object
-    with open('./Data/scraping_progress.json', 'r') as f:
+    with open('./Data/Brute/scraping_progress.json', 'r') as f:
         data = json.load(f) # Load JSON into a dictionary
 
     # Step 2: Extract the "books" data from within the "urls" layer
