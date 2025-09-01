@@ -1,5 +1,12 @@
 # Ignore
-*.html
-*.env
-*.env.*
 *.txt
+sci-fi_books_BRUTE.csv
+sci-fi_books_LISTS.csv
+sci-fi_books_PARTIAL_LISTS.csv
+sci-fi_books_SHELF.csv
+scraping_progress.json
+sci-fi_books_FILTERED.csv
+sci-fi_books_TEST.csv
+sci-fi_books_TEST_Wiki_small.csv
+wikipedia_failed_books.csv
+Science Fiction Books _ Goodreads _ *.html

@@ -294,7 +294,8 @@ def main():
         "Grant Naylor": "Rob Grant, Doug Naylor",
         "Pittacus Lore": "James Frey, Jobie Hughes",
         "J.W. Lynne": "Jenny Lynne",
-        "Ilona Andrews": "Ilona Gordon, Andrew Gordon"
+        "Ilona Andrews": "Ilona Gordon, Andrew Gordon",
+        "Edson McCann": "Frederik Pohl, Lester del Rey",
     }
 
     df['author'] = df['author'].replace(author_corrections)
@@ -306,11 +307,11 @@ def main():
         ("残次品", "残次品 [Can Ci Pin]", "Priest"),
         ("Dr. Jekyll and Mr. Hyde", "Strange Case of Dr Jekyll and Mr Hyde", "Robert Louis Stevenson"),
         ("Thrawn", "Star Wars: Thrawn", "Timothy Zahn"),
-        ("The Floating Island: The Pearl of the Pacific", "Propeller Island", None),
-        ("The Amphibian", "Amphibian Man", None),
-        ("After Many a Summer Dies the Swan: A Novel", "After Many a Summer", None),
-        ("The Futurological Congress: From the Memoirs of Ijon Tichy", "The Futurological Congress", None),
-        ("Frankenstein: The 1818 Text", "Frankenstein", None),
+        ("The Floating Island: The Pearl of the Pacific", "Propeller Island", "Jules Verne"),
+        ("The Amphibian", "Amphibian Man", "Alexander Belyaev"),
+        ("After Many a Summer Dies the Swan: A Novel", "After Many a Summer", "Aldous Huxley"),
+        ("The Futurological Congress: From the Memoirs of Ijon Tichy", "The Futurological Congress", "Stanisław Lem"),
+        ("Frankenstein: The 1818 Text", "Frankenstein", "Mary Wollstonecraft Shelley"),
         ("Round the Moon", "Around the Moon", "Jules Verne"),
         ("The Last Man", "Le Dernier Homme", "Jean-Baptiste Cousin de Grainville"),
         ("Tomorrow's Eve", "The Future Eve", "Auguste de Villiers de l'Isle-Adam"),

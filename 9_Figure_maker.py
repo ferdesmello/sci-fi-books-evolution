@@ -1122,7 +1122,7 @@ category_percent_2.plot(kind = 'bar',
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("What is the book's primary disciplinary focus?", fontsize = 14, color = custom_dark_gray)
+ax1.set_title("What is the main disciplinary focus of the story?", fontsize = 14, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -1215,7 +1215,7 @@ category_percent_3.plot(kind = 'bar',
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Is the book considered more of a light or heavy reading experience?", fontsize = 14, color = custom_dark_gray)
+ax1.set_title("Is the story considered more of a light or heavy reading experience?", fontsize = 14, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -1498,7 +1498,7 @@ category_percent_6.plot(kind = 'bar',
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("What is the social political scenario depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("What is the social-political scenario depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -1668,7 +1668,7 @@ category_percent_8.plot(kind = 'bar',
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Is the story set in a post-apocalyptic world (after a civilization-collapsing event)?", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("Is the story set in a post-apocalyptic world?", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -1752,7 +1752,7 @@ category_percent_9.plot(kind = 'bar',
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Are there any depictions or mentions of non-terrestrial life forms (e.g., aliens, extraterrestrial \norganisms, creatures not originating on Earth, etc.) or alien technology in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("Are there any depictions or mentions of extraterrestrial life forms or alien technology in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -1861,7 +1861,7 @@ ax1.legend(handles,
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("How are the non-terrestrial life forms generally depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("How are the extraterrestrial life forms generally depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -1952,7 +1952,7 @@ ax1.legend(handles,
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("How are the non-terrestrial life forms generally depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("How are the extraterrestrial life forms generally depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -2465,7 +2465,7 @@ category_percent_15a.plot(kind = 'bar',
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("What is the gender of the single protagonist or main character, as depicted in the narrative?", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("What is the gender of the single protagonist or main character, as depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -2552,7 +2552,7 @@ category_percent_15b.plot(kind = 'bar',
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("What is the gender of the single protagonist or main character, as depicted in the narrative?", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("What is the gender of the single protagonist or main character, as depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -2815,7 +2815,7 @@ category_percent_16.plot(kind = 'bar',
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Are there any depictions of virtual reality (e.g., immersive digital environments, \ndigital reality simulations, augmented reality, etc.) in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("Are there any depictions of virtual reality in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages
@@ -2996,7 +2996,7 @@ category_percent_18.plot(kind = 'bar',
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
 #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("How central is the critique or reflection of specific social issues (e.g., inequality, \nwar, discrimination, political oppression, etc.) to the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
+ax1.set_title("How central is the critique or reflection of specific social issues to the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
 #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
 # Format the y-axis to show percentages

@@ -79,25 +79,25 @@ def analyze_book(title: str , author: str, year: int, synopsis: str, review: str
     **Output Formatting Instructions**:
     Follow this exact format!
 
-    Provide a concise paragraph summarizing the most iconic and well-known elements of the book, including:
+    Provide a concise paragraph summarizing the central and relevant elements of the book, including:
     - Themes central to the story or that significantly impact the plot;
     - Memorable locations or time settings unique to the story;
     - The main character, if there is one, and secondary characters;
-    - Important creatures (e.g., aliens, robots, AIs) central to the story;
+    - Important creatures (aliens, robots, AIs, etc.) central to the story;
     - Notable technologies that play a key role in the plot.
 
     After the summary, leave one blank line and provide one answer per line in the following format:
     Question number, followed by a period, then the selected answer from the alternatives given, followed by a colon, and then the detailed but short justification in a single sentence.
     Example:
-    1. Hard: The story emphasizes hard sciences like physics and biology.
-    2. Balanced: The story balances entertainment with deeper themes and ideas.
-    3. Near future: The setting is within a few decades ahead of the publication date.
+    1. Moderate: Scientific plausibility and speculation are equally important in the story.
+    2. Mixed: The story balances elements of both soft and hard sciences.
+    3. Heavy: The story is emotionally demanding, with complex ideas and scientific concepts.
     ...
 
     Important Notes:
     Ensure there are no line breaks, extra spaces, or symbols between answers.
     If no clear summary is possible, provide a brief explanation before answering.
-    Answers must be one of the provided options given.
+    Answers must be one of the provided options.
     Answer in English.
 
     **Questions**:
@@ -108,21 +108,21 @@ def analyze_book(title: str , author: str, year: int, synopsis: str, review: str
         Moderate: A balanced mix, scientific plausibility is considered but not always prioritized;
         High: Scientific plausibility is important and generally consistent with known science;
         Very high: Scientific accuracy is a central component, with the narrative driven by plausible scientific details;
-        Uncertain: Not enough information to say.
-    2. What is the book's primary disciplinary focus?
+        Uncertain: Not enough information to say, unclear.
+    2. What is the main disciplinary focus of the story?
         Soft sciences: Psychology, sociology, politics, philosophy, anthropology, etc., dominate the narrative;
         Leaning soft sciences: Soft topics dominate, with some hard sciences elements;
-        Mixed: Balances elements of both soft and hard science equally;
+        Mixed: Balances elements of both soft and hard sciences equally;
         Leaning hard sciences: Hard topics dominate, with some soft sciences elements;
         Hard sciences: Physics, astronomy, biology, engineering, mathematics, etc., dominate the narrative;
-        Uncertain: Not enough information to say.
-    3. Is the book considered more of a light or heavy reading experience?
+        Uncertain: Not enough information to say, unclear.
+    3. Is the story considered more of a light or heavy reading experience?
         Very light: Easily accessible, fast read, minimal intellectual demands, focus on entertainment, humor, or adventure;
         Light: Somewhat accessible, with some thoughtful elements and themes, but still focused on entertainment;
         Balanced: A mix of light and heavy elements, moderately complex and deep;
         Heavy: Intellectually or emotionally demanding, with complex ideas and deeper themes;
         Very heavy: Challenging, slow read, dense in language, themes, or ideas, focus on philosophical or intricate scientific concepts;
-        Uncertain: Not enough information to say.
+        Uncertain: Not enough information to say, unclear.
     4. When does most of the story take place in relation to the year the book was published?
         Distant past: Millennia or more before; 
         Far past: Centuries before; 
@@ -131,94 +131,94 @@ def analyze_book(title: str , author: str, year: int, synopsis: str, review: str
         Near future: Within a few decades ahead; 
         Far future: Centuries ahead; 
         Distant future: Millennia or more ahead; 
-        Multiple timelines; 
-        Uncertain: Not enough information to say.
+        Multiple timelines: distinct time periods without a single dominant timeframe; 
+        Uncertain: Not enough information to say, unclear.
     5. What is the mood of the story?
         Very optimistic: Overwhelmingly positive, uplifting, hopeful; 
         Optimistic: Positive outlook but with moments of pessimism; 
         Balanced: A mix of positive and negative moods without leaning towards one; 
         Pessimistic: Negative outlook but with moments of optimism; 
         Very pessimistic: Overwhelmingly negative, bleak, hopeless;
-        Uncertain: Not enough information to say.
+        Uncertain: Not enough information to say, unclear.
     6. What is the social-political scenario depicted in the story?
         Utopic: Ideal or perfect society;
         Leaning utopic: Significant prosperity and desirable elements, but with some flaws;
         Balanced: A mix of both strengths and flaws elements, or an ordinary view of society;
         Leaning dystopic: Significant problems and undesirable elements, but with some strengths;
         Dystopic: Bleak, deeply flawed, authoritarian, and oppressive;
-        Uncertain: Unclear, not a major focus of the story, or there is not enough information to say.
+        Uncertain: Not enough information to say, unclear.
     7. Is most of the story set on planet Earth?
         Yes;
         No;
-        Uncertain: Not enough information to say.
-    8. Is the story set in a post-apocalyptic world (after a civilization-collapsing event)?
-        Yes: Clear post-apocalyptic state;
+        Uncertain: Not enough information to say, unclear.
+    8. Is the story set in a post-apocalyptic world?
+        Yes: Clear post-apocalyptic state, after a civilization-collapsing event;
         Somewhat: Just some elements are present, or the collapse is partial or local;
         No: It's not set in a post-apocalyptic world;
-        Uncertain: Not enough information to say.
-    9. Are there any depictions or mentions of non-terrestrial life forms (e.g., aliens, extraterrestrial organisms, creatures not originating on Earth, etc.) or alien technology in the story?
-        Yes;
-        No;
-        Uncertain: Not enough information to say.
-    10. How are the non-terrestrial life forms generally depicted in the story?
-        Not applicable: No extraterrestrial life forms present (answered No to the prior question);
+        Uncertain: Not enough information to say, unclear.
+    9. Are there any depictions of extraterrestrial life forms or alien technology in the story?
+        Yes: Extraterrestrial beings (aliens, non-terrestrial organisms, creatures not originating on Earth, etc.), or alien technology are mentioned or depicted;
+        No: No extraterrestrial life forms or technology are present;
+        Uncertain: Not enough information to say, unclear.
+    10. How are the extraterrestrial life forms generally depicted in the story?
+        Not applicable: No extraterrestrial life forms present, answered No to the prior question;
         Good: Friendly, virtuous, helpful, or heroic; 
         Leaning good: Generally positive or benign but with flaws or minor conflicts; 
         Ambivalent: Morally ambiguous, showing both positive and negative traits, or multifaceted; 
         Leaning bad: Generally antagonistic or threatening but not entirely villainous; 
         Bad: Hostile, villainous, antagonistic, or threatening; 
-        Uncertain: Not enough information to say, lack of (moral) characterization, neutral, or minimal plot relevance.
-    11. Are there any depictions of robots or complex artificial intelligences in the story?
+        Uncertain: Not enough information to say, unclear, lack of (moral) characterization, or answered Uncertain to the last question.
+    11. Are there any depictions of robots or artificial intelligences in the story?
         Yes;
         No;
-        Uncertain: Not enough information to say.
+        Uncertain: Not enough information to say, unclear.
     12. How are the robots or artificial intelligences generally depicted in the story?
-        Not applicable: No robots or artificial intelligences present (answered No to the prior question);
+        Not applicable: No robots or artificial intelligences present, answered No to the prior question;
         Good: Friendly, virtuous, helpful, or heroic; 
         Leaning good: Generally positive or benign but with flaws or minor conflicts; 
         Ambivalent: Morally ambiguous, showing both positive and negative traits, or multifaceted; 
         Leaning bad: Generally antagonistic or threatening but not entirely villainous; 
         Bad: Hostile, villainous, antagonistic, or threatening; 
-        Uncertain: Not enough information to say, lack of (moral) characterization, neutral, or minimal plot relevance.
+        Uncertain: Not enough information to say, unclear, lack of (moral) characterization, or answered Uncertain to the last question.
     13. Is there a single protagonist or main character?
         Yes; 
         No: No clear single protagonist or main character, multiple protagonists or main characters, or a collective;
-        Uncertain: Not enough information to say.
+        Uncertain: Not enough information to say, unclear.
     14. What is the nature of the single protagonist or main character?
-        Not applicable: No clear single protagonist or main character (e.g., multiple human or non-human main characters, a collective, etc.), answered No to the prior question.
+        Not applicable: No clear single protagonist or main character (multiple human or non-human main characters, a collective, etc.), answered No to the prior question;
         Human: The protagonist is a single human being (even if a cyborg or augmented);
-        Non-human: The protagonist is not a single human (e.g., animal, robot, AI, alien, creature, abstract concept, polygon, etc.);
-        Uncertain: Not enough information to say.
-    15. What is the gender of the single protagonist or main character, as depicted in the narrative?
-        Not applicable: No clear single protagonist or main character to assign a gender to (e.g., multiple human or non-human main characters, a collective, etc.), or answered Not applicable to the prior question.
+        Non-human: The protagonist is not a single human (animal, robot, AI, alien, creature, abstract concept, polygon, etc.);
+        Uncertain: Not enough information to say, unclear, or answered Uncertain to the last question.
+    15. What is the gender of the single protagonist or main character, as depicted in the story?
+        Not applicable: No clear single protagonist or main character to assign a gender to (multiple human or non-human main characters, a collective, etc.), or answered Not applicable to the prior question;
         Male: The single protagonist (human or non-human) is male; 
         Female: The single protagonist (human or non-human) is female; 
-        Other: The single protagonist (human or non-human) is gender ambiguous or fluid, ungendered, or neither male nor female;
-        Uncertain: Not enough information to say;
-    16. Are there any depictions of virtual reality (e.g., immersive digital environments, digital reality simulations, augmented reality, etc.) in the story?
-        Yes: Central or significant role in the plot;
-        Somewhat: Some form of it, minor or background role;
-        No: Not present;
-        Uncertain: Not enough information to say.
+        Other: The single protagonist (human or non-human) is non-binary, genderfluid, gender ambiguous or fluid, or another gender identity that is not male nor female;
+        Uncertain: Not enough information to say, unclear, or answered Uncertain to the last question.
+    16. Are there any depictions of virtual reality in the story?
+        Yes: Virtual reality, immersive digital environments, augmented reality, etc., have a central or significant role in the plot;
+        Somewhat: Some form is present, but it has a minor or background role;
+        No: Not present in any form;
+        Uncertain: Not enough information to say, unclear.
     17. How are technology and science depicted in the story?
         Good: Optimistic and beneficial portrayal; 
         Leaning good: Mostly positive but with some issues; 
         Ambivalent: Balanced view with both positive and negative consequences; 
         Leaning bad: Largely negative portrayal but with redeeming features; 
         Bad: Pessimistic, harmful, or destructive portrayal; 
-        Uncertain: Not enough information to say, lack of (moral) characterization, neutral, or minimal plot relevance.
-    18. How central is the critique or reflection of specific social issues (e.g., inequality, war, discrimination, political oppression, etc.) to the story?
-        Core: Main driver of the plot or key theme;
-        Major: Significant role but secondary theme;
-        Minor: Subtle role or minimal theme;
+        Uncertain: Not enough information to say, unclear, or a lack of (moral) characterization.
+    18. How central is the critique or reflection of specific social issues to the story?
+        Core: The critique of social issues (inequality, war, discrimination, political oppression, etc.) is the main driver of the plot or a key theme;
+        Major: It plays a significant role but is a secondary theme;
+        Minor: It is a subtle or minimal theme in the story;
         Absent: Not present;
-        Uncertain: Not enough information to say.
+        Uncertain: Not enough information to say, unclear.
     19. How central is an ecological or environmental message to the story?
         Core: Main driver of the plot or key theme;
         Major: Significant role but secondary theme;
         Minor: Subtle role or minimal theme;
         Absent: Not present;
-        Uncertain: Not enough information to say.
+        Uncertain: Not enough information to say, unclear.
 
     When answering, consider how the following synopsis, review, plot summary, and genres may provide relevant context for each question.
 
@@ -234,8 +234,8 @@ def analyze_book(title: str , author: str, year: int, synopsis: str, review: str
             model="gpt-5-mini",
             input=prompt,
             max_output_tokens=3000,
-            reasoning={"effort": "low"},  # can be "low", "medium", or "high"
-            text={"verbosity":"low"}  # can be "low", "medium", or "high"
+            reasoning={"effort": "low"}, # can be "low", "medium", or "high"
+            text={"verbosity":"low"} # can be "low", "medium", or "high"
         )
 
         # Extract and print the response
@@ -361,11 +361,6 @@ def ask_to_AI(df: pd.DataFrame, output_file: str) -> pd.DataFrame:
         plot = book['plot']
         url_w = book['url wikipedia']
 
-        """forbidden_titles = [
-            "Songmaster",
-            "The Hollow Lands"
-        ]"""
-
         forbidden_titles = [] # Empty for now. Add titles here if you want to force "No plot available."
 
         if pd.isna(plot) or len(plot) < 100 or title in forbidden_titles:
@@ -464,9 +459,16 @@ def ask_to_AI(df: pd.DataFrame, output_file: str) -> pd.DataFrame:
             }
 
             # Add the repeated questions/justifications columns
-            for i in range(19):
-                data[question_columns[i]] = [answers[i]]
-                data[justification_columns[i]] = [justifications[i]]
+            if (len(answers) == 19):
+                for i in range(19):
+                    data[question_columns[i]] = [answers[i]]
+                    data[justification_columns[i]] = [justifications[i]]
+
+            else:
+                for i in range(19):
+                    data[question_columns[i]] = [None]
+                    data[justification_columns[i]] = [None]
+                logging.warning(f"Filling None for all answers and justifications for book: {title}")
 
             # Build DataFrame
             df_progress = pd.DataFrame(data)
@@ -506,7 +508,7 @@ def ask_to_AI(df: pd.DataFrame, output_file: str) -> pd.DataFrame:
                 '14 protagonist nature',
                 'justifying protagonist nature',
                 '15 protagonist gender',
-                'justifying protagonist',
+                'justifying protagonist gender',
                 '16 virtual',
                 'justifying virtual',
                 '17 tech and science',
@@ -525,8 +527,12 @@ def ask_to_AI(df: pd.DataFrame, output_file: str) -> pd.DataFrame:
                 'review',
                 'url goodreads',
                 'plot',
-                'url wikipedia'
+                'url wikipedia',
             ]
+
+            # Check for duplicate columns in column_order
+            if len(column_order) != len(set(column_order)):
+                raise ValueError("Duplicate columns in column_order")
 
             # Reorder the columns
             df_progress = df_progress.reindex(columns=column_order)
@@ -554,15 +560,15 @@ def main():
         
     #------------------------------------------
     # Name of the input file
-    input_file = './Data/Filtered/sci-fi_books_TEST_Wiki.csv'
+    #input_file = './Data/Filtered/sci-fi_books_TEST_Wiki.csv'
     #input_file = './Data/Filtered/sci-fi_books_TEST_Wiki_small.csv'
-    #input_file = './Data/Filtered/sci-fi_books_TOP_Wiki.csv'
+    input_file = './Data/Filtered/sci-fi_books_TOP_Wiki.csv'
 
     # Name of the output file
     #output_file = './Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_01.csv'
-    output_file = './Data/Answers/sci-fi_books_AI_ANSWERS_TEST.csv'
+    #output_file = './Data/Answers/sci-fi_books_AI_ANSWERS_TEST.csv'
     #output_file = './Data/Answers/sci-fi_books_AI_ANSWERS_TEST_small.csv'
-    #output_file = './Data/Answers/sci-fi_books_AI_ANSWERS.csv'
+    output_file = './Data/Answers/sci-fi_books_AI_ANSWERS.csv'
 
     #------------------------------------------
     # Load book data to send to the AI
@@ -603,10 +609,10 @@ def main():
 if __name__ == "__main__":
 
     missing_books = 1
-    max_retries = 10
-    attempt = 0
+    max_retries = 20
+    attempt = 1
 
-    while (missing_books != 0) and (attempt < max_retries):
+    while (missing_books != 0) and (attempt <= max_retries):
         missing_books, df_processed = main()
         print(f"Book(s) missing: {missing_books}.\nAttempts made: {attempt}.")
         attempt += 1

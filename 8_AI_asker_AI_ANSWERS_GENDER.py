@@ -53,15 +53,13 @@ def analyze_author(author: str) -> str:
     **Output Formatting Instructions**:
     Follow this exact format!
     Please, give only one-word answers without any punctuation marks and only from the set of four alternatives given.
-    If it is given two names, answer Uncertain, unless they are of the same gender, then answer their shared gender.
-    If it is a well-known pseudonym, answer with the real author's gender; otherwise, answer Uncertain.
-    
+
     **Question**:
-    What is the gender of {author}?
+    What is the gender of author {author}?
         Male;
         Female;
-        Other;
-        Uncertain.
+        Other: Non-binary, genderfluid, ambiguous, fluid, or another gender identity that is not male nor female;
+        Uncertain: Not enough information to tell, or multiple authors of different genders.
     """
     
     # Call the OpenAI API with the crafted prompt
@@ -69,14 +67,13 @@ def analyze_author(author: str) -> str:
         response = client.responses.create(
             model="gpt-5-mini",
             input=prompt,
-            max_output_tokens=200,
+            max_output_tokens=400,
             reasoning={"effort": "low"}, # can be "low", "medium", or "high"
             text={"verbosity":"low"} # can be "low", "medium", or "high"
         )
 
         # Extract and print the response
         answer = response.output_text
-        print(f'{author} is {answer}')
 
     except Exception as e:
         print("Error:", e)
@@ -95,7 +92,6 @@ def main():
     
     # Name of the input file
     input_file = './Data/Filtered/sci-fi_books_TOP.csv'
-    #input_file = './Data/Filtered/sci-fi_books_AI_ANSWERS.csv'
 
     # Name of the output file
     output_file = './Data/Answers/sci-fi_books_AI_ANSWERS_GENDER.csv'
@@ -106,22 +102,32 @@ def main():
     #print(df.info())
 
     authors_list = list(set(df['author'].str.strip()))
-    print("length =",len(authors_list))
+    print("Author's set length =", len(authors_list))
 
     #----------------------------------------------------------------------------------
     # Main operation
 
-    # Create a list to store the results
-    results = []
-    number = 0
+    # Determine if the file exists to write headers
+    file_exists = os.path.exists(output_file)
 
     # Load existing progress if the file exists
-    if os.path.exists(output_file):
+    if file_exists:
         df_authors = pd.read_csv(output_file, sep=';', encoding='utf-8-sig')
     else:
         df_authors = pd.DataFrame(columns=['author', 'gender'])
 
     processed_authors = set(df_authors['author'].values)
+
+    # Valid answers set
+    answers_set = {
+            "Male",
+            "Female",
+            "Other",
+            "Uncertain"
+            }
+    
+    #------------------------------------------
+    number = 0
 
     # Iterate through the author names and query GPT-5
     for name in authors_list:
@@ -130,66 +136,108 @@ def main():
             continue
         
         gender = analyze_author(name)
-        
-        # Checking if the output is valid and adding to results
-        answer_set = {
-            "Male",
-            "Female",
-            "Other",
-            "Uncertain"
-            }
 
         try:
-            if gender.strip() not in answer_set:
-                print(f"Warning: Unexpected answer for {name}")
-                results.append((name, None))
+            if gender.strip() in answers_set:
+                print(f'  {name} is {gender}')
+                new_row = pd.DataFrame([{'author': name, 'gender': gender.strip()}])
+            
+                # Append the new row to the CSV file
+                new_row.to_csv(output_file, mode='a', header=not file_exists, index=False, sep=';', encoding='utf-8-sig')
+                
+                # The file now exists for subsequent writes
+                file_exists = True
+                number += 1
 
             else:
-                results.append((name, gender))
-                number += 1
+                print(f"Warning: Unexpected answer for {name}; {gender}")
 
         except Exception as e:
             print("Error:", e)
-            results.append((name, None))
 
-    print(f"\nAdded {number} author(s) and their gender to the list.\n")
-
-    # Convert to a DataFrame and add it to the end of the present DataFrame
-    df_added_authors = pd.DataFrame(results, columns=['author', 'gender'])
-    df_authors = pd.concat([df_authors, df_added_authors], ignore_index=True)
-
-    # Drop rows with any null value in gender
-    df_authors = df_authors.dropna(axis=0, subset=['gender'], how="any", ignore_index=True)
-
-    # Sort the DataFrame
-    df_authors = df_authors.sort_values(by=['gender', 'author'], ascending=True)
-    df_authors = df_authors.reset_index(drop=True)
-
-
-    #----------------------------------------------------------------------------------
-    df_authors.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig')
-    print(f"\nData saved to {output_file}")
-
-    for row in df_authors['author']:
-        if row not in authors_list:
-            print(f"\nCheck this extra author name: {row}.")
+    print(f"\nAdded {number} author(s) and their gender(s) to the list.\n")
 
     #------------------------------------------
-    size_in = len(authors_list) # Number of items
-    size_out = df_authors.shape[0] # Number of rows
-    missing_authors = size_in - size_out # Difference in number of rows
+    # RE-READ and APPLY CORRECTIONS to the final DataFrame
+    if os.path.exists(output_file):
+        df_authors_final = pd.read_csv(output_file, sep=';', encoding='utf-8-sig')
 
-    return missing_authors, df_authors # How many authors were not processed right and the DataFrame
+        gender_corrections = [
+            # (author, correct_gender)
+            ("Micaiah Johnson", "Female"),
+            ("Kaliane Bradley", "Female"),
+            ("Misba", "Female"),
+            ("Murray Constantine", "Female"),
+            ("N.E. Davenport", "Female"),
+            ("T.A. White", "Female"),
+            ("J.S. Dewes", "Female"),
+            ("Joan He", "Female"),
+            ("Lauren Thoman", "Female"),
+            ("Sierra Greer", "Female"),
+            ("Zoe Hana Mikuta", "Female"),
+
+            ("A.R. Merrydew", "Male"),
+            ("Blake Savage", "Male"),
+            ("Brett Sterling", "Male"),
+            ("Erik J. Brown", "Male"),
+            ("J.M. Troska", "Male"),
+            ("James Frey, Jobie Hughes", "Male"),
+            ("Max Nowaz", "Male"),
+            ("Skyler Ramirez", "Male"),
+            ("Terry Miles", "Male"),
+            ("Thomas R. Weaver", "Male"),
+            ("Calvin Kasulke", "Male"),
+            ("Edson McCann", "Male"),
+            ("Frederik Pohl, Lester del Rey", "Male"),
+            ("Owen Gregory", "Male"),
+            ("Peter Brown", "Male"),
+            ("K.M. Szpara", "Male"),
+
+            ("Annalee Newitz", "Other"),
+            ("Linden A. Lewis", "Other"),
+            ("Nino Cipri", "Other"),
+            ("Rivers Solomon", "Other"),
+            ("Sarah Gailey", "Other"),
+            ("Xiran Jay Zhao", "Other"),
+            ("Hiron Ennes", "Other"),
+            ("L.R. Lam", "Other"),
+            ("Ness Brown", "Other"),
+            ("Marisa Crane", "Other"),
+            ("Kenneth Robeson", "Other"),
+
+            ("Ilona Andrews", "Uncertain"),
+            ("Ilona Gordon, Andrew Gordon", "Uncertain"),
+            ("Trevor Alan Foris", "Uncertain"),
+            ("Victor Appleton II", "Uncertain"),
+        ]
+
+        # Apply corrections to the final DataFrame
+        for author, correct in gender_corrections:
+            df_authors_final.loc[df_authors_final["author"] == author, "gender"] = correct
+
+        # Clean, sort, and save the final DataFrame
+        df_authors_final = df_authors_final.dropna(axis=0, subset=['gender'], how="any", ignore_index=True)
+        df_authors_final = df_authors_final.sort_values(by=['gender', 'author'], ascending=True)
+        df_authors_final = df_authors_final.reset_index(drop=True)
+        df_authors_final.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig')
+        
+        length_in = len(authors_list)
+        length_out = df_authors_final.shape[0]
+        missing_authors = length_in - length_out
+
+        return missing_authors, df_authors_final
+    else:
+        return len(authors_list), pd.DataFrame() # No file created, all authors are missing
 
 #----------------------------------------------------------------------------------
 # Execution
 if __name__ == "__main__":
 
     missing_authors = 1
-    max_retries = 10
-    attempt = 0
+    max_retries = 20
+    attempt = 1
 
-    while (missing_authors != 0) and (attempt < max_retries):
+    while (missing_authors != 0) and (attempt <= max_retries):
         missing_authors, df_authors = main()
         print(f"Author(s) missing: {missing_authors}.\nAttempts made: {attempt}.")
         attempt += 1
