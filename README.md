@@ -32,7 +32,9 @@ All data recovered and processed is stored in the **Data/Brute** folder.
 
 If this is your first time running everything, you can proceed to step 3. But if you have already run everything to the end and are just adding some books from the scraper (or deleting books via the filtering), that may change which books are in the top 200 per decade. Some rows from the AI answers' CSV may need to be excluded, and/or new ones may need to be processed. For this, run **5_Data_fixer.py** _now_.
 
-Many of the novels in the top sample have a Wikipedia article with a plot section that gives much more details about the plot than Goodreads synopses and reviews, so they are preferable. **6_Wikipedia_plot_scraper.py** searches the wikipedia after the novels listed in **sci-fi_books_TOP.csv** and creates the **sci-fi_books_TOP_Wiki.csv** and **sci-fi_books_TEST_Wiki.csv** files with the plot sections found in the articles.
+Many of the novels in the top sample have a Wikipedia article with a plot section that gives much more details about the plot than Goodreads synopses and reviews, so they are preferable.
+
+**6_Wikipedia_plot_scraper.py** searches the wikipedia after the novels listed in **sci-fi_books_TOP.csv** and creates the **sci-fi_books_TOP_Wiki.csv** and **sci-fi_books_TEST_Wiki.csv** files with the plot sections found in the articles.
 
 All the files are stored in the **Data/Filtered** folder.
 
