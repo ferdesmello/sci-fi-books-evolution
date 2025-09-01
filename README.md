@@ -6,15 +6,15 @@ Inspired by this project ([video](https://www.youtube.com/watch?v=nRQ2vMpw-n8), 
 
 You can read in detail all the process of the data and analysis of the results [here](https://fdesmello.wordpress.com/2024/11/21/a-journey-through-160-years-of-sci-fi-novels-a-study-using-data-and-ai/).
 
-But, in short, I scraped data about thousands of sci-fi books from [Goodreads](https://www.goodreads.com/) lists and shelves, and the books' [Wikipedia](https://en.wikipedia.org/wiki/Main_Page) articles, cleaned and reduced the data, selected the top 200 novels per decade (or all the novels if fewer than 200 per decade), and fed that into GPT-5 (in the first tries I used GPT-4o and Gemini 2.0 Flash) via the OpenAI API, asking about many plot-related things. Then, I aggregated the results in figures to see how things changed over time.
+But, in short, I scraped data about thousands of sci-fi books from [Goodreads](https://www.goodreads.com/) lists and shelves, and the books' [Wikipedia](https://en.wikipedia.org/wiki/Main_Page) articles, cleaned and reduced the data, selected the top 200 novels per decade (or all the novels if fewer than 200 per decade), and fed that into GPT-5 (GPT-4o and Gemini 2.0 Flash in the first tries) via the OpenAI API, asking about many plot-related things. Then, I aggregated the results in figures to see how things changed over time.
 
 ## What the code does
 
 ### 1. Scraping the data
 
-**1_Goodreads_scraper_SHELF.py** reads HTML files in the folder **Saved_pages** and searches for links to the book pages and downloads data for book's _title_, _author_, _year_ published, number of _pages_, if it is part of a _series_, average _rate_, number of _ratings_, _genres_, _synopsis_ and the longest of the first two _reviews_, saving everything in the **sci-fi_books_SHELF.csv** file at the end.
+I intended to scrape data directly from the [science fiction book shelf](https://www.goodreads.com/shelf/show/science-fiction) on Goodreads, but it didn't work, and for some error, it only shows books until page [25](https://www.goodreads.com/shelf/show/science-fiction?page=25). I contorned this by downloading the pages and reading them locally. **1_Goodreads_scraper_SHELF.py** reads HTML files in the folder **Saved_pages** and searches for links to the book pages and downloads data for book's _title_, _author_, _year_ published, number of _pages_, if it is part of a _series_, average _rate_, number of _ratings_, _genres_, _synopsis_ and the longest of the first two _reviews_, saving everything in the **sci-fi_books_SHELF.csv** file at the end.
 
-You will have to download and put the HTML files in the Saved_pages folder by hand. I didn't include them here because they are big and were using too much space.
+You will have to download and put the HTML files in the Saved_pages folder by hand. I didn't include them here because they are big and use too much space.
 
 **2_Goodreads_scraper_LISTS.py** does the same, but from a list of URLs for the initial pages of thematic book lists, saving the progress in a JSON file and everything in the **sci-fi_books_LISTS.csv** file at the end. 
 
@@ -36,17 +36,17 @@ All the files are stored in the **Data/Filtered** folder.
 
 #
 
-### 3. Prompting the LLMs
+### 3. Prompting the LLM
 
 **7_AI_asker_AI_ANSWERS.py** reads the **sci-fi_books_TOP_Wiki.csv** file (or **sci-fi_books_TEST_Wiki.csv**) and, for every novel in the file, sends the prompt with the novel's data to OpenAI's API for GPT-5 and receives a text answer, parses it, and saves it in the **sci-fi_books_AI_ANSWERS.csv** file.
 
-In the **Variability_in_Answers** folder, there are already 15 answer files to be used with the **Figure_maker.py** script to have an estimate of the model change in answer for each novel and question.
+In the **Variability_in_Answers** folder, there are already 15 answer files to be used with the **Figure_maker.py** script to estimate the model change in answer for each novel and question.
 
 **8_AI_asker_AI_ANSWERS_GENDER.py** reads the **sci-fi_books_TOP.csv** file and, for every different _author_ in the file, sends the prompt with the author's name to GPT-5 and receives the author's gender, and saves it in the **sci-fi_books_AI_ANSWERS_GENDER.csv** file.
 
-You will need to have a working API key set in your environment and credits in your OpenAI account for them to work.
+You will need a working API key set in your environment and credits in your OpenAI account for them to work.
 
-Older results and some code for GPT-4o (**Old_GPT-4o**) and Gemini 2.0 Flash (**Old_Gemini_flash_2.0**) are stored in separate folders.
+Older results and some code for GPT-4o and Gemini 2.0 Flash are stored in separate folders (**Old_GPT-4o** and **Old_Gemini_2.0_flash**).
 
 #
 
