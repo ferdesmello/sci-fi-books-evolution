@@ -6,13 +6,15 @@ Inspired by this project ([video](https://www.youtube.com/watch?v=nRQ2vMpw-n8), 
 
 You can read in detail all the process of the data and analysis of the results [here](https://fdesmello.wordpress.com/2024/11/21/a-journey-through-160-years-of-sci-fi-novels-a-study-using-data-and-ai/).
 
-But, in short, I scraped data about thousands of sci-fi books from [Goodreads](https://www.goodreads.com/) lists and shelves, and the books' [Wikipedia](https://en.wikipedia.org/wiki/Main_Page) articles, cleaned and reduced the data, selected the top 200 novels per decade (or all the novels if fewer than 200 per decade), and fed that into GPT-5 (GPT-4o and Gemini 2.0 Flash in the first tries) via the OpenAI API, asking about many plot-related things. Then, I aggregated the results in figures to see how things changed over time.
+But, in short, I scraped data about thousands of sci-fi books from [Goodreads](https://www.goodreads.com/) lists and shelves, and the books' [Wikipedia](https://en.wikipedia.org/wiki/Main_Page) articles, cleaned and reduced the data, selected the top 200 novels per decade (or all the novels if fewer than 200 per decade), and fed that into GPT-5 (in the first tries, I used GPT-4o and Gemini 2.0 Flash) via the OpenAI API, asking about many plot-related things. Then, I aggregated the results in figures to see how things changed over time.
 
 ## What the code does
 
 ### 1. Scraping the data
 
-I intended to scrape data directly from the [science fiction book shelf](https://www.goodreads.com/shelf/show/science-fiction) on Goodreads, but it didn't work, and for some error, it only shows books until page [25](https://www.goodreads.com/shelf/show/science-fiction?page=25). I contorned this by downloading the pages and reading them locally. **1_Goodreads_scraper_SHELF.py** reads HTML files in the folder **Saved_pages** and searches for links to the book pages and downloads data for book's _title_, _author_, _year_ published, number of _pages_, if it is part of a _series_, average _rate_, number of _ratings_, _genres_, _synopsis_ and the longest of the first two _reviews_, saving everything in the **sci-fi_books_SHELF.csv** file at the end.
+I intended to scrape data directly from the [science fiction book shelf](https://www.goodreads.com/shelf/show/science-fiction) on Goodreads, but it didn't work, and for some error, it only shows books until page [25](https://www.goodreads.com/shelf/show/science-fiction?page=25). I got around that by downloading the pages and reading them locally.
+
+**1_Goodreads_scraper_SHELF.py** reads the HTML files in the folder **Data/Saved_pages** and searches for links to the book pages and downloads data for book's _title_, _author_, _year_ published, number of _pages_, if it is part of a _series_, average _rate_, number of _ratings_, _genres_, _synopsis_ and the longest of the first two _reviews_, saving everything in the **sci-fi_books_SHELF.csv** file at the end.
 
 You will have to download and put the HTML files in the Saved_pages folder by hand. I didn't include them here because they are big and use too much space.
 
@@ -30,7 +32,7 @@ All data recovered and processed is stored in the **Data/Brute** folder.
 
 If this is your first time running everything, you can proceed to step 3. But if you have already run everything to the end and are just adding some books from the scraper (or deleting books via the filtering), that may change which books are in the top 200 per decade. Some rows from the AI answers' CSV may need to be excluded, and/or new ones may need to be processed. For this, run **5_Data_fixer.py** _now_.
 
-Many of the novels in the top sample have a Wikipedia article with a plot section that gives much more details about the plot than Goodreads synopses and reviews, so they are preferable. **6_Wikipedia_plot_scraper.py** searches the wikipedia after the novels listed in **sci-fi_books_TOP.csv** and creates the **sci-fi_books_TOP_Wiki.csv** and **sci-fi_books_TEST_Wiki.csv** files with the plot texts.
+Many of the novels in the top sample have a Wikipedia article with a plot section that gives much more details about the plot than Goodreads synopses and reviews, so they are preferable. **6_Wikipedia_plot_scraper.py** searches the wikipedia after the novels listed in **sci-fi_books_TOP.csv** and creates the **sci-fi_books_TOP_Wiki.csv** and **sci-fi_books_TEST_Wiki.csv** files with the plot sections found in the articles.
 
 All the files are stored in the **Data/Filtered** folder.
 
@@ -38,9 +40,9 @@ All the files are stored in the **Data/Filtered** folder.
 
 ### 3. Prompting the LLM
 
-**7_AI_asker_AI_ANSWERS.py** reads the **sci-fi_books_TOP_Wiki.csv** file (or **sci-fi_books_TEST_Wiki.csv**) and, for every novel in the file, sends the prompt with the novel's data to OpenAI's API for GPT-5 and receives a text answer, parses it, and saves it in the **sci-fi_books_AI_ANSWERS.csv** file.
+**7_AI_asker_AI_ANSWERS.py** reads the **sci-fi_books_TOP_Wiki.csv** file (or **sci-fi_books_TEST_Wiki.csv**) and, for every novel in the file, sends the prompt with the novel's data to OpenAI's API for GPT-5 and receives a text answer, parses it, and saves it in the **sci-fi_books_AI_ANSWERS.csv** file in the **Data/Answers** folder.
 
-In the **Variability_in_Answers** folder, there are already 15 answer files to be used with the **Figure_maker.py** script to estimate the model change in answer for each novel and question.
+In the **Data/Variability_in_Answers** folder, there are already 15 answer files to be used with the **Figure_maker.py** script to estimate the model change in answer for each novel and question.
 
 **8_AI_asker_AI_ANSWERS_GENDER.py** reads the **sci-fi_books_TOP.csv** file and, for every different _author_ in the file, sends the prompt with the author's name to GPT-5 and receives the author's gender, and saves it in the **sci-fi_books_AI_ANSWERS_GENDER.csv** file.
 
@@ -52,7 +54,7 @@ Older results and some code for GPT-4o and Gemini 2.0 Flash are stored in separa
 
 ### 4. Plotting the results
 
-**9_Figure_maker.py** reads the **sci-fi_books_AI_ANSWERS.csv** and **sci-fi_books_AI_ANSWERS_GENDER.csv** files, and the files in the **Variability_in_Answers** folder, and makes figures from them, saving all of them in the **Figures** folder.
+**9_Figure_maker.py** reads the **sci-fi_books_AI_ANSWERS.csv** and **sci-fi_books_AI_ANSWERS_GENDER.csv** files, and the files in the **Data/Variability_in_Answers** folder, and makes figures from them, saving all of them in the **Figures** folder.
 
 ## Example of a figure
 
