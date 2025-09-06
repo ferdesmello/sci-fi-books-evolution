@@ -182,148 +182,155 @@ category_counts_6 = pd.crosstab(df_top_AI['decade'], df_top_AI['6 social politic
 # Normalize the counts to get percentages
 category_percent_6 = category_counts_6.div(category_counts_6.sum(axis = 1), axis = 0) * 100
 
-# 7 on Earth------------------------------------------
-print(df_top_AI['7 on Earth'].value_counts())
+# 7 politically unified------------------------------------------
+print(df_top_AI['7 politically unified'].value_counts())
 # Count the occurrences of each category per decade
-category_counts_7 = pd.crosstab(df_top_AI['decade'], df_top_AI['7 on Earth'])
+category_counts_7 = pd.crosstab(df_top_AI['decade'], df_top_AI['7 politically unified'])
 # Normalize the counts to get percentages
 category_percent_7 = category_counts_7.div(category_counts_7.sum(axis = 1), axis = 0) * 100
 
-# 8 post apocalyptic------------------------------------------
-print(df_top_AI['8 post apocalyptic'].value_counts())
+# 8 on Earth------------------------------------------
+print(df_top_AI['8 on Earth'].value_counts())
 # Count the occurrences of each category per decade
-category_counts_8 = pd.crosstab(df_top_AI['decade'], df_top_AI['8 post apocalyptic'])
+category_counts_8 = pd.crosstab(df_top_AI['decade'], df_top_AI['8 on Earth'])
 # Normalize the counts to get percentages
 category_percent_8 = category_counts_8.div(category_counts_8.sum(axis = 1), axis = 0) * 100
 
-# 9 aliens------------------------------------------
-print(df_top_AI['9 aliens'].value_counts())
+# 9 post apocalyptic------------------------------------------
+print(df_top_AI['9 post apocalyptic'].value_counts())
 # Count the occurrences of each category per decade
-category_counts_9 = pd.crosstab(df_top_AI['decade'], df_top_AI['9 aliens'])
+category_counts_9 = pd.crosstab(df_top_AI['decade'], df_top_AI['9 post apocalyptic'])
 # Normalize the counts to get percentages
 category_percent_9 = category_counts_9.div(category_counts_9.sum(axis = 1), axis = 0) * 100
 
-# 10a aliens are------------------------------------------
-print(df_top_AI['10 aliens are'].value_counts())
+# 10 aliens------------------------------------------
+print(df_top_AI['10 aliens'].value_counts())
 # Count the occurrences of each category per decade
-category_counts_10a = pd.crosstab(df_top_AI['decade'], df_top_AI['10 aliens are'])
+category_counts_10 = pd.crosstab(df_top_AI['decade'], df_top_AI['10 aliens'])
 # Normalize the counts to get percentages
-category_percent_10a = category_counts_10a.div(category_counts_10a.sum(axis = 1), axis = 0) * 100
+category_percent_10 = category_counts_10.div(category_counts_10.sum(axis = 1), axis = 0) * 100
 
-# 10b aliens are------------------------------------------
+# 11a aliens are------------------------------------------
+print(df_top_AI['11 aliens are'].value_counts())
+# Count the occurrences of each category per decade
+category_counts_11a = pd.crosstab(df_top_AI['decade'], df_top_AI['11 aliens are'])
+# Normalize the counts to get percentages
+category_percent_11a = category_counts_11a.div(category_counts_11a.sum(axis = 1), axis = 0) * 100
+
+# 11b aliens are------------------------------------------
 # Define the condition to exclude rows where the column has a specific value
 condition_to_exclude = "Not applicable"
 # Filter the dataframe to exclude those rows
-df_top_AI_10b = df_top_AI[df_top_AI['10 aliens are'] != condition_to_exclude]
+df_top_AI_11b = df_top_AI[df_top_AI['11 aliens are'] != condition_to_exclude]
 # Count the occurrences of each category per decade
-category_counts_10b = pd.crosstab(df_top_AI_10b['decade'], df_top_AI_10b['10 aliens are'])
+category_counts_11b = pd.crosstab(df_top_AI_11b['decade'], df_top_AI_11b['11 aliens are'])
 # Normalize the counts to get percentages
-category_percent_10b = category_counts_10b.div(category_counts_10b.sum(axis = 1), axis = 0) * 100
+category_percent_11b = category_counts_11b.div(category_counts_11b.sum(axis = 1), axis = 0) * 100
 
-# 11 robots and AI------------------------------------------
-print(df_top_AI['11 robots and AI'].value_counts())
+# 12 robots and AI------------------------------------------
+print(df_top_AI['12 robots and AI'].value_counts())
 # Count the occurrences of each category per decade
-category_counts_11 = pd.crosstab(df_top_AI['decade'], df_top_AI['11 robots and AI'])
+category_counts_12 = pd.crosstab(df_top_AI['decade'], df_top_AI['12 robots and AI'])
 # Normalize the counts to get percentages
-category_percent_11 = category_counts_11.div(category_counts_11.sum(axis = 1), axis = 0) * 100
+category_percent_12 = category_counts_12.div(category_counts_12.sum(axis = 1), axis = 0) * 100
 
-# 12a robots and AI are------------------------------------------
-print(df_top_AI['12 robots and AI are'].value_counts())
+# 13a robots and AI are------------------------------------------
+print(df_top_AI['13 robots and AI are'].value_counts())
 # Count the occurrences of each category per decade
-category_counts_12a = pd.crosstab(df_top_AI['decade'], df_top_AI['12 robots and AI are'])
+category_counts_13a = pd.crosstab(df_top_AI['decade'], df_top_AI['13 robots and AI are'])
 # Normalize the counts to get percentages
-category_percent_12a = category_counts_12a.div(category_counts_12a.sum(axis = 1), axis = 0) * 100
+category_percent_13a = category_counts_13a.div(category_counts_13a.sum(axis = 1), axis = 0) * 100
 
-# 12b robots and AI are------------------------------------------
+# 13b robots and AI are------------------------------------------
 # Define the condition to exclude rows where the column has a specific value
 condition_to_exclude = "Not applicable"
 # Filter the dataframe to exclude those rows
-df_top_AI_12b = df_top_AI[df_top_AI['12 robots and AI are'] != condition_to_exclude]
+df_top_AI_13b = df_top_AI[df_top_AI['13 robots and AI are'] != condition_to_exclude]
 # Count the occurrences of each category per decade
-category_counts_12b = pd.crosstab(df_top_AI_12b['decade'], df_top_AI_12b['12 robots and AI are'])
+category_counts_13b = pd.crosstab(df_top_AI_13b['decade'], df_top_AI_13b['13 robots and AI are'])
 # Normalize the counts to get percentages
-category_percent_12b = category_counts_12b.div(category_counts_12b.sum(axis = 1), axis = 0) * 100
+category_percent_13b = category_counts_13b.div(category_counts_13b.sum(axis = 1), axis = 0) * 100
 
-# 13 protagonist------------------------------------------
-print(df_top_AI['13 protagonist'].value_counts())
+# 14 protagonist------------------------------------------
+print(df_top_AI['14 protagonist'].value_counts())
 # Count the occurrences of each category per decade
-category_counts_13 = pd.crosstab(df_top_AI['decade'], df_top_AI['13 protagonist'])
-# Normalize the counts to get percentages
-category_percent_13 = category_counts_13.div(category_counts_13.sum(axis = 1), axis = 0) * 100
-
-# 14 protagonist nature------------------------------------------
-print(df_top_AI['14 protagonist nature'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_14 = pd.crosstab(df_top_AI['decade'], df_top_AI['14 protagonist nature'])
+category_counts_14 = pd.crosstab(df_top_AI['decade'], df_top_AI['14 protagonist'])
 # Normalize the counts to get percentages
 category_percent_14 = category_counts_14.div(category_counts_14.sum(axis = 1), axis = 0) * 100
 
-# 15a protagonist gender------------------------------------------
-print(df_top_AI['15 protagonist gender'].value_counts())
+# 15 protagonist nature------------------------------------------
+print(df_top_AI['15 protagonist nature'].value_counts())
 # Count the occurrences of each category per decade
-category_counts_15a = pd.crosstab(df_top_AI['decade'], df_top_AI['15 protagonist gender'])
+category_counts_15 = pd.crosstab(df_top_AI['decade'], df_top_AI['15 protagonist nature'])
 # Normalize the counts to get percentages
-category_percent_15a = category_counts_15a.div(category_counts_15a.sum(axis = 1), axis = 0) * 100
+category_percent_15 = category_counts_15.div(category_counts_15.sum(axis = 1), axis = 0) * 100
 
-# 15b protagonist gender------------------------------------------
+# 16a protagonist gender------------------------------------------
+print(df_top_AI['16 protagonist gender'].value_counts())
+# Count the occurrences of each category per decade
+category_counts_16a = pd.crosstab(df_top_AI['decade'], df_top_AI['16 protagonist gender'])
+# Normalize the counts to get percentages
+category_percent_16a = category_counts_16a.div(category_counts_16a.sum(axis = 1), axis = 0) * 100
+
+# 16b protagonist gender------------------------------------------
 # Define the condition to exclude rows where the column has a specific value
 condition_to_exclude = "Not applicable"
 # Filter the dataframe to exclude those rows
-df_top_AI_15b = df_top_AI[df_top_AI['15 protagonist gender'] != condition_to_exclude]
+df_top_AI_16b = df_top_AI[df_top_AI['16 protagonist gender'] != condition_to_exclude]
 # Count the occurrences of each category per decade
-category_counts_15b = pd.crosstab(df_top_AI_15b['decade'], df_top_AI_15b['15 protagonist gender'])
+category_counts_16b = pd.crosstab(df_top_AI_16b['decade'], df_top_AI_16b['16 protagonist gender'])
 # Normalize the counts to get percentages
-category_percent_15b = category_counts_15b.div(category_counts_15b.sum(axis = 1), axis = 0) * 100
+category_percent_16b = category_counts_16b.div(category_counts_16b.sum(axis = 1), axis = 0) * 100
 
-# 15c protagonist gender (only high and very high accuracy sci-fi)------------------------------------------
+# 16c protagonist gender (only high and very high accuracy sci-fi)------------------------------------------
 # Define the condition to select rows
 mask_1 = df_top_AI['1 accuracy'] == "High"
 mask_2 = df_top_AI['1 accuracy'] == "Very high"
 # Filter the dataframe to exclude those rows
-df_top_AI_15c = df_top_AI[mask_1 | mask_2]
+df_top_AI_16c = df_top_AI[mask_1 | mask_2]
 # Count the occurrences of each category per decade
-category_counts_15c = pd.crosstab(df_top_AI_15c['decade'], df_top_AI_15c['15 protagonist gender'])
+category_counts_16c = pd.crosstab(df_top_AI_16c['decade'], df_top_AI_16c['16 protagonist gender'])
 # Normalize the counts to get percentages
-category_percent_15c = category_counts_15c.div(category_counts_15c.sum(axis = 1), axis = 0) * 100
+category_percent_16c = category_counts_16c.div(category_counts_16c.sum(axis = 1), axis = 0) * 100
 
-# 15d protagonist gender (only leaning hard sciences and hard sciences)------------------------------------------
+# 16d protagonist gender (only leaning hard sciences and hard sciences)------------------------------------------
 # Define the condition to select rows
 mask_1 = df_top_AI['2 discipline'] == "Leaning hard sciences"
 mask_2 = df_top_AI['2 discipline'] == "Hard sciences"
 # Filter the dataframe to exclude those rows
-df_top_AI_15d = df_top_AI[mask_1 | mask_2]
+df_top_AI_16d = df_top_AI[mask_1 | mask_2]
 # Count the occurrences of each category per decade
-category_counts_15d = pd.crosstab(df_top_AI_15d['decade'], df_top_AI_15d['15 protagonist gender'])
+category_counts_16d = pd.crosstab(df_top_AI_16d['decade'], df_top_AI_16d['16 protagonist gender'])
 # Normalize the counts to get percentages
-category_percent_15d = category_counts_15d.div(category_counts_15d.sum(axis = 1), axis = 0) * 100
+category_percent_16d = category_counts_16d.div(category_counts_16d.sum(axis = 1), axis = 0) * 100
 
-# 16 virtual------------------------------------------
-print(df_top_AI['16 virtual'].value_counts())
+# 17 virtual------------------------------------------
+print(df_top_AI['17 virtual'].value_counts())
 # Count the occurrences of each category per decade
-category_counts_16 = pd.crosstab(df_top_AI['decade'], df_top_AI['16 virtual'])
-# Normalize the counts to get percentages
-category_percent_16 = category_counts_16.div(category_counts_16.sum(axis = 1), axis = 0) * 100
-
-# 17 tech and science------------------------------------------
-print(df_top_AI['17 tech and science'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_17 = pd.crosstab(df_top_AI['decade'], df_top_AI['17 tech and science'])
+category_counts_17 = pd.crosstab(df_top_AI['decade'], df_top_AI['17 virtual'])
 # Normalize the counts to get percentages
 category_percent_17 = category_counts_17.div(category_counts_17.sum(axis = 1), axis = 0) * 100
 
-# 18 social issues------------------------------------------
-print(df_top_AI['18 social issues'].value_counts())
+# 18 tech and science------------------------------------------
+print(df_top_AI['18 tech and science'].value_counts())
 # Count the occurrences of each category per decade
-category_counts_18 = pd.crosstab(df_top_AI['decade'], df_top_AI['18 social issues'])
+category_counts_18 = pd.crosstab(df_top_AI['decade'], df_top_AI['18 tech and science'])
 # Normalize the counts to get percentages
 category_percent_18 = category_counts_18.div(category_counts_18.sum(axis = 1), axis = 0) * 100
 
-# 19 enviromental------------------------------------------
-print(df_top_AI['19 enviromental'].value_counts())
+# 19 social issues------------------------------------------
+print(df_top_AI['19 social issues'].value_counts())
 # Count the occurrences of each category per decade
-category_counts_19 = pd.crosstab(df_top_AI['decade'], df_top_AI['19 enviromental'])
+category_counts_19 = pd.crosstab(df_top_AI['decade'], df_top_AI['19 social issues'])
 # Normalize the counts to get percentages
 category_percent_19 = category_counts_19.div(category_counts_19.sum(axis = 1), axis = 0) * 100
+
+# 20 enviromental------------------------------------------
+print(df_top_AI['20 enviromental'].value_counts())
+# Count the occurrences of each category per decade
+category_counts_20 = pd.crosstab(df_top_AI['decade'], df_top_AI['20 enviromental'])
+# Normalize the counts to get percentages
+category_percent_20 = category_counts_20.div(category_counts_20.sum(axis = 1), axis = 0) * 100
 
 #----------------------------------------------------------------------------------
 # Process for the complex figures
@@ -331,7 +338,7 @@ category_percent_19 = category_counts_19.div(category_counts_19.sum(axis = 1), a
 # Author and protagonist gender
 
 df_top_AI_new = df_top_AI.copy()
-df_top_AI_new["genders"] = df_top_AI_new['gender'] + " / " + df_top_AI_new['15 protagonist gender']
+df_top_AI_new["genders"] = df_top_AI_new['gender'] + " / " + df_top_AI_new['16 protagonist gender']
 
 # Count the occurrences of each category per decade
 category_counts_genders = pd.crosstab(df_top_AI_new['decade'], df_top_AI_new["genders"])
@@ -408,19 +415,20 @@ column_order = ['1 accuracy',
                 '4 time',
                 '5 mood',
                 '6 social political',
-                '7 on Earth',
-                '8 post apocalyptic',
-                '9 aliens',
-                '10 aliens are',
-                '11 robots and AI',
-                '12 robots and AI are',
-                '13 protagonist',
-                '14 protagonist nature',
-                '15 protagonist gender',
-                '16 virtual',
-                '17 tech and science',
-                '18 social issues',
-                '19 enviromental',]
+                '7 politically unified',
+                '8 on Earth',
+                '9 post apocalyptic',
+                '10 aliens',
+                '11 aliens are',
+                '12 robots and AI',
+                '13 robots and AI are',
+                '14 protagonist',
+                '15 protagonist nature',
+                '16 protagonist gender',
+                '17 virtual',
+                '18 tech and science',
+                '19 social issues',
+                '20 enviromental',]
 
 dfs = [] # List of DataFrames
 
@@ -1541,8 +1549,8 @@ plt.savefig("./Figures/06 social political.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/06 social political.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 12 - 7 on Earth
-print("  Making 7 on Earth...")
+# Figure 12 - 7 politically unified
+print("  Making 7 politically unified...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
@@ -1555,6 +1563,7 @@ ax1 = figure7.add_subplot(gs[0])
 #-------------------------------------------
 # Define the desired order of the categories
 category_order_7 = ['Yes',
+                    'Somewhat',
                     'No',
                     'Uncertain']
 
@@ -1566,8 +1575,9 @@ category_percent_7 = pd.concat([all_categories_df_7, category_percent_7]).conver
 category_percent_7 = category_percent_7[category_order_7]
 
 # Define custom colors for each category
-custom_colors_7 = ['#385AC2',
-                   '#AE305D',
+custom_colors_7 = ['#AE305D',
+                   '#8B3FCF',
+                   '#385AC2',
                    '#FFD700']
 
 # Bar plot-------------------------------------------
@@ -1577,7 +1587,91 @@ category_percent_7.plot(kind = 'bar',
                         color = custom_colors_7,
                         width = 1.0,
                         alpha = 1.0,
-                        label = "7 on Earth")
+                        label = "7 politically unified")
+
+# Design-------------------------------------------
+ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
+#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
+ax1.set_title("Is a unified, multi-planet or planetary-level state or government depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
+#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
+
+# Format the y-axis to show percentages
+ax1.yaxis.set_major_formatter(PercentFormatter())
+
+# Legend-------------------------------------------
+# Get handles and labels
+handles, labels = ax1.get_legend_handles_labels()
+
+# Reverse the order
+handles.reverse()
+labels.reverse()
+
+# Pass the reversed handles and labels to the legend
+ax1.legend(handles, 
+           labels, 
+           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
+           frameon = False, 
+           labelspacing = 4.5,
+           loc = 'center left')
+
+# Axes-------------------------------------------
+ax1.minorticks_on()
+ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
+ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
+ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
+ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
+ax1.tick_params(axis = 'both', colors = custom_dark_gray)
+
+ax1.spines['right'].set_visible(False)
+ax1.spines['top'].set_visible(False)
+#ax1.spines['left'].set_visible(False)
+ax1.spines['left'].set_color(custom_dark_gray)
+ax1.spines['bottom'].set_color(custom_dark_gray)
+
+# Save image-------------------------------------------
+plt.savefig("./Figures/07 politically unified.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/07 politically unified.eps", transparent = True, bbox_inches = 'tight')
+# Transparence will be lost in .eps, save in .svg for transparences
+#plt.savefig("./Figures/07 politically unified.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+
+#----------------------------------------------------------------------------------
+# Figure 13 - 8 on Earth
+print("  Making 8 on Earth...")
+
+#-------------------------------------------
+# Creates a figure object with size 12x6 inches
+figure8 = plt.figure(13, figsize = (12, 6))
+gs = figure8.add_gridspec(ncols = 1, nrows = 1)
+
+# Create the main plot
+ax1 = figure8.add_subplot(gs[0])
+
+#-------------------------------------------
+# Define the desired order of the categories
+category_order_8 = ['Yes',
+                    'No',
+                    'Uncertain']
+
+# Create a new DataFrame with all desired categories, filling with 0 if missing
+all_categories_df_8 = pd.DataFrame(columns=category_order_8).astype(float)
+category_percent_8 = pd.concat([all_categories_df_8, category_percent_8]).convert_dtypes().fillna(0.0)
+
+# Reorder the columns in the DataFrame according to the desired category order
+category_percent_8 = category_percent_8[category_order_8]
+
+# Define custom colors for each category
+custom_colors_8 = ['#385AC2',
+                   '#AE305D',
+                   '#FFD700']
+
+# Bar plot-------------------------------------------
+category_percent_8.plot(kind = 'bar',
+                        stacked = True,
+                        ax = ax1,
+                        color = custom_colors_8,
+                        width = 1.0,
+                        alpha = 1.0,
+                        label = "8 on Earth")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -1619,51 +1713,51 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/07 on Earth.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/07 on Earth.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/08 on Earth.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/08 on Earth.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/07 on Earth.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/08 on Earth.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 13 - 8 post apocalyptic
-print("  Making 8 post apocalyptic...")
+# Figure 14 - 9 post apocalyptic
+print("  Making 9 post apocalyptic...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure8 = plt.figure(13, figsize = (12, 6))
-gs = figure8.add_gridspec(ncols = 1, nrows = 1)
+figure9 = plt.figure(14, figsize = (12, 6))
+gs = figure9.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure8.add_subplot(gs[0])
+ax1 = figure9.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_8 = ['Yes',
+category_order_9 = ['Yes',
                     'Somewhat',
                     'No',
                     'Uncertain']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_8 = pd.DataFrame(columns=category_order_8).astype(float)
-category_percent_8 = pd.concat([all_categories_df_8, category_percent_8]).convert_dtypes().fillna(0.0)
+all_categories_df_9 = pd.DataFrame(columns=category_order_9).astype(float)
+category_percent_9 = pd.concat([all_categories_df_9, category_percent_9]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_8 = category_percent_8[category_order_8]
+category_percent_9 = category_percent_9[category_order_9]
 
 # Define custom colors for each category
-custom_colors_8 = ['#AE305D',
+custom_colors_9 = ['#AE305D',
                    '#8B3FCF',
                    '#385AC2',
                    '#FFD700']
 
 # Bar plot-------------------------------------------
-category_percent_8.plot(kind = 'bar',
+category_percent_9.plot(kind = 'bar',
                         stacked = True,
                         ax = ax1,
-                        color = custom_colors_8,
+                        color = custom_colors_9,
                         width = 1.0,
                         alpha = 1.0,
-                        label = "8 post apocalyptic")
+                        label = "9 post apocalyptic")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -1705,49 +1799,49 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/08 post apocalyptic.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/08 post apocalyptic.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/09 post apocalyptic.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/09 post apocalyptic.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/08 post apocalyptic.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/09 post apocalyptic.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 14 - 9 aliens
-print("  Making 9 aliens...")
+# Figure 15 - 10 aliens
+print("  Making 10 aliens...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure9 = plt.figure(14, figsize = (12, 6))
-gs = figure9.add_gridspec(ncols = 1, nrows = 1)
+figure10 = plt.figure(15, figsize = (12, 6))
+gs = figure10.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure9.add_subplot(gs[0])
+ax1 = figure10.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_9 = ['Yes',
-                    'No',
-                    'Uncertain']
+category_order_10 = ['Yes',
+                     'No',
+                     'Uncertain']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_9 = pd.DataFrame(columns=category_order_9).astype(float)
-category_percent_9 = pd.concat([all_categories_df_9, category_percent_9]).convert_dtypes().fillna(0.0)
+all_categories_df_10 = pd.DataFrame(columns=category_order_10).astype(float)
+category_percent_10 = pd.concat([all_categories_df_10, category_percent_10]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_9 = category_percent_9[category_order_9]
+category_percent_10 = category_percent_10[category_order_10]
 
 # Define custom colors for each category
-custom_colors_9 = ['#AE305D',
-                   '#385AC2',
-                   '#FFD700']
+custom_colors_10 = ['#AE305D',
+                    '#385AC2',
+                    '#FFD700']
 
 # Bar plot-------------------------------------------
-category_percent_9.plot(kind = 'bar',
-                        stacked = True,
-                        ax = ax1,
-                        color = custom_colors_9,
-                        width = 1.0,
-                        alpha = 1.0,
-                        label = "9 aliens")
+category_percent_10.plot(kind = 'bar',
+                         stacked = True,
+                         ax = ax1,
+                         color = custom_colors_10,
+                         width = 1.0,
+                         alpha = 1.0,
+                         label = "10 aliens")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -1789,25 +1883,25 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/09 aliens.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/09 aliens.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/10 aliens.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/10 aliens.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/09 aliens.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/10 aliens.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 15 - 10a aliens are
-print("  Making 10a aliens are...")
+# Figure 16 - 11a aliens are
+print("  Making 11a aliens are...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure10a = plt.figure(15, figsize = (12, 6))
-gs = figure10a.add_gridspec(ncols = 1, nrows = 1)
+figure11a = plt.figure(16, figsize = (12, 6))
+gs = figure11a.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure10a.add_subplot(gs[0])
+ax1 = figure11a.add_subplot(gs[0])
 
 # Define the desired order of the categories
-category_order_10a = ['Bad', 
+category_order_11a = ['Bad', 
                       'Leaning bad',
                       'Ambivalent', 
                       'Leaning good',
@@ -1817,14 +1911,14 @@ category_order_10a = ['Bad',
                       'Not applicable']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_10a = pd.DataFrame(columns=category_order_10a).astype(float)
-category_percent_10a = pd.concat([all_categories_df_10a, category_percent_10a]).convert_dtypes().fillna(0.0)
+all_categories_df_11a = pd.DataFrame(columns=category_order_11a).astype(float)
+category_percent_11a = pd.concat([all_categories_df_11a, category_percent_11a]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_10a = category_percent_10a[category_order_10a]
+category_percent_11a = category_percent_11a[category_order_11a]
 
 # Define custom colors for each category
-custom_colors_10a = ['#AE305D',
+custom_colors_11a = ['#AE305D',
                      '#CF5D5F',
                      '#8B3FCF',
                      '#5580D0',
@@ -1834,13 +1928,13 @@ custom_colors_10a = ['#AE305D',
                      '#D3D3D3']
 
 # Bar plot-------------------------------------------
-category_percent_10a.plot(kind = 'bar',
+category_percent_11a.plot(kind = 'bar',
                           stacked = True,
                           ax = ax1,
-                          color = custom_colors_10a,
+                          color = custom_colors_11a,
                           width = 1.0,
                           alpha = 1.0,
-                          label = "10a aliens are")
+                          label = "11a aliens are")
 
 # Legend-------------------------------------------
 # Get handles and labels
@@ -1882,25 +1976,25 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/10a aliens are.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/10a aliens are.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/11a aliens are.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/11a aliens are.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/10a aliens are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/11a aliens are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 16 - 10b aliens are
-print("  Making 10b aliens are...")
+# Figure 17 - 11b aliens are
+print("  Making 11b aliens are...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure10b = plt.figure(16, figsize = (12, 6))
-gs = figure10b.add_gridspec(ncols = 1, nrows = 1)
+figure11b = plt.figure(17, figsize = (12, 6))
+gs = figure11b.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure10b.add_subplot(gs[0])
+ax1 = figure11b.add_subplot(gs[0])
 
 # Define the desired order of the categories
-category_order_10b = ['Bad', 
+category_order_11b = ['Bad', 
                       'Leaning bad',
                       'Ambivalent', 
                       'Leaning good',
@@ -1909,14 +2003,14 @@ category_order_10b = ['Bad',
                       'Uncertain']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_10b = pd.DataFrame(columns=category_order_10b).astype(float)
-category_percent_10b = pd.concat([all_categories_df_10b, category_percent_10b]).convert_dtypes().fillna(0.0)
+all_categories_df_11b = pd.DataFrame(columns=category_order_11b).astype(float)
+category_percent_11b = pd.concat([all_categories_df_11b, category_percent_11b]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_10b = category_percent_10b[category_order_10b]
+category_percent_11b = category_percent_11b[category_order_11b]
 
 # Define custom colors for each category
-custom_colors_10b = ['#AE305D',
+custom_colors_11b = ['#AE305D',
                      '#CF5D5F',
                      '#8B3FCF',
                      '#5580D0',
@@ -1925,13 +2019,13 @@ custom_colors_10b = ['#AE305D',
                      '#FFD700']
 
 # Bar plot-------------------------------------------
-category_percent_10b.plot(kind = 'bar',
+category_percent_11b.plot(kind = 'bar',
                           stacked = True,
                           ax = ax1,
-                          color = custom_colors_10b,
+                          color = custom_colors_11b,
                           width = 1.0,
                           alpha = 1.0,
-                          label = "10b aliens are")
+                          label = "11b aliens are")
 
 # Legend-------------------------------------------
 # Get handles and labels
@@ -1973,49 +2067,49 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/10b aliens are.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/10b aliens are.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/11b aliens are.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/11b aliens are.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/10b aliens are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/11b aliens are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 17 - 11 robots and AI
-print("  Making 11 robots and AI...")
+# Figure 18 - 12 robots and AI
+print("  Making 12 robots and AI...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure11 = plt.figure(17, figsize = (12, 6))
-gs = figure11.add_gridspec(ncols = 1, nrows = 1)
+figure12 = plt.figure(18, figsize = (12, 6))
+gs = figure12.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure11.add_subplot(gs[0])
+ax1 = figure12.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_11 = ['Yes',
+category_order_12 = ['Yes',
                      'No',
                      'Uncertain']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_11 = pd.DataFrame(columns=category_order_11).astype(float)
-category_percent_11 = pd.concat([all_categories_df_11, category_percent_11]).convert_dtypes().fillna(0.0)
+all_categories_df_12 = pd.DataFrame(columns=category_order_12).astype(float)
+category_percent_12 = pd.concat([all_categories_df_12, category_percent_12]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_11 = category_percent_11[category_order_11]
+category_percent_12 = category_percent_12[category_order_12]
 
 # Define custom colors for each category
-custom_colors_11 = ['#AE305D',
+custom_colors_12 = ['#AE305D',
                     '#385AC2',
                     '#FFD700']
 
 # Bar plot-------------------------------------------
-category_percent_11.plot(kind = 'bar',
+category_percent_12.plot(kind = 'bar',
                          stacked = True,
                          ax = ax1,
-                         color = custom_colors_11,
+                         color = custom_colors_12,
                          width = 1.0,
                          alpha = 1.0,
-                         label = "11 robots and AI")
+                         label = "12 robots and AI")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -2057,26 +2151,26 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/11 robots and AI.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/11 robots and AI.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/12 robots and AI.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/12 robots and AI.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/11 robots and AI.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/12 robots and AI.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 18 - 12a robots and AI are
-print("  Making 12a robots and AI are...")
+# Figure 19 - 13a robots and AI are
+print("  Making 13a robots and AI are...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure12a = plt.figure(18, figsize = (12, 6))
-gs = figure12a.add_gridspec(ncols = 1, nrows = 1)
+figure13a = plt.figure(19, figsize = (12, 6))
+gs = figure13a.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure12a.add_subplot(gs[0])
+ax1 = figure13a.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_12a = ['Bad', 
+category_order_13a = ['Bad', 
                       'Leaning bad', 
                       'Ambivalent', 
                       'Leaning good',
@@ -2086,14 +2180,14 @@ category_order_12a = ['Bad',
                       'Not applicable']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_12a = pd.DataFrame(columns=category_order_12a).astype(float)
-category_percent_12a = pd.concat([all_categories_df_12a, category_percent_12a]).convert_dtypes().fillna(0.0)
+all_categories_df_13a = pd.DataFrame(columns=category_order_13a).astype(float)
+category_percent_13a = pd.concat([all_categories_df_13a, category_percent_13a]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_12a = category_percent_12a[category_order_12a]
+category_percent_13a = category_percent_13a[category_order_13a]
 
 # Define custom colors for each category
-custom_colors_12a = ['#AE305D',
+custom_colors_13a = ['#AE305D',
                      '#CF5D5F',
                      '#8B3FCF',
                      '#5580D0',
@@ -2103,13 +2197,13 @@ custom_colors_12a = ['#AE305D',
                      '#D3D3D3']
 
 # Bar plot-------------------------------------------
-category_percent_12a.plot(kind = 'bar',
+category_percent_13a.plot(kind = 'bar',
                           stacked = True,
                           ax = ax1,
-                          color = custom_colors_12a,
+                          color = custom_colors_13a,
                           width = 1.0,
                           alpha = 1.0,
-                          label = "12a robots and AI are")
+                          label = "13a robots and AI are")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -2151,26 +2245,26 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/12a robots and AI are.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/12a robots and AI are.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/13a robots and AI are.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/13a robots and AI are.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/12a robots and AI are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/13a robots and AI are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 19 - 12b robots and AI are
-print("  Making 12b robots and AI are...")
+# Figure 20 - 13b robots and AI are
+print("  Making 13b robots and AI are...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure12b = plt.figure(19, figsize = (12, 6))
-gs = figure12b.add_gridspec(ncols = 1, nrows = 1)
+figure13b = plt.figure(20, figsize = (12, 6))
+gs = figure13b.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure12b.add_subplot(gs[0])
+ax1 = figure13b.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_12b = ['Bad', 
+category_order_13b = ['Bad', 
                       'Leaning bad', 
                       'Ambivalent', 
                       'Leaning good',
@@ -2179,14 +2273,14 @@ category_order_12b = ['Bad',
                       'Uncertain']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_12b = pd.DataFrame(columns=category_order_12b).astype(float)
-category_percent_12b = pd.concat([all_categories_df_12b, category_percent_12b]).convert_dtypes().fillna(0.0)
+all_categories_df_13b = pd.DataFrame(columns=category_order_13b).astype(float)
+category_percent_13b = pd.concat([all_categories_df_13b, category_percent_13b]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_12b = category_percent_12b[category_order_12b]
+category_percent_13b = category_percent_13b[category_order_13b]
 
 # Define custom colors for each category
-custom_colors_12b = ['#AE305D',
+custom_colors_13b = ['#AE305D',
                      '#CF5D5F',
                      '#8B3FCF',
                      '#5580D0',
@@ -2195,13 +2289,13 @@ custom_colors_12b = ['#AE305D',
                      '#FFD700']
 
 # Bar plot-------------------------------------------
-category_percent_12b.plot(kind = 'bar',
+category_percent_13b.plot(kind = 'bar',
                           stacked = True,
                           ax = ax1,
-                          color = custom_colors_12b,
+                          color = custom_colors_13b,
                           width = 1.0,
                           alpha = 1.0,
-                          label = "12b robots and AI are")
+                          label = "13b robots and AI are")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -2243,48 +2337,48 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/12b robots and AI are.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/12b robots and AI are.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/13b robots and AI are.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/13b robots and AI are.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/12b robots and AI are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/13b robots and AI are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 20 - 13 protagonist
-print("  Making 13 protagonist...")
+# Figure 21 - 14 protagonist
+print("  Making 14 protagonist...")
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure13 = plt.figure(20, figsize = (12, 6))
-gs = figure13.add_gridspec(ncols = 1, nrows = 1)
+figure14 = plt.figure(21, figsize = (12, 6))
+gs = figure14.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure13.add_subplot(gs[0])
+ax1 = figure14.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_13 = ['Yes', 
+category_order_14 = ['Yes', 
                      'No',
                      'Uncertain']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_13 = pd.DataFrame(columns=category_order_13).astype(float)
-category_percent_13 = pd.concat([all_categories_df_13, category_percent_13]).convert_dtypes().fillna(0.0)
+all_categories_df_14 = pd.DataFrame(columns=category_order_14).astype(float)
+category_percent_14 = pd.concat([all_categories_df_14, category_percent_14]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_13 = category_percent_13[category_order_13]
+category_percent_14 = category_percent_14[category_order_14]
 
 # Define custom colors for each category
-custom_colors_13 = ['#AE305D',
+custom_colors_14 = ['#AE305D',
                     '#385AC2',
                     '#FFD700']
 
 # Bar plot-------------------------------------------
-category_percent_13.plot(kind = 'bar',
+category_percent_14.plot(kind = 'bar',
                          stacked = True,
                          ax = ax1,
-                         color = custom_colors_13,
+                         color = custom_colors_14,
                          width = 1.0,
                          alpha = 1.0,
-                         label = "13 protagonist")
+                         label = "14 protagonist")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -2326,52 +2420,52 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/13 protagonist.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/13 protagonist.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/14 protagonist.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/14 protagonist.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/13 protagonist.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/14 protagonist.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 21 - 14a protagonist nature
-print("  Making 14 protagonist nature...")
+# Figure 22 - 15 protagonist nature
+print("  Making 15 protagonist nature...")
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure14 = plt.figure(21, figsize = (12, 6))
-gs = figure14.add_gridspec(ncols = 1, nrows = 1)
+figure15 = plt.figure(22, figsize = (12, 6))
+gs = figure15.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure14.add_subplot(gs[0])
+ax1 = figure15.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_14 = ['Human', 
+category_order_15 = ['Human', 
                      'Non-human',
 
                      'Uncertain',
                      'Not applicable']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_14 = pd.DataFrame(columns=category_order_14).astype(float)
-category_percent_14 = pd.concat([all_categories_df_14, category_percent_14]).convert_dtypes().fillna(0.0)
+all_categories_df_15 = pd.DataFrame(columns=category_order_15).astype(float)
+category_percent_15 = pd.concat([all_categories_df_15, category_percent_15]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_14 = category_percent_14[category_order_14]
+category_percent_15 = category_percent_15[category_order_15]
 
 # Define custom colors for each category
-custom_colors_14 = ['#385AC2',
+custom_colors_15 = ['#385AC2',
                     '#AE305D',
 
                     '#FFD700',
                     '#D3D3D3']
 
 # Bar plot-------------------------------------------
-category_percent_14.plot(kind = 'bar',
+category_percent_15.plot(kind = 'bar',
                          stacked = True,
                          ax = ax1,
-                         color = custom_colors_14,
+                         color = custom_colors_15,
                          width = 1.0,
                          alpha = 1.0,
-                         label = "14 protagonist nature")
+                         label = "15 protagonist nature")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -2413,25 +2507,25 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/14a protagonist nature.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/14a protagonist nature.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/15 protagonist nature.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/15 protagonist nature.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/14a protagonist nature.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/15 protagonist nature.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 22 - 15a protagonist gender
-print("  Making 15a protagonist gender...")
+# Figure 23 - 16a protagonist gender
+print("  Making 16a protagonist gender...")
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure15a = plt.figure(22, figsize = (12, 6))
-gs = figure15a.add_gridspec(ncols = 1, nrows = 1)
+figure16a = plt.figure(23, figsize = (12, 6))
+gs = figure16a.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure15a.add_subplot(gs[0])
+ax1 = figure16a.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_15a = ['Male', 
+category_order_16a = ['Male', 
                       'Female',
                       'Other',
 
@@ -2439,14 +2533,14 @@ category_order_15a = ['Male',
                       'Not applicable']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_15a = pd.DataFrame(columns=category_order_15a).astype(float)
-category_percent_15a = pd.concat([all_categories_df_15a, category_percent_15a]).convert_dtypes().fillna(0.0)
+all_categories_df_16a = pd.DataFrame(columns=category_order_16a).astype(float)
+category_percent_16a = pd.concat([all_categories_df_16a, category_percent_16a]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_15a = category_percent_15a[category_order_15a]
+category_percent_16a = category_percent_16a[category_order_16a]
 
 # Define custom colors for each category
-custom_colors_15a = ['#385AC2',
+custom_colors_16a = ['#385AC2',
                      '#AE305D',
                      '#8B3FCF',
 
@@ -2454,13 +2548,13 @@ custom_colors_15a = ['#385AC2',
                      '#D3D3D3']
 
 # Bar plot-------------------------------------------
-category_percent_15a.plot(kind = 'bar',
+category_percent_16a.plot(kind = 'bar',
                           stacked = True,
                           ax = ax1,
-                          color = custom_colors_15a,
+                          color = custom_colors_16a,
                           width = 1.0,
                           alpha = 1.0,
-                          label = "15a protagonist gender")
+                          label = "16a protagonist gender")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -2502,52 +2596,52 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/15a protagonist gender.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/15a protagonist gender.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/16a protagonist gender.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/16a protagonist gender.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/15a protagonist gender.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/16a protagonist gender.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 23 - 15b protagonist gender
-print("  Making 15b protagonist gender...")
+# Figure 24 - 16b protagonist gender
+print("  Making 16b protagonist gender...")
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure15b = plt.figure(23, figsize = (12, 6))
-gs = figure15b.add_gridspec(ncols = 1, nrows = 1)
+figure16b = plt.figure(24, figsize = (12, 6))
+gs = figure16b.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure15b.add_subplot(gs[0])
+ax1 = figure16b.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_15b = ['Male', 
+category_order_16b = ['Male', 
                       'Female',
                       'Other',
 
                       'Uncertain']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_15b = pd.DataFrame(columns=category_order_15b).astype(float)
-category_percent_15b = pd.concat([all_categories_df_15b, category_percent_15b]).convert_dtypes().fillna(0.0)
+all_categories_df_16b = pd.DataFrame(columns=category_order_16b).astype(float)
+category_percent_16b = pd.concat([all_categories_df_16b, category_percent_16b]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_15b = category_percent_15b[category_order_15b]
+category_percent_16b = category_percent_16b[category_order_16b]
 
 # Define custom colors for each category
-custom_colors_15b = ['#385AC2',
+custom_colors_16b = ['#385AC2',
                      '#AE305D',
                      '#8B3FCF',
 
                      '#FFD700']
 
 # Bar plot-------------------------------------------
-category_percent_15b.plot(kind = 'bar',
+category_percent_16b.plot(kind = 'bar',
                           stacked = True,
                           ax = ax1,
-                          color = custom_colors_15b,
+                          color = custom_colors_16b,
                           width = 1.0,
                           alpha = 1.0,
-                          label = "15b protagonist gender")
+                          label = "16b protagonist gender")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -2589,25 +2683,25 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/15b protagonist gender.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/15b protagonist gender.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/16b protagonist gender.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/16b protagonist gender.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/15b protagonist gender.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/16b protagonist gender.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 24 - 15c protagonist gender accuracy
-print("  Making 15c protagonist gender accuracy...")
+# Figure 25 - 16c protagonist gender accuracy
+print("  Making 16c protagonist gender accuracy...")
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure15c = plt.figure(24, figsize = (12, 6))
-gs = figure15c.add_gridspec(ncols = 1, nrows = 1)
+figure16c = plt.figure(25, figsize = (12, 6))
+gs = figure16c.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure15c.add_subplot(gs[0])
+ax1 = figure16c.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_15c = ['Male', 
+category_order_16c = ['Male', 
                       'Female',
                       'Other',
 
@@ -2615,14 +2709,14 @@ category_order_15c = ['Male',
                       'Not applicable']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_15c = pd.DataFrame(columns=category_order_15c).astype(float)
-category_percent_15c = pd.concat([all_categories_df_15c, category_percent_15c]).convert_dtypes().fillna(0.0)
+all_categories_df_16c = pd.DataFrame(columns=category_order_16c).astype(float)
+category_percent_16c = pd.concat([all_categories_df_16c, category_percent_16c]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_15c = category_percent_15c[category_order_15c]
+category_percent_16c = category_percent_16c[category_order_16c]
 
 # Define custom colors for each category
-custom_colors_15c = ['#385AC2',
+custom_colors_16c = ['#385AC2',
                      '#AE305D',
                      '#8B3FCF',
 
@@ -2630,13 +2724,13 @@ custom_colors_15c = ['#385AC2',
                      '#D3D3D3']
 
 # Bar plot-------------------------------------------
-category_percent_15c.plot(kind = 'bar',
+category_percent_16c.plot(kind = 'bar',
                           stacked = True,
                           ax = ax1,
-                          color = custom_colors_15c,
+                          color = custom_colors_16c,
                           width = 1.0,
                           alpha = 1.0,
-                          label = "15cd protagonist gender accuracy")
+                          label = "16c protagonist gender accuracy")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -2678,25 +2772,25 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/15c protagonist gender accuracy.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/15c protagonist gender accuracy.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/16c protagonist gender accuracy.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/16c protagonist gender accuracy.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/15c protagonist gender accuracy.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/16c protagonist gender accuracy.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 25 - 15d protagonist gender discipline
-print("  Making 15d protagonist gender discipline...")
+# Figure 26 - 16d protagonist gender discipline
+print("  Making 16d protagonist gender discipline...")
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure15d = plt.figure(25, figsize = (12, 6))
-gs = figure15d.add_gridspec(ncols = 1, nrows = 1)
+figure16d = plt.figure(26, figsize = (12, 6))
+gs = figure16d.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure15d.add_subplot(gs[0])
+ax1 = figure16d.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_15d = ['Male', 
+category_order_16d = ['Male', 
                       'Female',
                       'Other',
 
@@ -2704,14 +2798,14 @@ category_order_15d = ['Male',
                       'Not applicable']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_15d = pd.DataFrame(columns=category_order_15d).astype(float)
-category_percent_15d = pd.concat([all_categories_df_15d, category_percent_15d]).convert_dtypes().fillna(0.0)
+all_categories_df_16d = pd.DataFrame(columns=category_order_16d).astype(float)
+category_percent_16d = pd.concat([all_categories_df_16d, category_percent_16d]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_15d = category_percent_15d[category_order_15d]
+category_percent_16d = category_percent_16d[category_order_16d]
 
 # Define custom colors for each category
-custom_colors_15d = ['#385AC2',
+custom_colors_16d = ['#385AC2',
                      '#AE305D',
                      '#8B3FCF',
 
@@ -2719,13 +2813,13 @@ custom_colors_15d = ['#385AC2',
                      '#D3D3D3']
 
 # Bar plot-------------------------------------------
-category_percent_15d.plot(kind = 'bar',
+category_percent_16d.plot(kind = 'bar',
                           stacked = True,
                           ax = ax1,
-                          color = custom_colors_15d,
+                          color = custom_colors_16d,
                           width = 1.0,
                           alpha = 1.0,
-                          label = "15d protagonist gender discipline")
+                          label = "16d protagonist gender discipline")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -2767,50 +2861,50 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/15d protagonist gender discipline.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/15d protagonist gender discipline.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/16d protagonist gender discipline.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/16d protagonist gender discipline.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/15d protagonist gender discipline.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/16d protagonist gender discipline.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 26 - 16 virtual
-print("  Making 16 virtual...")
+# Figure 27 - 17 virtual
+print("  Making 17 virtual...")
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure16 = plt.figure(26, figsize = (12, 6))
-gs = figure16.add_gridspec(ncols = 1, nrows = 1)
+figure17 = plt.figure(27, figsize = (12, 6))
+gs = figure17.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure16.add_subplot(gs[0])
+ax1 = figure17.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_16 = ['Yes', 
+category_order_17 = ['Yes', 
                      'Somewhat',
                      'No',
                      'Uncertain']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_16 = pd.DataFrame(columns=category_order_16).astype(float)
-category_percent_16 = pd.concat([all_categories_df_16, category_percent_16]).convert_dtypes().fillna(0.0)
+all_categories_df_17 = pd.DataFrame(columns=category_order_17).astype(float)
+category_percent_17 = pd.concat([all_categories_df_17, category_percent_17]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_16 = category_percent_16[category_order_16]
+category_percent_17 = category_percent_17[category_order_17]
 
 # Define custom colors for each category
-custom_colors_16 = ['#AE305D',
+custom_colors_17 = ['#AE305D',
                     '#8B3FCF',
                     '#385AC2',
                     '#FFD700']
 
 # Bar plot-------------------------------------------
-category_percent_16.plot(kind = 'bar',
+category_percent_17.plot(kind = 'bar',
                          stacked = True,
                          ax = ax1,
-                         color = custom_colors_16,
+                         color = custom_colors_17,
                          width = 1.0,
                          alpha = 1.0,
-                         label = "16 virtual")
+                         label = "17 virtual")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -2852,25 +2946,25 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/16 virtual.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/16 virtual.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/17 virtual.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/17 virtual.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/16 virtual.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/17 virtual.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 27 - 17 tech and science
-print("  Making 17 tech and science...")
+# Figure 28 - 18 tech and science
+print("  Making 18 tech and science...")
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure17 = plt.figure(27, figsize = (12, 6))
-gs = figure17.add_gridspec(ncols = 1, nrows = 1)
+figure18 = plt.figure(28, figsize = (12, 6))
+gs = figure18.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure17.add_subplot(gs[0])
+ax1 = figure18.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_17 = ['Bad', 
+category_order_18 = ['Bad', 
                      'Leaning bad', 
                      'Ambivalent', 
                      'Leaning good',
@@ -2879,14 +2973,14 @@ category_order_17 = ['Bad',
                      'Uncertain']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_17 = pd.DataFrame(columns=category_order_17).astype(float)
-category_percent_17 = pd.concat([all_categories_df_17, category_percent_17]).convert_dtypes().fillna(0.0)
+all_categories_df_18 = pd.DataFrame(columns=category_order_18).astype(float)
+category_percent_18 = pd.concat([all_categories_df_18, category_percent_18]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_17 = category_percent_17[category_order_17]
+category_percent_18 = category_percent_18[category_order_18]
 
 # Define custom colors for each category
-custom_colors_17 = ['#AE305D',
+custom_colors_18 = ['#AE305D',
                     '#CF5D5F',
                     '#8B3FCF',
                     '#5580D0',
@@ -2895,13 +2989,13 @@ custom_colors_17 = ['#AE305D',
                     '#FFD700']
 
 # Bar plot-------------------------------------------
-category_percent_17.plot(kind = 'bar',
+category_percent_18.plot(kind = 'bar',
                          stacked = True,
                          ax = ax1,
-                         color = custom_colors_17,
+                         color = custom_colors_18,
                          width = 1.0,
                          alpha = 1.0,
-                         label = "17 tech and science")
+                         label = "18 tech and science")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -2943,26 +3037,26 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/17 tech and science.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/17 tech and science.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/18 tech and science.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/18 tech and science.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/17 tech and science.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/18 tech and science.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 28 - 18 social issues
-print("  Making 18 social issues...")
+# Figure 29 - 19 social issues
+print("  Making 19 social issues...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure18 = plt.figure(28, figsize = (12, 6))
-gs = figure18.add_gridspec(ncols = 1, nrows = 1)
+figure19 = plt.figure(29, figsize = (12, 6))
+gs = figure19.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure18.add_subplot(gs[0])
+ax1 = figure19.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_18 = ['Core', 
+category_order_19 = ['Core', 
                      'Major',
                      'Minor',
 
@@ -2970,14 +3064,14 @@ category_order_18 = ['Core',
                      'Uncertain']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_18 = pd.DataFrame(columns=category_order_18).astype(float)
-category_percent_18 = pd.concat([all_categories_df_18, category_percent_18]).convert_dtypes().fillna(0.0)
+all_categories_df_19 = pd.DataFrame(columns=category_order_19).astype(float)
+category_percent_19 = pd.concat([all_categories_df_19, category_percent_19]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_18 = category_percent_18[category_order_18]
+category_percent_19 = category_percent_19[category_order_19]
 
 # Define custom colors for each category
-custom_colors_18 = ['#385AC2',
+custom_colors_19 = ['#385AC2',
                     '#5580D0',
                     '#6CACEB',
 
@@ -2985,13 +3079,13 @@ custom_colors_18 = ['#385AC2',
                     '#FFD700']
 
 # Bar plot-------------------------------------------
-category_percent_18.plot(kind = 'bar',
+category_percent_19.plot(kind = 'bar',
                          stacked = True,
                          ax = ax1,
-                         color = custom_colors_18,
+                         color = custom_colors_19,
                          width = 1.0,
                          alpha = 1.0,
-                         label = "18 social issues")
+                         label = "19 social issues")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -3033,26 +3127,26 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/18 social issues.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/18 social issues.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/19 social issues.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/19 social issues.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/18 social issues.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/19 social issues.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 29 - 19 enviromental
-print("  Making 19 enviromental...")
+# Figure 30 - 20 enviromental
+print("  Making 20 enviromental...")
 
 #-------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure19 = plt.figure(29, figsize = (12, 6))
-gs = figure19.add_gridspec(ncols = 1, nrows = 1)
+figure20 = plt.figure(30, figsize = (12, 6))
+gs = figure20.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
-ax1 = figure19.add_subplot(gs[0])
+ax1 = figure20.add_subplot(gs[0])
 
 #-------------------------------------------
 # Define the desired order of the categories
-category_order_19 = ['Core', 
+category_order_20 = ['Core', 
                      'Major',
                      'Minor',
 
@@ -3060,14 +3154,14 @@ category_order_19 = ['Core',
                      'Uncertain']
 
 # Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_19 = pd.DataFrame(columns=category_order_19).astype(float)
-category_percent_19 = pd.concat([all_categories_df_19, category_percent_19]).convert_dtypes().fillna(0.0)
+all_categories_df_20 = pd.DataFrame(columns=category_order_20).astype(float)
+category_percent_20 = pd.concat([all_categories_df_20, category_percent_20]).convert_dtypes().fillna(0.0)
 
 # Reorder the columns in the DataFrame according to the desired category order
-category_percent_19 = category_percent_19[category_order_19]
+category_percent_20 = category_percent_20[category_order_20]
 
 # Define custom colors for each category
-custom_colors_19 = ['#385AC2',
+custom_colors_20 = ['#385AC2',
                     '#5580D0',
                     '#6CACEB',
 
@@ -3075,13 +3169,13 @@ custom_colors_19 = ['#385AC2',
                     '#FFD700']
 
 # Bar plot-------------------------------------------
-category_percent_19.plot(kind = 'bar',
+category_percent_20.plot(kind = 'bar',
                          stacked = True,
                          ax = ax1,
-                         color = custom_colors_19,
+                         color = custom_colors_20,
                          width = 1.0,
                          alpha = 1.0,
-                         label = "19 enviromental")
+                         label = "20 enviromental")
 
 # Design-------------------------------------------
 ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
@@ -3123,21 +3217,21 @@ ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/19 enviromental.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/19 enviromental.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/20 enviromental.png", bbox_inches = 'tight')
+#plt.savefig("./Figures/20 enviromental.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/19 enviromental.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/20 enviromental.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------
 # For the Tests and more
 #----------------------------------------------------------------------------------
-# Figure 30 - Author and protagonist heatmap
+# Figure 31 - Author and protagonist heatmap
 print("  Making author and protagonist heatmap...")
 
 #-------------------------------------------
 # Creates a figure object with size 18x5 inches
-figure_t1 = plt.figure(30, figsize = (18, 5))
+figure_t1 = plt.figure(31, figsize = (18, 5))
 gs = figure_t1.add_gridspec(ncols = 2, nrows = 1)
 
 # Define the desired order for Author Gender (y-axis)
@@ -3155,7 +3249,7 @@ protagonist_gender_order = ['Male',
 
 #-------------------------------------------
 # Step 1: Create a contingency table (cross-tab)
-contingency_table = pd.crosstab(df_top_AI['gender'], df_top_AI['15 protagonist gender'])
+contingency_table = pd.crosstab(df_top_AI['gender'], df_top_AI['16 protagonist gender'])
 
 contingency_table = contingency_table.div(contingency_table.sum(axis=1), axis=0) * 100
 
@@ -3206,7 +3300,7 @@ mask = df_top_AI['decade'] >= 2000
 df_top_AI_2000 = df_top_AI[mask]
 
 # Step 1: Create a contingency table (cross-tab)
-contingency_table_2000 = pd.crosstab(df_top_AI_2000['gender'], df_top_AI_2000['15 protagonist gender'])
+contingency_table_2000 = pd.crosstab(df_top_AI_2000['gender'], df_top_AI_2000['16 protagonist gender'])
 
 contingency_table_2000 = contingency_table_2000.div(contingency_table_2000.sum(axis = 1), axis = 0) * 100
 
@@ -3259,12 +3353,12 @@ plt.savefig("./Figures/00 author and protagonist heatmap.png", bbox_inches = 'ti
 #plt.savefig("./Figures/00 author and protagonist heatmap.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 31 - Author and protagonist gender
+# Figure 32 - Author and protagonist gender
 print("  Making author and protagonist gender...")
 
 #------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure_t2 = plt.figure(31, figsize = (12, 6))
+figure_t2 = plt.figure(32, figsize = (12, 6))
 gs = figure_t2.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -3297,23 +3391,6 @@ category_percent_genders = pd.concat([all_categories_df_genders, category_percen
 category_percent_genders = category_percent_genders[category_order_genders]
 
 # Define custom colors for each category
-"""custom_colors_genders = ['#385AC2',
-                         '#5580D0',
-                         '#6CACEB',
-
-                         '#FFD700',
-                         '#D3D3D3',
-                         
-                         '#AE305D',
-                         '#CF5D5F',
-                         '#E3937B',
-
-                         '#FFD700',
-                         '#D3D3D3',
-                         
-                         '#8B3FCF',
-                         '#FFD700']"""
-
 custom_colors_genders = ['#385AC2',
                          '#5580D0',
                          '#6CACEB',
@@ -3410,7 +3487,11 @@ for b in boundaries:
         ys.append(y)
 
     # Now draw with step connections
-    ax1.plot(xs, ys, color = custom_dark_gray, linewidth = 1.0)
+    ax1.plot(xs, 
+             ys, 
+             color=custom_dark_gray, 
+             linewidth = 1.2, 
+             linestyle='solid')
 
     # Add vertical connectors between bars
     for i in range(len(y_values) - 1):
@@ -3418,7 +3499,8 @@ for b in boundaries:
             [i + bar_width/2, i + 1 - bar_width/2],
             [y_values[i], y_values[i+1]],
             color = custom_dark_gray,
-            linewidth = 1.0
+            linewidth = 1.2,
+            linestyle='solid'
         )
 
 # Save image-------------------------------------------
@@ -3428,12 +3510,12 @@ plt.savefig("./Figures/00 author and protagonist gender.png", bbox_inches = 'tig
 #plt.savefig("./Figures/00 author and protagonist gender.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #----------------------------------------------------------------------------------
-# Figure 32 - Variation in Answer
+# Figure 33 - Variation in Answer
 print("  Making Variation in Answers...")
 
 #----------------------------------------------------------------------------------
 # Creates a figure object with size 10x14 inches
-figure_t3 = plt.figure(32, figsize = (10, 14))
+figure_t3 = plt.figure(33, figsize = (10, 14))
 gs = figure_t3.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -3444,7 +3526,7 @@ ax1 = figure_t3.add_subplot(gs[0])
 # 1 Difference two by two of the answers
 # 2 Percent Agreement / Mode Consistency
 # 3 Shannon Entropy (Diversity Index)
-var_flag = 2
+var_flag = 3
 
 #-----------------------------
 # 1 Difference two by two of the answers
@@ -3478,11 +3560,11 @@ elif var_flag == 3:
         if abs(val) < TOLERANCE:
             return 0
         elif abs(val) >= 100:
-            return f"{val:.0f}"  # No decimals for numbers >= 100
+            return f"{val:.0f}" # No decimals for numbers >= 100
         elif abs(val) >= 10:
-            return f"{val:.1f}"  # One decimal for numbers >= 10 and < 100
+            return f"{val:.1f}" # One decimal for numbers >= 10 and < 100
         else:
-            return f"{val:.2f}"  # Two decimals for numbers < 10
+            return f"{val:.2f}" # Two decimals for numbers < 10
 
     # Apply the function to each cell
     sns.heatmap(df_entropy, 

@@ -36,6 +36,7 @@ import os
 import csv
 from pathlib import Path
 import time
+from datetime import datetime
 import winsound
 
 #----------------------------------------------------------------------------------
@@ -653,7 +654,19 @@ def main():
 #----------------------------------------------------------------------------------
 # Execution
 if __name__ == "__main__":
+    
+    # Record start time
+    start = datetime.now()
+    
     main()
+
+    # Record end time
+    end = datetime.now()
+
+    # How long did it take?
+    print(f"Script started at {start}")
+    print(f"Script finished at {end}")
+    print(f"Total runtime: {end - start}")
 
     winsound.Beep(800, 500) # Play a 800 Hz beep for 500 milliseconds
     winsound.Beep(500, 500) # Play a 500 Hz beep for 500 milliseconds

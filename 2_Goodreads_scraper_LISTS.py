@@ -15,6 +15,8 @@ Modules:
     - tenacity
     - re
     - typing
+    - datetime
+    - winsound (only for Windows)
 """
 
 #-------------------------------------------------------------------------------------------
@@ -34,6 +36,8 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 import re
 from typing import List, Dict, Any, Union
 from requests import Session
+from datetime import datetime
+import winsound
 
 #----------------------------------------------------------------------------------
 # Set up logging
@@ -472,4 +476,20 @@ def main():
 #----------------------------------------------------------------------------------
 # Execution
 if __name__ == "__main__":
+
+    # Record start time
+    start = datetime.now()
+
     main()
+
+    # Record end time
+    end = datetime.now()
+
+    # How long did it take?
+    print(f"Script started at {start}")
+    print(f"Script finished at {end}")
+    print(f"Total runtime: {end - start}")
+
+    winsound.Beep(800, 500) # Play a 800 Hz beep for 500 milliseconds
+    winsound.Beep(500, 500) # Play a 500 Hz beep for 500 milliseconds
+    winsound.Beep(300, 500) # Play a 300 Hz beep for 500 milliseconds

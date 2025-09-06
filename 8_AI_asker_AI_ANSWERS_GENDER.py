@@ -7,6 +7,7 @@ Modules:
     - pandas
     - openai
     - dotenv
+    - datetime
     - winsound (only for Windows)
 """
 
@@ -16,6 +17,7 @@ import os
 import pandas as pd
 from openai import OpenAI
 from dotenv import load_dotenv
+from datetime import datetime
 import winsound
 
 #----------------------------------------------------------------------------------
@@ -59,7 +61,7 @@ def analyze_author(author: str) -> str:
         Male;
         Female;
         Other: Non-binary, genderfluid, ambiguous, fluid, or another gender identity that is not male nor female;
-        Uncertain: Not enough information to tell, or multiple authors of different genders.
+        Uncertain: Not enough information to say, or multiple authors of different genders.
     """
     
     # Call the OpenAI API with the crafted prompt
@@ -233,6 +235,9 @@ def main():
 # Execution
 if __name__ == "__main__":
 
+    # Record start time
+    start = datetime.now()
+
     missing_authors = 1
     max_retries = 20
     attempt = 1
@@ -249,6 +254,14 @@ if __name__ == "__main__":
     print(df_authors.info())
     print("\n", Count)
     print("\n", Fraction)  
+
+    # Record end time
+    end = datetime.now()
+
+    # How long did it take?
+    print(f"Script started at {start}")
+    print(f"Script finished at {end}")
+    print(f"Total runtime: {end - start}")
 
     winsound.Beep(800, 500) # Play a 800 Hz beep for 500 milliseconds
     winsound.Beep(500, 500) # Play a 500 Hz beep for 500 milliseconds
