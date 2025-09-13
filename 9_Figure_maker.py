@@ -7,30 +7,35 @@ Modules:
     - seaborn
     - scipy.stats
     - numpy
+    - plotly
+    - typing
 """
 
-#-------------------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.ticker import PercentFormatter
 from scipy.stats import chi2_contingency
 import numpy as np
+import plotly.express as px
+from typing import List
 
-#----------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 print("Reading and processing tha data...")
 
 # Read the data
 df_filtered = pd.read_csv("./Data/Filtered/sci-fi_books_FILTERED.csv", sep=";", encoding="utf-8-sig")
 df_top = pd.read_csv("./Data/Filtered/sci-fi_books_TOP_Wiki.csv", sep=";", encoding="utf-8-sig")
+#df_top_AI = pd.read_csv("./Data/Answers/sci-fi_books_AI_ANSWERS_old.csv", sep=";", encoding="utf-8-sig")
 df_top_AI = pd.read_csv("./Data/Answers/sci-fi_books_AI_ANSWERS.csv", sep=";", encoding="utf-8-sig")
 df_top_AI_gender = pd.read_csv("./Data/Answers/sci-fi_books_AI_ANSWERS_GENDER.csv", sep=";", encoding="utf-8-sig")
 
 #print(df_top_AI.info())
 #print(df.head())
 
-#----------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # Exclude books of before 1860 (allmost none)
 
 mask_all = df_filtered['decade'] >= 1860
@@ -42,16 +47,16 @@ df_top = df_top[mask_top]
 mask_top_AI = df_top_AI['decade'] >= 1860
 df_top_AI = df_top_AI[mask_top_AI]
 
-#----------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # Include author gender to data
 
 # Create a dictionary from df_top_AI_gender
-author_gender_dict = df_top_AI_gender.set_index('author')['gender'].to_dict()
+author_gender_dict = df_top_AI_gender.set_index('author')["gender"].to_dict()
 
-# Map the 'gender' based on 'author' column from df_top_AI
-df_top_AI['gender'] = df_top_AI['author'].map(author_gender_dict).fillna('Uncertain')
+# Map the "author gender" based on 'author' column from df_top_AI
+df_top_AI["author gender"] = df_top_AI['author'].map(author_gender_dict).fillna('Uncertain')
 
-#----------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # For the boxplots
 
 # Add a column to each DataFrame to label the dataset
@@ -61,7 +66,7 @@ df_top['dataset'] = 'Top sample'
 # Concatenate dataframes
 df_filtered_200 = pd.concat([df_filtered, df_top])
 
-#----------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # General information of the FILTERED sample of books
 #'title', 'author', 'year', 'decade', 'rate', 'ratings', 'genres', 'synopsis', 'review', 'url'
 print("\nFILTERED books.")
@@ -89,7 +94,7 @@ df_all = (df_all
 #print(df_all.info())
 #print(df_all)
 
-#----------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # General information of the 200 PER DECADE sample of books
 #'title', 'author', 'year', 'decade', 'rate', 'ratings', 'genres', 'synopsis', 'review', 'url'
 print("\n200 PER DECADE books.")
@@ -114,231 +119,13 @@ df_all_200 = (df_all_200
               .sort_values(by = ['decade'], ascending = True)
               .reset_index(drop = True))
 
-# Part in a series of books------------------------------------------
-# Count the occurrences of each category per decade
-category_counts_series = pd.crosstab(df_top['decade'], df_top['series'])
-# Normalize the counts to get percentages
-category_percent_series = category_counts_series.div(category_counts_series.sum(axis = 1), axis = 0) * 100
-
-# Author gender------------------------------------------
-# Count the occurrences of each category per decade
-category_counts_gender = pd.crosstab(df_top_AI['decade'], df_top_AI['gender'])
-# Normalize the counts to get percentages
-category_percent_gender = category_counts_gender.div(category_counts_gender.sum(axis = 1), axis = 0) * 100
-
-# (very) high author gender------------------------------------------
-# Define the condition to select rows
-mask_1 = df_top_AI['1 accuracy'] == "High"
-mask_2 = df_top_AI['1 accuracy'] == "Very high"
-# Filter the dataframe to exclude those rows
-df_top_AI_gender_b = df_top_AI[mask_1 | mask_2]
-# Count the occurrences of each category per decade
-category_counts_gender_b = pd.crosstab(df_top_AI_gender_b['decade'], df_top_AI_gender_b['gender'])
-# Normalize the counts to get percentages
-category_percent_gender_b = category_counts_gender_b.div(category_counts_gender_b.sum(axis = 1), axis = 0) * 100
-
-#----------------------------------------------------------------------------------
-# Process for the questions/answers
-
-# 1 accuracy------------------------------------------
-print(df_top_AI['1 accuracy'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_1 = pd.crosstab(df_top_AI['decade'], df_top_AI['1 accuracy'])
-# Normalize the counts to get percentages
-category_percent_1 = category_counts_1.div(category_counts_1.sum(axis = 1), axis = 0) * 100
-
-# 2 discipline------------------------------------------
-print(df_top_AI['2 discipline'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_2 = pd.crosstab(df_top_AI['decade'], df_top_AI['2 discipline'])
-# Normalize the counts to get percentages
-category_percent_2 = category_counts_2.div(category_counts_2.sum(axis = 1), axis = 0) * 100
-
-# 3 light heavy------------------------------------------
-print(df_top_AI['3 light heavy'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_3 = pd.crosstab(df_top_AI['decade'], df_top_AI['3 light heavy'])
-# Normalize the counts to get percentages
-category_percent_3 = category_counts_3.div(category_counts_3.sum(axis = 1), axis = 0) * 100
-
-# 4 time------------------------------------------
-print(df_top_AI['4 time'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_4 = pd.crosstab(df_top_AI['decade'], df_top_AI['4 time'])
-# Normalize the counts to get percentages
-category_percent_4 = category_counts_4.div(category_counts_4.sum(axis = 1), axis = 0) * 100
-
-# 5 mood------------------------------------------
-print(df_top_AI['5 mood'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_5 = pd.crosstab(df_top_AI['decade'], df_top_AI['5 mood'])
-# Normalize the counts to get percentages
-category_percent_5 = category_counts_5.div(category_counts_5.sum(axis = 1), axis = 0) * 100
-
-# 6 social political------------------------------------------
-print(df_top_AI['6 social political'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_6 = pd.crosstab(df_top_AI['decade'], df_top_AI['6 social political'])
-# Normalize the counts to get percentages
-category_percent_6 = category_counts_6.div(category_counts_6.sum(axis = 1), axis = 0) * 100
-
-# 7 politically unified------------------------------------------
-print(df_top_AI['7 politically unified'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_7 = pd.crosstab(df_top_AI['decade'], df_top_AI['7 politically unified'])
-# Normalize the counts to get percentages
-category_percent_7 = category_counts_7.div(category_counts_7.sum(axis = 1), axis = 0) * 100
-
-# 8 on Earth------------------------------------------
-print(df_top_AI['8 on Earth'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_8 = pd.crosstab(df_top_AI['decade'], df_top_AI['8 on Earth'])
-# Normalize the counts to get percentages
-category_percent_8 = category_counts_8.div(category_counts_8.sum(axis = 1), axis = 0) * 100
-
-# 9 post apocalyptic------------------------------------------
-print(df_top_AI['9 post apocalyptic'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_9 = pd.crosstab(df_top_AI['decade'], df_top_AI['9 post apocalyptic'])
-# Normalize the counts to get percentages
-category_percent_9 = category_counts_9.div(category_counts_9.sum(axis = 1), axis = 0) * 100
-
-# 10 aliens------------------------------------------
-print(df_top_AI['10 aliens'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_10 = pd.crosstab(df_top_AI['decade'], df_top_AI['10 aliens'])
-# Normalize the counts to get percentages
-category_percent_10 = category_counts_10.div(category_counts_10.sum(axis = 1), axis = 0) * 100
-
-# 11a aliens are------------------------------------------
-print(df_top_AI['11 aliens are'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_11a = pd.crosstab(df_top_AI['decade'], df_top_AI['11 aliens are'])
-# Normalize the counts to get percentages
-category_percent_11a = category_counts_11a.div(category_counts_11a.sum(axis = 1), axis = 0) * 100
-
-# 11b aliens are------------------------------------------
-# Define the condition to exclude rows where the column has a specific value
-condition_to_exclude = "Not applicable"
-# Filter the dataframe to exclude those rows
-df_top_AI_11b = df_top_AI[df_top_AI['11 aliens are'] != condition_to_exclude]
-# Count the occurrences of each category per decade
-category_counts_11b = pd.crosstab(df_top_AI_11b['decade'], df_top_AI_11b['11 aliens are'])
-# Normalize the counts to get percentages
-category_percent_11b = category_counts_11b.div(category_counts_11b.sum(axis = 1), axis = 0) * 100
-
-# 12 robots and AI------------------------------------------
-print(df_top_AI['12 robots and AI'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_12 = pd.crosstab(df_top_AI['decade'], df_top_AI['12 robots and AI'])
-# Normalize the counts to get percentages
-category_percent_12 = category_counts_12.div(category_counts_12.sum(axis = 1), axis = 0) * 100
-
-# 13a robots and AI are------------------------------------------
-print(df_top_AI['13 robots and AI are'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_13a = pd.crosstab(df_top_AI['decade'], df_top_AI['13 robots and AI are'])
-# Normalize the counts to get percentages
-category_percent_13a = category_counts_13a.div(category_counts_13a.sum(axis = 1), axis = 0) * 100
-
-# 13b robots and AI are------------------------------------------
-# Define the condition to exclude rows where the column has a specific value
-condition_to_exclude = "Not applicable"
-# Filter the dataframe to exclude those rows
-df_top_AI_13b = df_top_AI[df_top_AI['13 robots and AI are'] != condition_to_exclude]
-# Count the occurrences of each category per decade
-category_counts_13b = pd.crosstab(df_top_AI_13b['decade'], df_top_AI_13b['13 robots and AI are'])
-# Normalize the counts to get percentages
-category_percent_13b = category_counts_13b.div(category_counts_13b.sum(axis = 1), axis = 0) * 100
-
-# 14 protagonist------------------------------------------
-print(df_top_AI['14 protagonist'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_14 = pd.crosstab(df_top_AI['decade'], df_top_AI['14 protagonist'])
-# Normalize the counts to get percentages
-category_percent_14 = category_counts_14.div(category_counts_14.sum(axis = 1), axis = 0) * 100
-
-# 15 protagonist nature------------------------------------------
-print(df_top_AI['15 protagonist nature'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_15 = pd.crosstab(df_top_AI['decade'], df_top_AI['15 protagonist nature'])
-# Normalize the counts to get percentages
-category_percent_15 = category_counts_15.div(category_counts_15.sum(axis = 1), axis = 0) * 100
-
-# 16a protagonist gender------------------------------------------
-print(df_top_AI['16 protagonist gender'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_16a = pd.crosstab(df_top_AI['decade'], df_top_AI['16 protagonist gender'])
-# Normalize the counts to get percentages
-category_percent_16a = category_counts_16a.div(category_counts_16a.sum(axis = 1), axis = 0) * 100
-
-# 16b protagonist gender------------------------------------------
-# Define the condition to exclude rows where the column has a specific value
-condition_to_exclude = "Not applicable"
-# Filter the dataframe to exclude those rows
-df_top_AI_16b = df_top_AI[df_top_AI['16 protagonist gender'] != condition_to_exclude]
-# Count the occurrences of each category per decade
-category_counts_16b = pd.crosstab(df_top_AI_16b['decade'], df_top_AI_16b['16 protagonist gender'])
-# Normalize the counts to get percentages
-category_percent_16b = category_counts_16b.div(category_counts_16b.sum(axis = 1), axis = 0) * 100
-
-# 16c protagonist gender (only high and very high accuracy sci-fi)------------------------------------------
-# Define the condition to select rows
-mask_1 = df_top_AI['1 accuracy'] == "High"
-mask_2 = df_top_AI['1 accuracy'] == "Very high"
-# Filter the dataframe to exclude those rows
-df_top_AI_16c = df_top_AI[mask_1 | mask_2]
-# Count the occurrences of each category per decade
-category_counts_16c = pd.crosstab(df_top_AI_16c['decade'], df_top_AI_16c['16 protagonist gender'])
-# Normalize the counts to get percentages
-category_percent_16c = category_counts_16c.div(category_counts_16c.sum(axis = 1), axis = 0) * 100
-
-# 16d protagonist gender (only leaning hard sciences and hard sciences)------------------------------------------
-# Define the condition to select rows
-mask_1 = df_top_AI['2 discipline'] == "Leaning hard sciences"
-mask_2 = df_top_AI['2 discipline'] == "Hard sciences"
-# Filter the dataframe to exclude those rows
-df_top_AI_16d = df_top_AI[mask_1 | mask_2]
-# Count the occurrences of each category per decade
-category_counts_16d = pd.crosstab(df_top_AI_16d['decade'], df_top_AI_16d['16 protagonist gender'])
-# Normalize the counts to get percentages
-category_percent_16d = category_counts_16d.div(category_counts_16d.sum(axis = 1), axis = 0) * 100
-
-# 17 virtual------------------------------------------
-print(df_top_AI['17 virtual'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_17 = pd.crosstab(df_top_AI['decade'], df_top_AI['17 virtual'])
-# Normalize the counts to get percentages
-category_percent_17 = category_counts_17.div(category_counts_17.sum(axis = 1), axis = 0) * 100
-
-# 18 tech and science------------------------------------------
-print(df_top_AI['18 tech and science'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_18 = pd.crosstab(df_top_AI['decade'], df_top_AI['18 tech and science'])
-# Normalize the counts to get percentages
-category_percent_18 = category_counts_18.div(category_counts_18.sum(axis = 1), axis = 0) * 100
-
-# 19 social issues------------------------------------------
-print(df_top_AI['19 social issues'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_19 = pd.crosstab(df_top_AI['decade'], df_top_AI['19 social issues'])
-# Normalize the counts to get percentages
-category_percent_19 = category_counts_19.div(category_counts_19.sum(axis = 1), axis = 0) * 100
-
-# 20 enviromental------------------------------------------
-print(df_top_AI['20 enviromental'].value_counts())
-# Count the occurrences of each category per decade
-category_counts_20 = pd.crosstab(df_top_AI['decade'], df_top_AI['20 enviromental'])
-# Normalize the counts to get percentages
-category_percent_20 = category_counts_20.div(category_counts_20.sum(axis = 1), axis = 0) * 100
-
-#----------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # Process for the complex figures
-#----------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # Author and protagonist gender
 
 df_top_AI_new = df_top_AI.copy()
-df_top_AI_new["genders"] = df_top_AI_new['gender'] + " / " + df_top_AI_new['16 protagonist gender']
+df_top_AI_new["genders"] = df_top_AI_new["author gender"] + " / " + df_top_AI_new['18 protagonist gender']
 
 # Count the occurrences of each category per decade
 category_counts_genders = pd.crosstab(df_top_AI_new['decade'], df_top_AI_new["genders"])
@@ -389,46 +176,68 @@ category_percent_genders = category_counts_genders.div(category_counts_genders.s
 print("\ngenders", df_top_AI_new["genders"].unique())
 #print("\n")
 
-#----------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # Variation in Answers
 
 # File names in the normally ordered alternatives
-file_names = ["./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_01.csv",
-              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_02.csv",
-              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_03.csv",
-              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_04.csv",
-              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_05.csv",
-              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_06.csv",
-              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_07.csv",
-              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_08.csv",
-              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_09.csv",
-              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_10.csv",
-              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_11.csv",
-              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_12.csv",
-              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_13.csv",
-              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_14.csv",
-              "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_15.csv"]
+file_names = [
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_01.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_02.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_03.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_04.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_05.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_06.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_07.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_08.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_09.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_10.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_11.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_12.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_13.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_14.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_15.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_16.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_17.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_18.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_19.csv",
+    "./Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_20.csv"
+    ]
 
-column_order = ['1 accuracy',
-                '2 discipline',
-                '3 light heavy',
-                '4 time',
-                '5 mood',
-                '6 social political',
-                '7 politically unified',
-                '8 on Earth',
-                '9 post apocalyptic',
-                '10 aliens',
-                '11 aliens are',
-                '12 robots and AI',
-                '13 robots and AI are',
-                '14 protagonist',
-                '15 protagonist nature',
-                '16 protagonist gender',
-                '17 virtual',
-                '18 tech and science',
-                '19 social issues',
-                '20 enviromental',]
+column_order = [
+    '1 accuracy',
+    '2 discipline',
+    '3 light heavy',
+    '4 time',
+    '5 mood',
+    '6 ending',
+
+    '7 social political',
+    '8 politically unified',
+    '9 on Earth',
+    '10 post apocalyptic',
+    '11 conflict',
+
+    '12 aliens',
+    '13 aliens are',
+    '14 robots and AI',
+    '15 robots and AI are',
+
+    '16 protagonist',
+    '17 protagonist nature',
+    '18 protagonist gender',
+    '19 protagonist is',
+
+    '20 virtual',
+    '21 virtual is',
+    '22 biotech',
+    '23 biotech is',
+    '24 transhuman',
+    '25 transhuman is',
+    '26 tech and science',
+
+    '27 social issues',
+    '28 enviromental'
+]
 
 dfs = [] # List of DataFrames
 
@@ -521,14 +330,15 @@ df_entropy = pd.DataFrame(entropy_values, index=dfs[0].index, columns=dfs[0].col
 df_entropy['Mean'] = df_entropy.mean(axis=1)
 df_entropy.loc['Mean'] = df_entropy.mean(axis=0)
 
-#----------------------------------------------------------------------------------
-#----------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # Make figures
 print("Making the figures...")
-#----------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # Custom dark gray color
 custom_dark_gray = (0.2, 0.2, 0.2)
-#----------------------------------------------------------------------------------
+
+#---------------------------------------------------------------------------------------------------
 # Figure 1, Quantities
 print("  Making book counts...")
 
@@ -610,9 +420,10 @@ plt.savefig("./Figures/00 Quantities.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/00 Quantities.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
 #plt.savefig("./Figures/00 Quantities.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+plt.close(figure_c1)
 
-#----------------------------------------------------------------------------------
-#----------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # Figure 2, Quantities
 print("  Making rate and ratings...")
 
@@ -673,7 +484,7 @@ ax1.spines['left'].set_visible(False)
 #ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
 
-#----------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # Create the main plot
 ax2 = figure_c2.add_subplot(gs[1])
 
@@ -732,2506 +543,1448 @@ plt.savefig("./Figures/00 Rates and Ratings.png", bbox_inches = 'tight')
 #plt.savefig("./Figures/00 Rates and Ratings.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
 #plt.savefig("./Figures/00 Rates and Ratings.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+plt.close(figure_c2)
 
-#----------------------------------------------------------------------------------
-#----------------------------------------------------------------------------------
-# Figure 3, Series
-print("  Making series...")
+#---------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+def figure_maker (number: int, 
+                  column_name: str,
+                  df_top: pd.DataFrame,
+                  category_order: List[str], 
+                  custom_colors: List[str], 
+                  title: str, 
+                  printing_name: str) -> None:
+    
+    """
+    Function to make most of the figures.
 
-# Creates a figure object with size 12x6 inches
-figure_c3 = plt.figure(3, figsize = (12, 6))
-gs = figure_c3.add_gridspec(ncols = 1, nrows = 1)
+    Args:
+        number (int): Number of the figure.
+        df_top (Dataframe): Dataframe with all data.
+        column_name (str): Name of data column to be used.
+        category_order (List[str]): Order of the categories.
+        custom_colors (List[str]): Color of the categories.
+        title (str): Figure title.
+        printing_name (str): Name to be printed as the file name and label.
 
-# Create the main plot
-ax1 = figure_c3.add_subplot(gs[0])
+    Returns:
+        No return.
+    """
 
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_series = ['yes',
-                         'no']
+    #---------------------------------------------------------------------------------------------------
+    # Creates a figure object with size 12x6 inches
+    figure = plt.figure(number, figsize = (12, 6))
+    gs = figure.add_gridspec(ncols = 1, nrows = 1)
 
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_series = category_percent_series[category_order_series]
+    # Create the main plot
+    ax1 = figure.add_subplot(gs[0])
 
-# Define custom colors for each category
-custom_colors_series = ['#AE305D', 
-                        '#385AC2']
+    # Custom dark gray color
+    custom_dark_gray = (0.2, 0.2, 0.2)
 
-# Bar plot-------------------------------------------
-category_percent_series.plot(kind = 'bar',
-                             stacked = True,
-                             ax = ax1,
-                             color = custom_colors_series,
-                             width = 1.0,
-                             alpha = 1.0,
-                             label = "series")
+    # Custom label spacing
+    custom_label_spacing = {
+        1: 1.0,
+        2: 12.0,
+        3: 10.0,
+        4: 8.0,
+        5: 6.0,
+        6: 4.5,
+        7: 4.0,
+        8: 3.2,
+        9: 2.8,
+        10: 2.4,
+        11: 2.0,
+        12: 1.6
+    }
 
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Is the novel part of a series?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
+    #-------------------------------------------
+     # Count the occurrences of each category per decade
+    category_counts = pd.crosstab(df_top['decade'], df_top[column_name])
+    # Normalize the counts to get percentages
+    category_percent = category_counts.div(category_counts.sum(axis = 1), axis = 0) * 100
 
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
+    #-------------------------------------------
+    # Create a new DataFrame with all desired categories, filling with 0 if missing
+    all_categories_df = pd.DataFrame(columns=category_order).astype(float)
+    category_percent = pd.concat([all_categories_df, category_percent]).convert_dtypes().convert_dtypes().fillna(0.0)
 
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
+    # Reorder the columns in the DataFrame according to the desired category order
+    category_percent = category_percent[category_order]
 
-# Reverse the order
-handles.reverse()
-labels.reverse()
+    # Bar plot-------------------------------------------
+    category_percent.plot(kind = 'bar',
+                          stacked = True,
+                          ax = ax1,
+                          color = custom_colors,
+                          width = 1.0,
+                          alpha = 1.0,
+                          label = printing_name)
 
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 12.0,
-           loc = 'center left')
+    # Design-------------------------------------------
+    ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
+    #ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
+    ax1.set_title(title, fontsize = 14, pad = 5, color = custom_dark_gray)
+    #ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
 
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
+    # Format the y-axis to show percentages
+    ax1.yaxis.set_major_formatter(PercentFormatter())
 
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
+    # Legend-------------------------------------------
+    # Get handles and labels
+    handles, labels = ax1.get_legend_handles_labels()
 
-# Save image-------------------------------------------
-plt.savefig("./Figures/00 series.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/00 series.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/00 series.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+    # Reverse the order
+    handles.reverse()
+    labels.reverse()
 
-#----------------------------------------------------------------------------------
-#----------------------------------------------------------------------------------
+    # Pass the reversed handles and labels to the legend
+    ax1.legend(handles, 
+            labels, 
+            bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
+            frameon = False, 
+            labelspacing = custom_label_spacing[len(category_order)],
+            loc = 'center left')
+
+    # Axes-------------------------------------------
+    ax1.minorticks_on()
+    ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
+    ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
+    ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
+    ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
+    ax1.tick_params(axis = 'both', colors = custom_dark_gray)
+
+    ax1.spines['right'].set_visible(False)
+    ax1.spines['top'].set_visible(False)
+    #ax1.spines['left'].set_visible(False)
+    ax1.spines['left'].set_color(custom_dark_gray)
+    ax1.spines['bottom'].set_color(custom_dark_gray)
+
+    # Save image-------------------------------------------
+    plt.savefig(f"./Figures/{printing_name}.png", bbox_inches = 'tight')
+    #plt.savefig(f"./Figures/{printing_name}.eps", transparent = True, bbox_inches = 'tight')
+    # Transparence will be lost in .eps, save in .svg for transparences
+    #plt.savefig(f"./Figures/{printing_name}.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+    plt.close(figure)
+
+#---------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+
+#---------------------------------------------------------------------------------------------------
+# Figure 3, Series (top)
+print("  Making series (top)...")
+
+# Desired order of the categories
+category_order = ['yes',
+                  'no']
+
+# Custom colors for each category
+custom_colors = ['#AE305D', 
+                 '#385AC2']
+
+figure_maker (3, # number
+              "series", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "Is the novel part of a series? (top sample)", # title
+              "00 series (top 200)") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 4, Series (filtered)
+print("    Making series (filtered)...")
+
+# Desired order of the categories
+category_order = ['yes',
+                  'no']
+
+# Custom colors for each category
+custom_colors = ['#AE305D', 
+                 '#385AC2']
+
+figure_maker (50, # number
+              "series", # column_name
+              df_filtered, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "Is the novel part of a series? (filtered sample)", # title
+              "00 series (filtered)") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 5, Series (top 50)
+print("    Making series (top 50)...")
+
+# Create decade columns to use in the groupby below and keep the original decade
+df_top_AI_2 = df_top_AI.copy(deep=True)
+df_top_AI_2['decade_gb'] = df_top_AI_2['decade']
+
+# Group by 'decade_gb', sort by 'ratings' in descending order, and select the top 50 per group
+df_top_50 = (df_top_AI_2.groupby('decade_gb', group_keys=False)
+                .apply((lambda x: x.sort_values('ratings', ascending=False).head(50)), 
+                    include_groups=False))
+
+#---------------------------------------------
+# Desired order of the categories
+category_order = ['yes',
+                  'no']
+
+# Custom colors for each category
+custom_colors = ['#AE305D', 
+                 '#385AC2']
+
+figure_maker (51, # number
+              "series", # column_name
+              df_top_50, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "Is the novel part of a series? (top 50)", # title
+              "00 series (top 50)") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
 # Figure 4, author gender
 print("  Making author gender...")
 
-# Creates a figure object with size 12x6 inches
-figure_c4 = plt.figure(4, figsize = (12, 6))
-gs = figure_c4.add_gridspec(ncols = 1, nrows = 1)
+# Desired order of the categories
+category_order = ['Male',
+                  'Female',
+                  'Other',
+                  'Uncertain']
 
-# Create the main plot
-ax1 = figure_c4.add_subplot(gs[0])
+# Custom colors for each category
+custom_colors = ['#385AC2',
+                 '#AE305D',
+                 '#8B3FCF',
+                 '#FFD700']
 
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_gender = ['Male',
-                         'Female',
-                         'Other',
-                         'Uncertain']
+figure_maker (4, # number
+              "author gender", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "What is the gender of the author?", # title
+              "00 author gender") # printing_name and label
 
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_gender = pd.DataFrame(columns=category_order_gender).astype(float)
-category_percent_gender = pd.concat([all_categories_df_gender, category_percent_gender]).convert_dtypes().convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_gender = category_percent_gender[category_order_gender]
-
-# Define custom colors for each category
-custom_colors_gender = ['#385AC2',
-                        '#AE305D',
-                        '#8B3FCF',
-                        '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_gender.plot(kind = 'bar',
-                             stacked = True,
-                             ax = ax1,
-                             color = custom_colors_gender,
-                             width = 1.0,
-                             alpha = 1.0,
-                             label = "gender")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("What is the gender of the author?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 8.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/00 author gender.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/00 author gender.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/00 author gender.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # Figure 5, author gender accuracy
 print("  Making author gender accuracy...")
 
-# Creates a figure object with size 12x6 inches
-figure_c5 = plt.figure(5, figsize = (12, 6))
-gs = figure_c5.add_gridspec(ncols = 1, nrows = 1)
+# Desired order of the categories
+category_order = ['Male',
+                  'Female',
+                  'Other',
+                  'Uncertain']
 
-# Create the main plot
-ax1 = figure_c5.add_subplot(gs[0])
+# Custom colors for each category
+custom_colors = ['#385AC2',
+                 '#AE305D',
+                 '#8B3FCF',
+                 '#FFD700']
 
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_gender_b = ['Male',
-                           'Female',
-                           'Other',
-                           'Uncertain']
+# Define the condition to select rows
+mask_1 = df_top_AI['1 accuracy'] == "High"
+mask_2 = df_top_AI['1 accuracy'] == "Very high"
+# Filter the dataframe to exclude those rows
+df_top_AI_masked = df_top_AI[mask_1 | mask_2]
 
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_gender_b = pd.DataFrame(columns=category_order_gender_b).astype(float)
-category_percent_gender_b = pd.concat([all_categories_df_gender_b, category_percent_gender_b]).convert_dtypes().convert_dtypes().fillna(0.0)
+figure_maker (5, # number
+              "author gender", # column_name
+              df_top_AI_masked, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "What is the gender of the author for (very) high accuracy sci-fi?", # title
+              "00 author gender accuracy") # printing_name and label
 
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_gender_b = category_percent_gender_b[category_order_gender_b]
+#---------------------------------------------------------------------------------------------------
+# Figure 6, author gender accuracy
+print("  Making author gender discipline...")
 
-# Define custom colors for each category
-custom_colors_gender_b = ['#385AC2',
-                          '#AE305D',
-                          '#8B3FCF',
-                          '#FFD700']
+# Desired order of the categories
+category_order = ['Male',
+                  'Female',
+                  'Other',
+                  'Uncertain']
 
-# Bar plot-------------------------------------------
-category_percent_gender_b.plot(kind = 'bar',
-                               stacked = True,
-                               ax = ax1,
-                               color = custom_colors_gender_b,
-                               width = 1.0,
-                               alpha = 1.0,
-                               label = "gender")
+# Custom colors for each category
+custom_colors = ['#385AC2',
+                 '#AE305D',
+                 '#8B3FCF',
+                 '#FFD700']
 
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("What is the gender of the author for high or very high accuracy sci-fi?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
+# Define the condition to select rows
+mask_1 = df_top_AI['2 discipline'] == "Leaning hard sciences"
+mask_2 = df_top_AI['2 discipline'] == "Hard sciences"
+# Filter the dataframe to exclude those rows
+df_top_AI_masked = df_top_AI[mask_1 | mask_2]
 
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
+figure_maker (6, # number
+              "author gender", # column_name
+              df_top_AI_masked, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "What is the gender of the author for (leaning) hard sciences sci-fi?", # title
+              "00 author gender discipline") # printing_name and label
 
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 8.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/00 author gender accuracy.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/00 author gender accuracy.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/00 author gender accuracy.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-#----------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # figures for the questions/answers
-#----------------------------------------------------------------------------------
-# Figure 6 - 1 accuracy
+#---------------------------------------------------------------------------------------------------
+# Figure 7 - 1 accuracy
 print("  Making 1 accuracy...")
 
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure1 = plt.figure(6, figsize = (12, 6))
-gs = figure1.add_gridspec(ncols = 1, nrows = 1)
+# Desired order of the categories
+category_order = ['Very low',
+                  'Low',
+                  'Moderate', 
+                  'High',
+                  'Very high',
+                  
+                  'Uncertain']
 
-# Create the main plot
-ax1 = figure1.add_subplot(gs[0])
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+                 
+                 '#FFD700']
 
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_1 = ['Very low',
-                    'Low',
-                    'Moderate', 
-                    'High',
-                    'Very high',
+figure_maker (7, # number
+              "1 accuracy", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "How important is scientific accuracy and plausibility in the story?", # title
+              "01 accuracy") # printing_name and label
 
-                    'Uncertain']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_1 = pd.DataFrame(columns=category_order_1).astype(float)
-category_percent_1 = pd.concat([all_categories_df_1, category_percent_1]).convert_dtypes().convert_dtypes().fillna(0.0)
-
-category_percent_1 = category_percent_1.reindex(columns=category_order_1)
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_1 = category_percent_1[category_order_1]
-
-# Define custom colors for each category
-custom_colors_1 = ['#AE305D',
-                   '#CF5D5F',
-                   '#8B3FCF',
-                   '#5580D0',
-                   '#385AC2',
-
-                   '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_1.plot(kind = 'bar',
-                        stacked = True,
-                        ax = ax1,
-                        color = custom_colors_1,
-                        width = 1.0,
-                        alpha = 1.0,
-                        label = "1 accuracy")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("How important is scientific accuracy and plausibility in the story?", fontsize = 14, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 4.5,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['top'].set_color(custom_dark_gray)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/01 accuracy.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/01 accuracy.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/01 accuracy.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 7 - 2 discipline
+#---------------------------------------------------------------------------------------------------
+# Figure 8 - 2 discipline
 print("  Making 2 discipline...")
 
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure2 = plt.figure(7, figsize = (12, 6))
-gs = figure2.add_gridspec(ncols = 1, nrows = 1)
+# Desired order of the categories
+category_order = ['Soft sciences',
+                  'Leaning soft sciences',
+                  'Mixed', 
+                  'Leaning hard sciences',
+                  'Hard sciences',
 
-# Create the main plot
-ax1 = figure2.add_subplot(gs[0])
+                  'Uncertain']
 
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_2 = ['Soft sciences',
-                    'Leaning soft sciences',
-                    'Mixed', 
-                    'Leaning hard sciences',
-                    'Hard sciences',
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
 
-                    'Uncertain']
+                 '#FFD700']
 
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_2 = pd.DataFrame(columns=category_order_2).astype(float)
-category_percent_2 = pd.concat([all_categories_df_2, category_percent_2]).convert_dtypes().convert_dtypes().fillna(0.0)
+figure_maker (8, # number
+              "2 discipline", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "What is the main disciplinary focus of the story?", # title
+              "02 discipline") # printing_name and label
 
-category_percent_2 = category_percent_2.reindex(columns=category_order_2)
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_2 = category_percent_2[category_order_2]
-
-# Define custom colors for each category
-custom_colors_2 = ['#AE305D',
-                   '#CF5D5F',
-                   '#8B3FCF',
-                   '#5580D0',
-                   '#385AC2',
-
-                   '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_2.plot(kind = 'bar',
-                        stacked = True,
-                        ax = ax1,
-                        color = custom_colors_2,
-                        width = 1.0,
-                        alpha = 1.0,
-                        label = "2 discipline")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("What is the main disciplinary focus of the story?", fontsize = 14, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 4.5,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['top'].set_color(custom_dark_gray)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/02 discipline.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/02 discipline.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/02 discipline.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 8 - 3 light heavy
+#---------------------------------------------------------------------------------------------------
+# Figure 9 - 3 light heavy
 print("  Making 3 light heavy...")
 
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure3 = plt.figure(8, figsize = (12, 6))
-gs = figure3.add_gridspec(ncols = 1, nrows = 1)
+# Desired order of the categories
+category_order = ['Very heavy',
+                  'Heavy',
+                  'Balanced', 
+                  'Light',
+                  'Very light',
 
-# Create the main plot
-ax1 = figure3.add_subplot(gs[0])
+                  'Uncertain']
 
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_3 = ['Very heavy',
-                    'Heavy',
-                    'Balanced', 
-                    'Light',
-                    'Very light',
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
 
-                    'Uncertain']
+                 '#FFD700']
 
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_3 = pd.DataFrame(columns=category_order_3).astype(float)
-category_percent_3 = pd.concat([all_categories_df_3, category_percent_3]).convert_dtypes().fillna(0.0)
+figure_maker (9, # number
+              "3 light heavy", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "Is the story more of a light or heavy reading experience?", # title
+              "03 light heavy") # printing_name and label
 
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_3 = category_percent_3[category_order_3]
-
-# Define custom colors for each category
-custom_colors_3 = ['#AE305D',
-                   '#CF5D5F',
-                   '#8B3FCF',
-                   '#5580D0',
-                   '#385AC2',
-
-                   '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_3.plot(kind = 'bar',
-                        stacked = True,
-                        ax = ax1,
-                        color = custom_colors_3,
-                        width = 1.0,
-                        alpha = 1.0,
-                        label = "3 light heavy")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Is the story considered more of a light or heavy reading experience?", fontsize = 14, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 4.5,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['top'].set_color(custom_dark_gray)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/03 light heavy.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/03 light heavy.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/03 light heavy.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 9 - 4 time
+#---------------------------------------------------------------------------------------------------
+# Figure 10 - 4 time
 print("  Making 4 time...")
 
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure4 = plt.figure(9, figsize = (12, 6))
-gs = figure4.add_gridspec(ncols = 1, nrows = 1)
+# Desired order of the categories
+category_order = ['Distant past',
+                  'Far past',
+                  'Near past',
+                  'Present',
+                  'Near future',
+                  'Far future',
+                  'Distant future',
 
-# Create the main plot
-ax1 = figure4.add_subplot(gs[0])
+                  'Multiple timelines',
+                  'Uncertain']
 
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_4 = ['Distant past',
-                    'Far past',
-                    'Near past',
-                    'Present',
-                    'Near future',
-                    'Far future',
-                    'Distant future',
+# Custom colors for each category
+custom_colors = ['#AE305D', # Distant past
+                 '#CF5D5F',
+                 '#E3937B',
+                 '#8B3FCF', # Present
+                 '#6CACEB',
+                 '#5580D0',
+                 '#385AC2', # Distant future
 
-                    'Multiple timelines',
-                    'Uncertain']
+                 '#008000', # Multiple timelines
+                 '#FFD700'] # Uncertain
 
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_4 = pd.DataFrame(columns=category_order_4).astype(float)
-category_percent_4 = pd.concat([all_categories_df_4, category_percent_4]).convert_dtypes().fillna(0.0)
+figure_maker (10, # number
+              "4 time", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "When does most of the story take place in relation to the year the book was published?", # title
+              "04 time") # printing_name and label
 
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_4 = category_percent_4[category_order_4]
-
-# Define custom colors for each category
-custom_colors_4 = ['#AE305D', # Distant past
-                   '#CF5D5F',
-                   '#E3937B',
-                   '#8B3FCF', # Present
-                   '#6CACEB',
-                   '#5580D0',
-                   '#385AC2', # Distant future
-
-                   'green', # Multiple timelines
-                   '#FFD700'] # Uncertain
-
-# Bar plot-------------------------------------------
-category_percent_4.plot(kind = 'bar',
-                        stacked = True,
-                        ax = ax1,
-                        color = custom_colors_4,
-                        width = 1.0,
-                        alpha = 1.0,
-                        label = "4 time")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("When does most of the story take place in relation to the year the book was published?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 2.8,
-           loc='center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/04 time.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/04 time.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/04 time.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 10 - 5 mood
+#---------------------------------------------------------------------------------------------------
+# Figure 11 - 5 mood
 print("  Making 5 mood...")
 
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure5 = plt.figure(10, figsize = (12, 6))
-gs = figure5.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure5.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_5 = ['Very pessimistic',
-                    'Pessimistic',
-                    'Balanced',
-                    'Optimistic',
-                    'Very optimistic',
-
-                    'Uncertain']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_5 = pd.DataFrame(columns=category_order_5).astype(float)
-category_percent_5 = pd.concat([all_categories_df_5, category_percent_5]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_5 = category_percent_5[category_order_5]
-
-# Define custom colors for each category
-custom_colors_5 = ['#AE305D',
-                   '#CF5D5F',
-                   '#8B3FCF',
-                   '#5580D0',
-                   '#385AC2',
-
-                   '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_5.plot(kind = 'bar',
-                        stacked = True,
-                        ax = ax1,
-                        color = custom_colors_5,
-                        width = 1.0,
-                        alpha = 1.0,
-                        label = "5 mood")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("What is the mood of the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 4.5,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/05 mood.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/05 mood.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/05 mood.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 11 - 6 social political
-print("  Making 6 social political...")
-
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure6 = plt.figure(11, figsize = (12, 6))
-gs = figure6.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure6.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_6 = ['Dystopic',
-                    'Leaning dystopic',
-                    'Balanced',
-                    'Leaning utopic',
-                    'Utopic',
-
-                    'Uncertain']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_6 = pd.DataFrame(columns=category_order_6).astype(float)
-category_percent_6 = pd.concat([all_categories_df_6, category_percent_6]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_6 = category_percent_6[category_order_6]
-
-# Define custom colors for each category
-custom_colors_6 = ['#AE305D',
-                   '#CF5D5F',
-                   '#8B3FCF',
-                   '#5580D0',
-                   '#385AC2',
-
-                   '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_6.plot(kind = 'bar',
-                        stacked = True,
-                        ax = ax1,
-                        color = custom_colors_6,
-                        width = 1.0,
-                        alpha = 1.0,
-                        label = "6 social political")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("What is the social-political scenario depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 4.5,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/06 social political.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/06 social political.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/06 social political.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 12 - 7 politically unified
-print("  Making 7 politically unified...")
-
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure7 = plt.figure(12, figsize = (12, 6))
-gs = figure7.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure7.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_7 = ['Yes',
-                    'Somewhat',
-                    'No',
-                    'Uncertain']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_7 = pd.DataFrame(columns=category_order_7).astype(float)
-category_percent_7 = pd.concat([all_categories_df_7, category_percent_7]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_7 = category_percent_7[category_order_7]
-
-# Define custom colors for each category
-custom_colors_7 = ['#AE305D',
-                   '#8B3FCF',
-                   '#385AC2',
-                   '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_7.plot(kind = 'bar',
-                        stacked = True,
-                        ax = ax1,
-                        color = custom_colors_7,
-                        width = 1.0,
-                        alpha = 1.0,
-                        label = "7 politically unified")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Is a unified, multi-planet or planetary-level state or government depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 4.5,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/07 politically unified.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/07 politically unified.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/07 politically unified.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 13 - 8 on Earth
-print("  Making 8 on Earth...")
-
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure8 = plt.figure(13, figsize = (12, 6))
-gs = figure8.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure8.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_8 = ['Yes',
-                    'No',
-                    'Uncertain']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_8 = pd.DataFrame(columns=category_order_8).astype(float)
-category_percent_8 = pd.concat([all_categories_df_8, category_percent_8]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_8 = category_percent_8[category_order_8]
-
-# Define custom colors for each category
-custom_colors_8 = ['#385AC2',
-                   '#AE305D',
-                   '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_8.plot(kind = 'bar',
-                        stacked = True,
-                        ax = ax1,
-                        color = custom_colors_8,
-                        width = 1.0,
-                        alpha = 1.0,
-                        label = "8 on Earth")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Is most of the story set on planet Earth?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 12.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/08 on Earth.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/08 on Earth.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/08 on Earth.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 14 - 9 post apocalyptic
-print("  Making 9 post apocalyptic...")
-
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure9 = plt.figure(14, figsize = (12, 6))
-gs = figure9.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure9.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_9 = ['Yes',
-                    'Somewhat',
-                    'No',
-                    'Uncertain']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_9 = pd.DataFrame(columns=category_order_9).astype(float)
-category_percent_9 = pd.concat([all_categories_df_9, category_percent_9]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_9 = category_percent_9[category_order_9]
-
-# Define custom colors for each category
-custom_colors_9 = ['#AE305D',
-                   '#8B3FCF',
-                   '#385AC2',
-                   '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_9.plot(kind = 'bar',
-                        stacked = True,
-                        ax = ax1,
-                        color = custom_colors_9,
-                        width = 1.0,
-                        alpha = 1.0,
-                        label = "9 post apocalyptic")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Is the story set in a post-apocalyptic world?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 8.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/09 post apocalyptic.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/09 post apocalyptic.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/09 post apocalyptic.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 15 - 10 aliens
-print("  Making 10 aliens...")
-
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure10 = plt.figure(15, figsize = (12, 6))
-gs = figure10.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure10.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_10 = ['Yes',
-                     'No',
-                     'Uncertain']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_10 = pd.DataFrame(columns=category_order_10).astype(float)
-category_percent_10 = pd.concat([all_categories_df_10, category_percent_10]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_10 = category_percent_10[category_order_10]
-
-# Define custom colors for each category
-custom_colors_10 = ['#AE305D',
-                    '#385AC2',
-                    '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_10.plot(kind = 'bar',
-                         stacked = True,
-                         ax = ax1,
-                         color = custom_colors_10,
-                         width = 1.0,
-                         alpha = 1.0,
-                         label = "10 aliens")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Are there any depictions or mentions of extraterrestrial life forms or alien technology in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 12.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/10 aliens.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/10 aliens.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/10 aliens.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 16 - 11a aliens are
-print("  Making 11a aliens are...")
-
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure11a = plt.figure(16, figsize = (12, 6))
-gs = figure11a.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure11a.add_subplot(gs[0])
-
-# Define the desired order of the categories
-category_order_11a = ['Bad', 
-                      'Leaning bad',
-                      'Ambivalent', 
-                      'Leaning good',
-                      'Good',
-
-                      'Uncertain',
-                      'Not applicable']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_11a = pd.DataFrame(columns=category_order_11a).astype(float)
-category_percent_11a = pd.concat([all_categories_df_11a, category_percent_11a]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_11a = category_percent_11a[category_order_11a]
-
-# Define custom colors for each category
-custom_colors_11a = ['#AE305D',
-                     '#CF5D5F',
-                     '#8B3FCF',
-                     '#5580D0',
-                     '#385AC2',
-
-                     '#FFD700',
-                     '#D3D3D3']
-
-# Bar plot-------------------------------------------
-category_percent_11a.plot(kind = 'bar',
-                          stacked = True,
-                          ax = ax1,
-                          color = custom_colors_11a,
-                          width = 1.0,
-                          alpha = 1.0,
-                          label = "11a aliens are")
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 4.0,
-           loc = 'center left')
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("How are the extraterrestrial life forms generally depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/11a aliens are.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/11a aliens are.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/11a aliens are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 17 - 11b aliens are
-print("  Making 11b aliens are...")
-
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure11b = plt.figure(17, figsize = (12, 6))
-gs = figure11b.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure11b.add_subplot(gs[0])
-
-# Define the desired order of the categories
-category_order_11b = ['Bad', 
-                      'Leaning bad',
-                      'Ambivalent', 
-                      'Leaning good',
-                      'Good',
-
-                      'Uncertain']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_11b = pd.DataFrame(columns=category_order_11b).astype(float)
-category_percent_11b = pd.concat([all_categories_df_11b, category_percent_11b]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_11b = category_percent_11b[category_order_11b]
-
-# Define custom colors for each category
-custom_colors_11b = ['#AE305D',
-                     '#CF5D5F',
-                     '#8B3FCF',
-                     '#5580D0',
-                     '#385AC2',
-
-                     '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_11b.plot(kind = 'bar',
-                          stacked = True,
-                          ax = ax1,
-                          color = custom_colors_11b,
-                          width = 1.0,
-                          alpha = 1.0,
-                          label = "11b aliens are")
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 5.0,
-           loc = 'center left')
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("How are the extraterrestrial life forms generally depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/11b aliens are.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/11b aliens are.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/11b aliens are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 18 - 12 robots and AI
-print("  Making 12 robots and AI...")
-
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure12 = plt.figure(18, figsize = (12, 6))
-gs = figure12.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure12.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_12 = ['Yes',
-                     'No',
-                     'Uncertain']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_12 = pd.DataFrame(columns=category_order_12).astype(float)
-category_percent_12 = pd.concat([all_categories_df_12, category_percent_12]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_12 = category_percent_12[category_order_12]
-
-# Define custom colors for each category
-custom_colors_12 = ['#AE305D',
-                    '#385AC2',
-                    '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_12.plot(kind = 'bar',
-                         stacked = True,
-                         ax = ax1,
-                         color = custom_colors_12,
-                         width = 1.0,
-                         alpha = 1.0,
-                         label = "12 robots and AI")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Are there any depictions of robots or complex artificial intelligences in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 12.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/12 robots and AI.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/12 robots and AI.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/12 robots and AI.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 19 - 13a robots and AI are
-print("  Making 13a robots and AI are...")
-
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure13a = plt.figure(19, figsize = (12, 6))
-gs = figure13a.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure13a.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_13a = ['Bad', 
-                      'Leaning bad', 
-                      'Ambivalent', 
-                      'Leaning good',
-                      'Good',
-                      
-                      'Uncertain',
-                      'Not applicable']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_13a = pd.DataFrame(columns=category_order_13a).astype(float)
-category_percent_13a = pd.concat([all_categories_df_13a, category_percent_13a]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_13a = category_percent_13a[category_order_13a]
-
-# Define custom colors for each category
-custom_colors_13a = ['#AE305D',
-                     '#CF5D5F',
-                     '#8B3FCF',
-                     '#5580D0',
-                     '#385AC2',
-                     
-                     '#FFD700',
-                     '#D3D3D3']
-
-# Bar plot-------------------------------------------
-category_percent_13a.plot(kind = 'bar',
-                          stacked = True,
-                          ax = ax1,
-                          color = custom_colors_13a,
-                          width = 1.0,
-                          alpha = 1.0,
-                          label = "13a robots and AI are")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("How are the robots or artificial intelligences generally depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 4.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/13a robots and AI are.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/13a robots and AI are.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/13a robots and AI are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 20 - 13b robots and AI are
-print("  Making 13b robots and AI are...")
-
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure13b = plt.figure(20, figsize = (12, 6))
-gs = figure13b.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure13b.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_13b = ['Bad', 
-                      'Leaning bad', 
-                      'Ambivalent', 
-                      'Leaning good',
-                      'Good',
-                      
-                      'Uncertain']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_13b = pd.DataFrame(columns=category_order_13b).astype(float)
-category_percent_13b = pd.concat([all_categories_df_13b, category_percent_13b]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_13b = category_percent_13b[category_order_13b]
-
-# Define custom colors for each category
-custom_colors_13b = ['#AE305D',
-                     '#CF5D5F',
-                     '#8B3FCF',
-                     '#5580D0',
-                     '#385AC2',
-                     
-                     '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_13b.plot(kind = 'bar',
-                          stacked = True,
-                          ax = ax1,
-                          color = custom_colors_13b,
-                          width = 1.0,
-                          alpha = 1.0,
-                          label = "13b robots and AI are")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("How are the robots or artificial intelligences generally depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 5.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/13b robots and AI are.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/13b robots and AI are.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/13b robots and AI are.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 21 - 14 protagonist
-print("  Making 14 protagonist...")
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure14 = plt.figure(21, figsize = (12, 6))
-gs = figure14.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure14.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_14 = ['Yes', 
-                     'No',
-                     'Uncertain']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_14 = pd.DataFrame(columns=category_order_14).astype(float)
-category_percent_14 = pd.concat([all_categories_df_14, category_percent_14]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_14 = category_percent_14[category_order_14]
-
-# Define custom colors for each category
-custom_colors_14 = ['#AE305D',
-                    '#385AC2',
-                    '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_14.plot(kind = 'bar',
-                         stacked = True,
-                         ax = ax1,
-                         color = custom_colors_14,
-                         width = 1.0,
-                         alpha = 1.0,
-                         label = "14 protagonist")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Is there a single protagonist or main character?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 12.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/14 protagonist.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/14 protagonist.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/14 protagonist.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 22 - 15 protagonist nature
-print("  Making 15 protagonist nature...")
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure15 = plt.figure(22, figsize = (12, 6))
-gs = figure15.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure15.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_15 = ['Human', 
-                     'Non-human',
-
-                     'Uncertain',
-                     'Not applicable']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_15 = pd.DataFrame(columns=category_order_15).astype(float)
-category_percent_15 = pd.concat([all_categories_df_15, category_percent_15]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_15 = category_percent_15[category_order_15]
-
-# Define custom colors for each category
-custom_colors_15 = ['#385AC2',
-                    '#AE305D',
-
-                    '#FFD700',
-                    '#D3D3D3']
-
-# Bar plot-------------------------------------------
-category_percent_15.plot(kind = 'bar',
-                         stacked = True,
-                         ax = ax1,
-                         color = custom_colors_15,
-                         width = 1.0,
-                         alpha = 1.0,
-                         label = "15 protagonist nature")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("What is the nature of the single protagonist or main character?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 5.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/15 protagonist nature.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/15 protagonist nature.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/15 protagonist nature.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 23 - 16a protagonist gender
-print("  Making 16a protagonist gender...")
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure16a = plt.figure(23, figsize = (12, 6))
-gs = figure16a.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure16a.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_16a = ['Male', 
-                      'Female',
-                      'Other',
-
-                      'Uncertain',
-                      'Not applicable']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_16a = pd.DataFrame(columns=category_order_16a).astype(float)
-category_percent_16a = pd.concat([all_categories_df_16a, category_percent_16a]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_16a = category_percent_16a[category_order_16a]
-
-# Define custom colors for each category
-custom_colors_16a = ['#385AC2',
-                     '#AE305D',
-                     '#8B3FCF',
-
-                     '#FFD700',
-                     '#D3D3D3']
-
-# Bar plot-------------------------------------------
-category_percent_16a.plot(kind = 'bar',
-                          stacked = True,
-                          ax = ax1,
-                          color = custom_colors_16a,
-                          width = 1.0,
-                          alpha = 1.0,
-                          label = "16a protagonist gender")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("What is the gender of the single protagonist or main character, as depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 6.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/16a protagonist gender.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/16a protagonist gender.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/16a protagonist gender.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 24 - 16b protagonist gender
-print("  Making 16b protagonist gender...")
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure16b = plt.figure(24, figsize = (12, 6))
-gs = figure16b.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure16b.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_16b = ['Male', 
-                      'Female',
-                      'Other',
-
-                      'Uncertain']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_16b = pd.DataFrame(columns=category_order_16b).astype(float)
-category_percent_16b = pd.concat([all_categories_df_16b, category_percent_16b]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_16b = category_percent_16b[category_order_16b]
-
-# Define custom colors for each category
-custom_colors_16b = ['#385AC2',
-                     '#AE305D',
-                     '#8B3FCF',
-
-                     '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_16b.plot(kind = 'bar',
-                          stacked = True,
-                          ax = ax1,
-                          color = custom_colors_16b,
-                          width = 1.0,
-                          alpha = 1.0,
-                          label = "16b protagonist gender")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("What is the gender of the single protagonist or main character, as depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 5.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/16b protagonist gender.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/16b protagonist gender.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/16b protagonist gender.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 25 - 16c protagonist gender accuracy
-print("  Making 16c protagonist gender accuracy...")
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure16c = plt.figure(25, figsize = (12, 6))
-gs = figure16c.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure16c.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_16c = ['Male', 
-                      'Female',
-                      'Other',
-
-                      'Uncertain',
-                      'Not applicable']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_16c = pd.DataFrame(columns=category_order_16c).astype(float)
-category_percent_16c = pd.concat([all_categories_df_16c, category_percent_16c]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_16c = category_percent_16c[category_order_16c]
-
-# Define custom colors for each category
-custom_colors_16c = ['#385AC2',
-                     '#AE305D',
-                     '#8B3FCF',
-
-                     '#FFD700',
-                     '#D3D3D3']
-
-# Bar plot-------------------------------------------
-category_percent_16c.plot(kind = 'bar',
-                          stacked = True,
-                          ax = ax1,
-                          color = custom_colors_16c,
-                          width = 1.0,
-                          alpha = 1.0,
-                          label = "16c protagonist gender accuracy")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("What is the gender of the single protagonist or main character for high and very high accuracy sci-fi?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 5.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/16c protagonist gender accuracy.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/16c protagonist gender accuracy.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/16c protagonist gender accuracy.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 26 - 16d protagonist gender discipline
-print("  Making 16d protagonist gender discipline...")
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure16d = plt.figure(26, figsize = (12, 6))
-gs = figure16d.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure16d.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_16d = ['Male', 
-                      'Female',
-                      'Other',
-
-                      'Uncertain',
-                      'Not applicable']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_16d = pd.DataFrame(columns=category_order_16d).astype(float)
-category_percent_16d = pd.concat([all_categories_df_16d, category_percent_16d]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_16d = category_percent_16d[category_order_16d]
-
-# Define custom colors for each category
-custom_colors_16d = ['#385AC2',
-                     '#AE305D',
-                     '#8B3FCF',
-
-                     '#FFD700',
-                     '#D3D3D3']
-
-# Bar plot-------------------------------------------
-category_percent_16d.plot(kind = 'bar',
-                          stacked = True,
-                          ax = ax1,
-                          color = custom_colors_16d,
-                          width = 1.0,
-                          alpha = 1.0,
-                          label = "16d protagonist gender discipline")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("What is the gender of the single protagonist or main character for leaning hard or hard sci-fi?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 5.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/16d protagonist gender discipline.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/16d protagonist gender discipline.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/16d protagonist gender discipline.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 27 - 17 virtual
-print("  Making 17 virtual...")
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure17 = plt.figure(27, figsize = (12, 6))
-gs = figure17.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure17.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_17 = ['Yes', 
-                     'Somewhat',
-                     'No',
-                     'Uncertain']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_17 = pd.DataFrame(columns=category_order_17).astype(float)
-category_percent_17 = pd.concat([all_categories_df_17, category_percent_17]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_17 = category_percent_17[category_order_17]
-
-# Define custom colors for each category
-custom_colors_17 = ['#AE305D',
-                    '#8B3FCF',
-                    '#385AC2',
-                    '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_17.plot(kind = 'bar',
-                         stacked = True,
-                         ax = ax1,
-                         color = custom_colors_17,
-                         width = 1.0,
-                         alpha = 1.0,
-                         label = "17 virtual")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("Are there any depictions of virtual reality in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 8.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/17 virtual.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/17 virtual.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/17 virtual.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 28 - 18 tech and science
-print("  Making 18 tech and science...")
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure18 = plt.figure(28, figsize = (12, 6))
-gs = figure18.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure18.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_18 = ['Bad', 
-                     'Leaning bad', 
-                     'Ambivalent', 
-                     'Leaning good',
-                     'Good',
-
-                     'Uncertain']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_18 = pd.DataFrame(columns=category_order_18).astype(float)
-category_percent_18 = pd.concat([all_categories_df_18, category_percent_18]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_18 = category_percent_18[category_order_18]
-
-# Define custom colors for each category
-custom_colors_18 = ['#AE305D',
-                    '#CF5D5F',
-                    '#8B3FCF',
-                    '#5580D0',
-                    '#385AC2',
-
-                    '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_18.plot(kind = 'bar',
-                         stacked = True,
-                         ax = ax1,
-                         color = custom_colors_18,
-                         width = 1.0,
-                         alpha = 1.0,
-                         label = "18 tech and science")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("How are technology and science depicted in the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 4.5,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/18 tech and science.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/18 tech and science.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/18 tech and science.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 29 - 19 social issues
-print("  Making 19 social issues...")
-
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure19 = plt.figure(29, figsize = (12, 6))
-gs = figure19.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure19.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_19 = ['Core', 
-                     'Major',
-                     'Minor',
-
-                     'Absent',
-                     'Uncertain']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_19 = pd.DataFrame(columns=category_order_19).astype(float)
-category_percent_19 = pd.concat([all_categories_df_19, category_percent_19]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_19 = category_percent_19[category_order_19]
-
-# Define custom colors for each category
-custom_colors_19 = ['#385AC2',
-                    '#5580D0',
-                    '#6CACEB',
-
-                    '#AE305D',
-                    '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_19.plot(kind = 'bar',
-                         stacked = True,
-                         ax = ax1,
-                         color = custom_colors_19,
-                         width = 1.0,
-                         alpha = 1.0,
-                         label = "19 social issues")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("How central is the critique or reflection of specific social issues to the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 6.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/19 social issues.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/19 social issues.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/19 social issues.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-# Figure 30 - 20 enviromental
-print("  Making 20 enviromental...")
-
-#-------------------------------------------
-# Creates a figure object with size 12x6 inches
-figure20 = plt.figure(30, figsize = (12, 6))
-gs = figure20.add_gridspec(ncols = 1, nrows = 1)
-
-# Create the main plot
-ax1 = figure20.add_subplot(gs[0])
-
-#-------------------------------------------
-# Define the desired order of the categories
-category_order_20 = ['Core', 
-                     'Major',
-                     'Minor',
-
-                     'Absent',
-                     'Uncertain']
-
-# Create a new DataFrame with all desired categories, filling with 0 if missing
-all_categories_df_20 = pd.DataFrame(columns=category_order_20).astype(float)
-category_percent_20 = pd.concat([all_categories_df_20, category_percent_20]).convert_dtypes().fillna(0.0)
-
-# Reorder the columns in the DataFrame according to the desired category order
-category_percent_20 = category_percent_20[category_order_20]
-
-# Define custom colors for each category
-custom_colors_20 = ['#385AC2',
-                    '#5580D0',
-                    '#6CACEB',
-
-                    '#AE305D',
-                    '#FFD700']
-
-# Bar plot-------------------------------------------
-category_percent_20.plot(kind = 'bar',
-                         stacked = True,
-                         ax = ax1,
-                         color = custom_colors_20,
-                         width = 1.0,
-                         alpha = 1.0,
-                         label = "20 enviromental")
-
-# Design-------------------------------------------
-ax1.set_xlabel("Decade", fontsize = 12, color = custom_dark_gray)
-#ax1.set_ylabel("Fraction [%]", fontsize = 12, color = custom_dark_gray)
-ax1.set_title("How central is an ecological or environmental message to the story?", fontsize = 14, pad = 5, color = custom_dark_gray)
-#ax1.yaxis.grid(True, linestyle = "dotted", linewidth = "1.0", zorder = 0, alpha = 1.0)
-
-# Format the y-axis to show percentages
-ax1.yaxis.set_major_formatter(PercentFormatter())
-
-# Legend-------------------------------------------
-# Get handles and labels
-handles, labels = ax1.get_legend_handles_labels()
-
-# Reverse the order
-handles.reverse()
-labels.reverse()
-
-# Pass the reversed handles and labels to the legend
-ax1.legend(handles, 
-           labels, 
-           bbox_to_anchor = (0.99, 0.00, 0.50, 0.95), 
-           frameon = False, 
-           labelspacing = 6.0,
-           loc = 'center left')
-
-# Axes-------------------------------------------
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 3, labelsize = 10, color = custom_dark_gray)
-ax1.tick_params(which = "minor", direction = "out", length = 0, color = custom_dark_gray)
-ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False, color = custom_dark_gray)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False, color = custom_dark_gray)
-ax1.tick_params(axis = 'both', colors = custom_dark_gray)
-
-ax1.spines['right'].set_visible(False)
-ax1.spines['top'].set_visible(False)
-#ax1.spines['left'].set_visible(False)
-ax1.spines['left'].set_color(custom_dark_gray)
-ax1.spines['bottom'].set_color(custom_dark_gray)
-
-# Save image-------------------------------------------
-plt.savefig("./Figures/20 enviromental.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/20 enviromental.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/20 enviromental.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
-
-#----------------------------------------------------------------------------------
-#----------------------------------------------------------------------------------
+# Desired order of the categories
+category_order = ['Very pessimistic',
+                  'Pessimistic',
+                  'Balanced',
+                  'Optimistic',
+                  'Very optimistic',
+
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+
+                 '#FFD700']
+
+figure_maker (11, # number
+              "5 mood", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "What is the mood of the story?", # title
+              "05 mood") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 12 - 6 ending
+print("  Making 6 ending...")
+
+# Desired order of the categories
+category_order = ['Very negative',
+                  'Negative',
+                  'Ambivalent',
+                  'Positive',
+                  'Very positive',
+
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+
+                 '#FFD700']
+
+figure_maker (12, # number
+              "6 ending", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "What is the overall mood and outcome of the story's ending?", # title
+              "06 ending") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 13 - 7 social political
+print("  Making 7 social political...")
+
+# Desired order of the categories
+category_order = ['Dystopic',
+                  'Leaning dystopic',
+                  'Balanced',
+                  'Leaning utopic',
+                  'Utopic',
+
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+
+                 '#FFD700']
+
+figure_maker (13, # number
+              "7 social political", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "What is the social-political scenario depicted in the story?", # title
+              "07 social political") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 14 - 8 politically unified
+print("  Making 8 politically unified...")
+
+# Desired order of the categories
+category_order = ['Yes',
+                  'Somewhat',
+                  'No',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#8B3FCF',
+                 '#385AC2',
+                 '#FFD700']
+
+figure_maker (14, # number
+              "8 politically unified", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "Is a unified, planetary-level or multi-planet state or government depicted in the story?", # title
+              "08 politically unified") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 15 - 9 on Earth
+print("  Making 9 on Earth...")
+
+# Desired order of the categories
+category_order = ['Yes',
+                  'Somewhat',
+                  'No',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#385AC2',
+                 '#8B3FCF',
+                 '#AE305D',
+                 '#FFD700']
+
+figure_maker (15, # number
+              "9 on Earth", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "Is most of the story set on planet Earth?", # title
+              "09 on Earth") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 16 - 10 post apocalyptic
+print("  Making 10 post apocalyptic...")
+
+# Desired order of the categories
+category_order = ['Yes',
+                  'Somewhat',
+                  'No',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#8B3FCF',
+                 '#385AC2',
+                 '#FFD700']
+
+figure_maker (16, # number
+              "10 post apocalyptic", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "Is the setting of the story post-apocalyptic?", # title
+              "10 post apocalyptic") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 17 - 11 conflict
+print("  Making 11 conflict...")
+
+# Desired order of the categories
+category_order = ['Internal',
+                  'Interpersonal',
+                  'Societal',
+                  'Synthetic',
+                  'Technological',
+                  'Extraterrestrial',
+                  'Natural',
+                  'Mixed',
+
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D', # Internal
+                 '#CF5D5F', # Interpersonal
+                 '#E3937B', # Societal
+                 '#385AC2', # Synthetic
+                 '#5580D0', # Technological
+                 '#6CACEB', # Extraterrestrial
+                 '#008000', # Natural
+                 '#8B3FCF', # Mixed
+
+                 '#FFD700'] # Uncertain
+
+figure_maker (17, # number
+              "11 conflict", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "What is the dominant type of conflict in the story?", # title
+              "11 conflict") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 18 - 12 aliens
+print("  Making 12 aliens...")
+
+# Desired order of the categories
+category_order = ['Yes',
+                  'Somewhat',
+                  'No',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#8B3FCF',
+                 '#385AC2',
+                 '#FFD700']
+
+figure_maker (18, # number
+              "12 aliens", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "Does the story depict extraterrestrial life forms or alien technology?", # title
+              "12 aliens") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 19 - 13a aliens are
+print("  Making 13a aliens are...")
+
+# Desired order of the categories
+category_order = ['Bad', 
+                  'Leaning bad',
+                  'Ambivalent', 
+                  'Leaning good',
+                  'Good',
+
+                  'Non-moral',
+                  'Uncertain',
+                  'Not applicable']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+
+                 '#008000',
+                 '#FFD700',
+                 '#D3D3D3']
+
+figure_maker (19, # number
+              "13 aliens are", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "If the story depicts extraterrestrial life forms, how are they generally portrayed?", # title
+              "13a aliens are") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 20 - 13b aliens are
+print("    Making 13b aliens are...")
+
+# Desired order of the categories
+category_order = ['Bad', 
+                  'Leaning bad',
+                  'Ambivalent', 
+                  'Leaning good',
+                  'Good',
+
+                  'Non-moral',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+
+                 '#008000',
+                 '#FFD700']
+
+# Filter the dataframe to exclude some rows
+df_top_filtered = df_top_AI[df_top_AI["13 aliens are"] != "Not applicable"]
+
+figure_maker (20, # number
+              "13 aliens are", # column_name
+              df_top_filtered, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "If the story depicts extraterrestrial life forms, how are they generally portrayed?", # title
+              "13b aliens are") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 21 - 4 time
+print("  14 robots and AI...")
+
+# Desired order of the categories
+category_order = ['Yes',
+                  'Somewhat',
+                  'No',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#8B3FCF',
+                 '#385AC2',
+                 '#FFD700']
+
+figure_maker (21, # number
+              "14 robots and AI", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "Does the story depict robots or artificial intelligences?", # title
+              "14 robots and AI") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 22 - 15a robots and AI are
+print("  Making 15a robots and AI are...")
+
+# Desired order of the categories
+category_order = ['Bad', 
+                  'Leaning bad', 
+                  'Ambivalent', 
+                  'Leaning good',
+                  'Good',
+                
+                  'Non-moral',
+                  'Uncertain',
+                  'Not applicable']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+
+                 '#008000',
+                 '#FFD700',
+                 '#D3D3D3']
+
+figure_maker (22, # number
+              "15 robots and AI are", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "If the story depicts robots or artificial intelligences, how are they generally portrayed?", # title
+              "15a robots and AI are") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 23 - 15b robots and AI are
+print("    Making 15b robots and AI are...")
+
+# Desired order of the categories
+category_order = ['Bad', 
+                  'Leaning bad', 
+                  'Ambivalent', 
+                  'Leaning good',
+                  'Good',
+                
+                  'Non-moral',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+
+                 '#008000',
+                 '#FFD700']
+
+# Filter the dataframe to exclude some rows
+df_top_filtered = df_top_AI[df_top_AI["15 robots and AI are"] != "Not applicable"]
+
+figure_maker (23, # number
+              "15 robots and AI are", # column_name
+              df_top_filtered, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "If the story depicts robots or artificial intelligences, how are they generally portrayed?", # title
+              "15b robots and AI are") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 24 - 16 protagonist
+print("  Making 16 protagonist...")
+
+# Desired order of the categories
+category_order = ['Yes',
+                  'Somewhat',
+                  'No',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#8B3FCF',
+                 '#385AC2',
+                 '#FFD700']
+
+figure_maker (24, # number
+              "16 protagonist", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "Is there a single main character or protagonist in the story?", # title
+              "16 protagonist") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 25 - 17a protagonist nature
+print("  Making 17a protagonist nature...")
+
+# Desired order of the categories
+category_order = ['Human', 
+                  'Non-human',
+
+                  'Uncertain',
+                  'Not applicable']
+
+# Custom colors for each category
+custom_colors = ['#385AC2',
+                 '#AE305D',
+
+                 '#FFD700',
+                 '#D3D3D3']
+
+figure_maker (25, # number
+              "17 protagonist nature", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "If the story has a single protagonist or main character, what is their nature?", # title
+              "17a protagonist nature") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 26 - 17b protagonist nature
+print("  Making 17b protagonist nature...")
+
+# Desired order of the categories
+category_order = ['Human', 
+                  'Non-human',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#385AC2',
+                 '#AE305D',
+                 '#FFD700']
+
+# Filter the dataframe to exclude some rows
+df_top_filtered = df_top_AI[df_top_AI["17 protagonist nature"] != "Not applicable"]
+
+figure_maker (26, # number
+              "17 protagonist nature", # column_name
+              df_top_filtered, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "If the story has a single protagonist or main character, what is their nature?", # title
+              "17b protagonist nature") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 27 - 18a protagonist gender
+print("  Making 18a protagonist gender...")
+
+# Desired order of the categories
+category_order = ['Male', 
+                  'Female',
+                  'Other',
+
+                  'Uncertain',
+                  'Not applicable']
+
+# Custom colors for each category
+custom_colors = ['#385AC2',
+                 '#AE305D',
+                 '#8B3FCF',
+
+                 '#FFD700',
+                 '#D3D3D3']
+
+figure_maker (27, # number
+              "18 protagonist gender", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "If the story has a single protagonist or main character, what is their gender?", # title
+              "18a protagonist gender") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 28 - 18ba protagonist gender
+print("    Making 18b protagonist gender...")
+
+# Desired order of the categories
+category_order = ['Male', 
+                  'Female',
+                  'Other',
+
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#385AC2',
+                 '#AE305D',
+                 '#8B3FCF',
+
+                 '#FFD700']
+
+# Filter the dataframe to exclude some rows
+df_top_filtered = df_top_AI[df_top_AI["18 protagonist gender"] != "Not applicable"]
+
+figure_maker (28, # number
+              "18 protagonist gender", # column_name
+              df_top_filtered, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "If the story has a single protagonist or main character, what is their gender?", # title
+              "18b protagonist gender") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 29 - 18c protagonist gender accuracy
+print("    Making 18c protagonist gender accuracy...")
+
+# Desired order of the categories
+category_order = ['Male', 
+                  'Female',
+                  'Other',
+
+                  'Uncertain',
+                  'Not applicable']
+
+# Custom colors for each category
+custom_colors = ['#385AC2',
+                 '#AE305D',
+                 '#8B3FCF',
+
+                 '#FFD700',
+                 '#D3D3D3']
+
+# Define the condition to select rows
+mask_1 = df_top_AI['1 accuracy'] == "High"
+mask_2 = df_top_AI['1 accuracy'] == "Very high"
+# Filter the dataframe to exclude those rows
+df_top_AI_masked = df_top_AI[mask_1 | mask_2]
+
+figure_maker (29, # number
+              "18 protagonist gender", # column_name
+              df_top_AI_masked, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "What is the gender of the single protagonist or main character \nfor (very) high accuracy sci-fi?", # title
+              "18c protagonist gender accuracy") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 30 - 18d protagonist gender discipline
+print("    Making 18d protagonist gender discipline...")
+
+# Desired order of the categories
+category_order = ['Male', 
+                  'Female',
+                  'Other',
+
+                  'Uncertain',
+                  'Not applicable']
+
+# Custom colors for each category
+custom_colors = ['#385AC2',
+                 '#AE305D',
+                 '#8B3FCF',
+
+                 '#FFD700',
+                 '#D3D3D3']
+
+# Define the condition to select rows
+mask_1 = df_top_AI['2 discipline'] == "Leaning hard sciences"
+mask_2 = df_top_AI['2 discipline'] == "Hard sciences"
+# Filter the dataframe to exclude those rows
+df_top_AI_masked = df_top_AI[mask_1 | mask_2]
+
+figure_maker (30, # number
+              "18 protagonist gender", # column_name
+              df_top_AI_masked, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "What is the gender of the single protagonist or main character \nfor (leaning) hard discipline sci-fi?", # title
+              "18d protagonist gender discipline") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 31 - 19a protagonist is
+print("  Making 19a protagonist is...")
+
+# Desired order of the categories
+category_order = ['Bad', 
+                  'Leaning bad',
+                  'Ambivalent', 
+                  'Leaning good',
+                  'Good',
+
+                  'Non-moral',
+                  'Uncertain',
+                  'Not applicable']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+
+                 '#008000',
+                 '#FFD700',
+                 '#D3D3D3']
+
+figure_maker (31, # number
+              "19 protagonist is", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "If the story has a single protagonist or main character, how are they generally portrayed?", # title
+              "19a protagonist is") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 32 - 19b protagonist is
+print("  Making 19b protagonist is...")
+
+# Desired order of the categories
+category_order = ['Bad', 
+                  'Leaning bad',
+                  'Ambivalent', 
+                  'Leaning good',
+                  'Good',
+
+                  'Non-moral',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+
+                 '#008000',
+                 '#FFD700']
+
+# Filter the dataframe to exclude those rows
+df_top_filtered = df_top_AI[df_top_AI['19 protagonist is'] != "Not applicable"]
+
+figure_maker (32, # number
+              "19 protagonist is", # column_name
+              df_top_filtered, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "If the story has a single protagonist or main character, how are they generally portrayed?", # title
+              "19b protagonist is") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 33 - 20 virtual
+print("  Making 20 virtual...")
+
+# Desired order of the categories
+category_order = ['Yes',
+                  'Somewhat',
+                  'No',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#8B3FCF',
+                 '#385AC2',
+                 '#FFD700']
+
+figure_maker (33, # number
+              "20 virtual", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "Does the story depict virtual or augmented reality?", # title
+              "20 virtual") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 34 - 21a virtual is
+print("  Making 21a virtual is...")
+
+# Desired order of the categories
+category_order = ['Bad', 
+                  'Leaning bad',
+                  'Ambivalent', 
+                  'Leaning good',
+                  'Good',
+
+                  'Instrumental',
+                  'Uncertain',
+                  'Not applicable']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+
+                 '#008000',
+                 '#FFD700',
+                 '#D3D3D3']
+
+figure_maker (34, # number
+              "21 virtual is", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "If the story depicts virtual or augmented reality, how are they generally depicted?", # title
+              "21a virtual is") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 35 - 21b virtual is
+print("    Making 21b virtual is...")
+
+# Desired order of the categories
+category_order = ['Bad', 
+                  'Leaning bad',
+                  'Ambivalent', 
+                  'Leaning good',
+                  'Good',
+
+                  'Instrumental',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+
+                 '#008000',
+                 '#FFD700']
+
+# Filter the dataframe to exclude those rows
+df_top_filtered = df_top_AI[df_top_AI['21 virtual is'] != "Not applicable"]
+
+figure_maker (35, # number
+              "21 virtual is", # column_name
+              df_top_filtered, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "If the story depicts virtual or augmented reality, how are they generally depicted?", # title
+              "21b virtual is") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 36 - 22 biotech
+print("  Making 22 biotech...")
+
+# Desired order of the categories
+category_order = ['Yes',
+                  'Somewhat',
+                  'No',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#8B3FCF',
+                 '#385AC2',
+                 '#FFD700']
+
+figure_maker (36, # number
+              "22 biotech", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "Does the story depict biotechnology, genetic engineering, or human biological alteration?", # title
+              "22 biotech") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 37 - 23a biotech is
+print("  Making 23a biotech is...")
+
+# Desired order of the categories
+category_order = ['Bad', 
+                  'Leaning bad',
+                  'Ambivalent', 
+                  'Leaning good',
+                  'Good',
+
+                  'Instrumental',
+                  'Uncertain',
+                  'Not applicable']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+
+                 '#008000',
+                 '#FFD700',
+                 '#D3D3D3']
+
+figure_maker (37, # number
+              "23 biotech is", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "If the story depicts biotechnology, genetic engineering, or human biological alteration, \nhow are they generally depicted?", # title
+              "23a biotech is") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 38 - 23b biotech is
+print("    Making 23b biotech is...")
+
+# Desired order of the categories
+category_order = ['Bad', 
+                  'Leaning bad',
+                  'Ambivalent', 
+                  'Leaning good',
+                  'Good',
+
+                  'Instrumental',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+
+                 '#008000',
+                 '#FFD700']
+
+# Filter the dataframe to exclude those rows
+df_top_filtered = df_top_AI[df_top_AI['23 biotech is'] != "Not applicable"]
+
+figure_maker (38, # number
+              "23 biotech is", # column_name
+              df_top_filtered, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "If the story depicts biotechnology, genetic engineering, or human biological alteration, \nhow are they generally depicted?", # title
+              "23b biotech is") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 39 - 24 transhuman
+print("  Making 24 transhuman...")
+
+# Desired order of the categories
+category_order = ['Yes',
+                  'Somewhat',
+                  'No',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#8B3FCF',
+                 '#385AC2',
+                 '#FFD700']
+
+figure_maker (39, # number
+              "24 transhuman", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "Does the story depict transhumanism or the transcendence of human limitations?", # title
+              "24 transhuman") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 40 - 25a transhuman is
+print("  Making 25a transhuman is...")
+
+# Desired order of the categories
+category_order = ['Bad', 
+                  'Leaning bad',
+                  'Ambivalent', 
+                  'Leaning good',
+                  'Good',
+
+                  'Instrumental',
+                  'Uncertain',
+                  'Not applicable']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+
+                 '#008000',
+                 '#FFD700',
+                 '#D3D3D3']
+
+figure_maker (40, # number
+              "25 transhuman is", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "If the story depicts transhumanism or the transcendence of human limitations, \nhow are they generally depicted?", # title
+              "25a transhuman is") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 41 - 25b transhuman is
+print("    Making 25b transhuman is...")
+
+# Desired order of the categories
+category_order = ['Bad', 
+                  'Leaning bad',
+                  'Ambivalent', 
+                  'Leaning good',
+                  'Good',
+
+                  'Instrumental',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+
+                 '#008000',
+                 '#FFD700']
+
+# Filter the dataframe to exclude those rows
+df_top_filtered = df_top_AI[df_top_AI['25 transhuman is'] != "Not applicable"]
+
+figure_maker (41, # number
+              "25 transhuman is", # column_name
+              df_top_filtered, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "If the story depicts transhumanism or the transcendence of human limitations, \nhow are they generally depicted?", # title
+              "25b transhuman is") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 42 - 26 tech and science
+print("  Making 26 tech and science...")
+
+# Desired order of the categories
+category_order = ['Bad', 
+                  'Leaning bad', 
+                  'Ambivalent', 
+                  'Leaning good',
+                  'Good',
+
+                  'Instrumental',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#AE305D',
+                 '#CF5D5F',
+                 '#8B3FCF',
+                 '#5580D0',
+                 '#385AC2',
+
+                 '#008000',
+                 '#FFD700']
+
+figure_maker (42, # number
+              "26 tech and science", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "How are science and technology depicted in the story?", # title
+              "26 tech and science") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 43 - 27 social issues
+print("  Making 27 social issues...")
+
+# Desired order of the categories
+category_order = ['Core', 
+                  'Major',
+                  'Minor',
+
+                  'Absent',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#385AC2',
+                 '#5580D0',
+                 '#6CACEB',
+
+                 '#AE305D',
+                 '#FFD700']
+
+figure_maker (43, # number
+              "27 social issues", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "How central is the critique of specific social issues in the story?", # title
+              "27 social issues") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+# Figure 44 - 28 enviromental
+print("  Making 28 enviromental...")
+
+# Desired order of the categories
+category_order = ['Core', 
+                  'Major',
+                  'Minor',
+
+                  'Absent',
+                  'Uncertain']
+
+# Custom colors for each category
+custom_colors = ['#385AC2',
+                 '#5580D0',
+                 '#6CACEB',
+
+                 '#AE305D',
+                 '#FFD700']
+
+figure_maker (44, # number
+              "28 enviromental", # column_name
+              df_top_AI, # df_top
+              category_order, # category_order
+              custom_colors, # custom_colors
+              "How central are ecological or environmental themes in the story?", # title
+              "28 enviromental") # printing_name and label
+
+#---------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # For the Tests and more
-#----------------------------------------------------------------------------------
-# Figure 31 - Author and protagonist heatmap
+#---------------------------------------------------------------------------------------------------
+# Figure 45 - Author and protagonist heatmap
 print("  Making author and protagonist heatmap...")
 
 #-------------------------------------------
 # Creates a figure object with size 18x5 inches
-figure_t1 = plt.figure(31, figsize = (18, 5))
+figure_t1 = plt.figure(45, figsize = (18, 5))
 gs = figure_t1.add_gridspec(ncols = 2, nrows = 1)
 
 # Define the desired order for Author Gender (y-axis)
@@ -3244,12 +1997,12 @@ author_gender_order = ['Male',
 protagonist_gender_order = ['Male', 
                             'Female', 
                             'Other', 
-                            'Uncertain', 
+                            #'Uncertain', 
                             'Not applicable']
 
 #-------------------------------------------
 # Step 1: Create a contingency table (cross-tab)
-contingency_table = pd.crosstab(df_top_AI['gender'], df_top_AI['16 protagonist gender'])
+contingency_table = pd.crosstab(df_top_AI["author gender"], df_top_AI['18 protagonist gender'])
 
 contingency_table = contingency_table.div(contingency_table.sum(axis=1), axis=0) * 100
 
@@ -3291,16 +2044,16 @@ print(f"P-Value: {p_value}")
 
 # Interpret the result
 if p_value < 0.05:
-    print("There is a significant correlation between Author Gender and Protagonist Gender.")
+    print("There IS a significant correlation between Author Gender and Protagonist Gender.")
 else:
-    print("There is no significant correlation between Author Gender and Protagonist Gender.")
+    print("There is NO significant correlation between Author Gender and Protagonist Gender.")
 
 #-------------------------------------------
 mask = df_top_AI['decade'] >= 2000
 df_top_AI_2000 = df_top_AI[mask]
 
 # Step 1: Create a contingency table (cross-tab)
-contingency_table_2000 = pd.crosstab(df_top_AI_2000['gender'], df_top_AI_2000['16 protagonist gender'])
+contingency_table_2000 = pd.crosstab(df_top_AI_2000["author gender"], df_top_AI_2000['18 protagonist gender'])
 
 contingency_table_2000 = contingency_table_2000.div(contingency_table_2000.sum(axis = 1), axis = 0) * 100
 
@@ -3351,14 +2104,15 @@ plt.savefig("./Figures/00 author and protagonist heatmap.png", bbox_inches = 'ti
 #plt.savefig("./Figures/00 author and protagonist heatmap.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
 #plt.savefig("./Figures/00 author and protagonist heatmap.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+plt.close(figure_t1)
 
-#----------------------------------------------------------------------------------
-# Figure 32 - Author and protagonist gender
+#---------------------------------------------------------------------------------------------------
+# Figure 46 - Author and protagonist gender
 print("  Making author and protagonist gender...")
 
 #------------------------------------------
 # Creates a figure object with size 12x6 inches
-figure_t2 = plt.figure(32, figsize = (12, 6))
+figure_t2 = plt.figure(46, figsize = (12, 6))
 gs = figure_t2.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -3508,14 +2262,15 @@ plt.savefig("./Figures/00 author and protagonist gender.png", bbox_inches = 'tig
 #plt.savefig("./Figures/00 author and protagonist gender.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
 #plt.savefig("./Figures/00 author and protagonist gender.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+plt.close(figure_t2)
 
-#----------------------------------------------------------------------------------
-# Figure 33 - Variation in Answer
+#---------------------------------------------------------------------------------------------------
+# Figure 47 - Variation in Answer
 print("  Making Variation in Answers...")
 
-#----------------------------------------------------------------------------------
-# Creates a figure object with size 10x14 inches
-figure_t3 = plt.figure(33, figsize = (10, 14))
+#-----------------------------------------
+# Creates a figure object with size 14x14 inches
+figure_t3 = plt.figure(47, figsize = (14, 14))
 gs = figure_t3.add_gridspec(ncols = 1, nrows = 1)
 
 # Create the main plot
@@ -3524,22 +2279,37 @@ ax1 = figure_t3.add_subplot(gs[0])
 # Heatmap-------------------------------------------
 # Set var_flag to the measure of variation in answers that you want:
 # 1 Difference two by two of the answers
-# 2 Percent Agreement / Mode Consistency
+# 2 Percent Agreement (Mode Consistency)
 # 3 Shannon Entropy (Diversity Index)
-var_flag = 3
+var_flag = 1
 
+# Define tolerance for near-zero values
+TOLERANCE = 1e-6
+
+# Custom format function for decimal number show
+def custom_format(val):
+    # Treat values within the tolerance as zero
+    if abs(val) < TOLERANCE:
+        return 0
+    elif abs(val) >= 100:
+        return f"{val:.0f}" # No decimals for numbers >= 100
+    elif abs(val) >= 10:
+        return f"{val:.1f}" # One decimal for numbers >= 10 and < 100
+    else:
+        return f"{val:.2f}" # Two decimals for numbers < 10
+        
 #-----------------------------
 # 1 Difference two by two of the answers
 if var_flag == 1:
     sns.heatmap(df_mean_difference, 
-                annot=True, 
+                annot=df_mean_difference.map(custom_format), 
                 cmap="coolwarm",
-                fmt=".2f", 
+                fmt="", 
                 cbar_kws={'label': 'Mean Difference Score'},
                 annot_kws={"size": 8})
 
 #-----------------------------
-# 2 Percent Agreement / Mode Consistency
+# 2 Percent Agreement (Mode Consistency)
 elif var_flag == 2:
     sns.heatmap(df_percent_agreement, 
                 annot=True, 
@@ -3551,24 +2321,8 @@ elif var_flag == 2:
 #-----------------------------
 # 3 Shannon Entropy (Diversity Index)
 elif var_flag == 3:
-    # Define tolerance for near-zero values
-    TOLERANCE = 1e-6
-
-    # Custom format function for your specific rule
-    def custom_format(val):
-        # Treat values within the tolerance as zero
-        if abs(val) < TOLERANCE:
-            return 0
-        elif abs(val) >= 100:
-            return f"{val:.0f}" # No decimals for numbers >= 100
-        elif abs(val) >= 10:
-            return f"{val:.1f}" # One decimal for numbers >= 10 and < 100
-        else:
-            return f"{val:.2f}" # Two decimals for numbers < 10
-
-    # Apply the function to each cell
     sns.heatmap(df_entropy, 
-                annot=df_entropy.applymap(custom_format), 
+                annot=df_entropy.map(custom_format), 
                 cmap="coolwarm",
                 fmt="", 
                 cbar_kws={'label': 'Shannon index'},
@@ -3576,11 +2330,7 @@ elif var_flag == 3:
 
 #-----------------------------
 # Add thicker lines to separate the last row and column
-"""
-ax.get_xlim() returns a tuple with the x-axis limits, like (0.0, 4.0).
-Using *ax.get_xlim() unpacks this tuple into two separate arguments. 
-So, hlines interprets it as hlines(y, xmin=0.0, xmax=4.0).
-"""
+
 # Horizontal line above mean row
 ax1.hlines(len(df_mean_difference) - 1, 
            *ax1.get_xlim(), 
@@ -3629,12 +2379,179 @@ elif var_flag == 2:
 elif var_flag == 3:
     plt.savefig("./Figures/00 variation entropy.png", bbox_inches = 'tight')
 
-#plt.savefig("./Figures/00 variation.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/00 variation.eps", transparent = True, bbox_inches = 'tight')
-# Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/00 variation.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+plt.close(figure_t3)
 
-#----------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+# Figure 48 - protagonist classes
+print("  Making protagonist classes (All decades)...")
+
+#------------------------------------------
+color_map = {
+    "Total": '#385AC2',
+    "Yes": '#385AC2', 
+    "No": '#AE305D', 
+    "Uncertain": '#FFD700',
+    "Not applicable": '#D3D3D3', 
+    "Human": '#385AC2', 
+    "Non-human": '#AE305D', 
+    "Male": '#385AC2', 
+    "Female": '#AE305D', 
+    "Other": '#8B3FCF',
+    "Good": '#385AC2', 
+    "Leaning good": '#5580D0', 
+    "Ambivalent": '#8B3FCF', 
+    "Leaning bad": '#CF5D5F', 
+    "Bad": '#AE305D', 
+    "Non-moral": '#008000'
+}
+
+path = [
+    px.Constant("Total"),
+    "author gender",
+    "16 protagonist",
+    "17 protagonist nature", 
+    "18 protagonist gender", 
+    "19 protagonist is"
+    ]
+
+# List of column names
+column_titles = [
+    "Author",
+    "Protagonist",
+    "Nature",
+    "Gender",
+    "Moral"
+]
+
+# Create a dictionary to map each column title to its x-position.
+# You will need to adjust these values to perfectly center the labels
+# on your specific chart.
+x_positions = {
+    "Author": 0.25,
+    "Protagonist": 0.42,
+    "Nature": 0.58,
+    "Gender": 0.75,
+    "Moral": 0.91
+}
+
+#-----------------------------
+figure_classes_all = px.icicle(
+    df_top_AI,
+    path=path,
+    color=path[-1],
+    color_discrete_map=color_map
+)
+
+# Create a list of text colors based on the label's value
+text_colors = []
+for label in color_map.keys():
+    if label == "Not applicable":
+        text_colors.append("black") # Use default color
+    else:
+        text_colors.append('white') # Use white for all other labels
+
+figure_classes_all.update_traces(
+    textinfo="label+percent entry",
+    root_color="#D3D3D3",
+    marker_colors=[color_map.get(label, "#CCCCCC") for label in figure_classes_all.data[0].labels],
+    textfont=dict(color=text_colors)
+)
+
+#-----------------------------
+# Create a list of annotations for each column title
+annotations = []
+for title in column_titles:
+    annotations.append(
+        dict(
+            text=title,
+            x=x_positions.get(title), # Get the x-position from the dictionary
+            y=1.0,
+            xref="paper",
+            yref="paper",
+            showarrow=False,
+            font=dict(size=14, color="black"),
+            xanchor="center",
+            yanchor="bottom"
+        )
+    )
+
+#-----------------------------
+# Update layout with all changes
+figure_classes_all.update_layout(
+    #uniformtext=dict(minsize=5, mode='hide'),
+    title_text="Authors and Types of Protagonist (all decades)",
+    title_font_size=20,
+    title_x=0.5,
+    margin=dict(t=50, l=20, r=20, b=20),
+    annotations=annotations
+)
+
+# Save image-------------------------------------------
+figure_classes_all.write_image("./Figures/00 protagonist classes (all decades).png", scale=3)
+
+#---------------------------------------------------------------------------------------------------
+# Figure 49 - protagonist classes
+print("  Making protagonist classes (2000s-2020s)...")
+
+#mask = df_top_AI['decade'] >= 2000
+#df_top_AI_2000 = df_top_AI[mask]
+
+#-----------------------------
+figure_classes_2000 = px.icicle(
+    df_top_AI_2000,
+    path=path,
+    color=path[-1],
+    color_discrete_map=color_map
+)
+
+# Create a list of text colors based on the label's value
+text_colors = []
+for label in color_map.keys():
+    if label == "Not applicable":
+        text_colors.append("black") # Use default color
+    else:
+        text_colors.append('white') # Use white for all other labels
+
+figure_classes_2000.update_traces(
+    textinfo="label+percent entry",
+    root_color="#D3D3D3",
+    marker_colors=[color_map.get(label, "#CCCCCC") for label in figure_classes_2000.data[0].labels],
+    textfont=dict(color=text_colors)
+)
+
+#-----------------------------
+# Create a list of annotations for each column title
+annotations = []
+for title in column_titles:
+    annotations.append(
+        dict(
+            text=title,
+            x=x_positions.get(title), # Get the x-position from the dictionary
+            y=1.0,
+            xref="paper",
+            yref="paper",
+            showarrow=False,
+            font=dict(size=14, color="black"),
+            xanchor="center",
+            yanchor="bottom"
+        )
+    )
+
+#-----------------------------
+# Update layout with all changes
+figure_classes_2000.update_layout(
+    #uniformtext=dict(minsize=5, mode='hide'),
+    title_text="Authors and Types of Protagonist (2000s-2020s)",
+    title_font_size=20,
+    title_x=0.5,
+    margin=dict(t=50, l=20, r=20, b=20),
+    annotations=annotations
+)
+
+# Save image-------------------------------------------
+figure_classes_2000.write_image("./Figures/00 protagonist classes (2000s-2020s).png", scale=3)
+
+#---------------------------------------------------------------------------------------------------
 print("All done.")
 
 # Show figures-------------------------------------------------------------------------------------------

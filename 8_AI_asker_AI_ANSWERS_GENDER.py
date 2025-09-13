@@ -60,7 +60,7 @@ def analyze_author(author: str) -> str:
     What is the gender of author {author}?
         Male;
         Female;
-        Other: Non-binary, genderfluid, ambiguous, fluid, or another gender identity that is not male nor female;
+        Other: Non-binary, genderfluid, ambiguous, or another gender identity that is not male nor female;
         Uncertain: Not enough information to say, or multiple authors of different genders.
     """
     
