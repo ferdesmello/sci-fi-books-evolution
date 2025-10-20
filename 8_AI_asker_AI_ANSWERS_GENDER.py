@@ -1,6 +1,6 @@
 """
 This script uses GPT-5, via the OPENAI API, to answer questions about the gender 
-of the authors of the books scraped before, parses the answers and saves it.
+of the authors of the novels scraped before, parses the answers, and saves it.
 
 Modules:
     - os
@@ -38,10 +38,10 @@ else:
 #----------------------------------------------------------------------------------
 def analyze_author(author: str) -> str:
     """
-    Prompts GPT-5 to analyse the author gender of each book.
+    Prompts GPT-5 to analyse the author gender of each novel.
 
     Args:
-        author (str): Book author.
+        author (str): novel author.
 
     Returns:
         answer (str): GPT-5 processed gender answer.
@@ -49,7 +49,7 @@ def analyze_author(author: str) -> str:
 
     # Create the prompt with the gathered data
     prompt = f"""
-    You are a helpful assistant and scholar of comparative sci-fi literature who analyzes book plots based on your own knowledge and provided information.
+    You are a helpful assistant and scholar of comparative sci-fi literature who analyzes novel plots based on your own knowledge and provided information.
     Consider the writer {author}.
 
     **Output Formatting Instructions**:
@@ -93,13 +93,13 @@ def main():
     """
     
     # Name of the input file
-    input_file = './Data/Filtered/sci-fi_books_TOP.csv'
+    input_file = './Data/Filtered/sci-fi_novels_TOP.csv'
 
     # Name of the output file
-    output_file = './Data/Answers/sci-fi_books_AI_ANSWERS_GENDER.csv'
+    output_file = './Data/Answers/sci-fi_novels_AI_ANSWERS_GENDER.csv'
 
     #----------------------------------------------------------------------------------
-    # Load book data to send to the AI
+    # Load novel data to send to the AI
     df = pd.read_csv(input_file, sep=';', encoding="utf-8-sig")
     #print(df.info())
 

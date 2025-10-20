@@ -1,6 +1,6 @@
 """
 This script uses GPT-5, via the OPENAI API, to answer questions about the plot 
-of the books scraped before, parses the answers and saves it.
+of the novels scraped before, parses the answers, and saves it.
 
 Modules:
     - os
@@ -57,17 +57,17 @@ else:
     wait=wait_exponential(multiplier=1, min=4, max=60), # Exponential backoff: starts at 4 seconds, max 60 seconds
     stop=stop_after_attempt(10) # Stop after 10 attempts
 )
-def analyze_book(title: str , author: str, year: int, synopsis: str, review: str, plot: str, genres: List[str]) -> str: 
+def analyze_novel(title: str , author: str, year: int, synopsis: str, review: str, plot: str, genres: List[str]) -> str: 
     """
-    Prompts GPT-5 to analyse the data of each book and answers questions about it.
+    Prompts GPT-5 to analyse the data of each novel and answers questions about it.
 
     Args:
-        title (str): Book title.
-        author (str): Book author.
-        year (int): Book publishing year.
-        synopsis (str): Goodreads synopsis for the book.
-        review (str): Chosen Goodreads review for the book.
-        plot (str): Wikipedia plot for the book.
+        title (str): novel title.
+        author (str): novel author.
+        year (int): novel publishing year.
+        synopsis (str): Goodreads synopsis for the novel.
+        review (str): Chosen Goodreads review for the novel.
+        plot (str): Wikipedia plot for the novel.
         genres (List[str]): Goodreads list of genres.
 
     Returns:
@@ -75,13 +75,13 @@ def analyze_book(title: str , author: str, year: int, synopsis: str, review: str
     """
 
     prompt = f"""
-    You are a helpful assistant and scholar of comparative sci-fi literature who analyzes book plots based on your own knowledge and provided information.
-    You received the task to carefully consider the plot of the book "{title}" by {author}, published in {year}, focusing on key elements that will help you answer the following questions. 
+    You are a helpful assistant and scholar of comparative sci-fi literature who analyzes novel plots based on your own knowledge and provided information.
+    You received the task to carefully consider the plot of the novel "{title}" by {author}, published in {year}, focusing on key elements that will help you answer the following questions. 
 
     **Output Formatting Instructions**:
     Follow this exact format!
 
-    Provide a concise paragraph summarizing the central and relevant elements of the book, including:
+    Provide a concise paragraph summarizing the central and relevant elements of the novel, including:
     - Themes central to the story or that significantly impact the plot;
     - Memorable locations or time settings unique to the story;
     - Important events and conflicts in the story and its ending;
@@ -132,7 +132,7 @@ def analyze_book(title: str , author: str, year: int, synopsis: str, review: str
         Light: Somewhat accessible, with some thoughtful elements and themes, but still focused on entertainment.
         Very light: Easily accessible, fast read, minimal intellectual demands, focus on entertainment, humor, or adventure.
         Uncertain: Insufficient information.
-    4. When does most of the story take place in relation to the year the book was published?
+    4. When does most of the story take place in relation to the year the novel was published?
         Distant future: Millennia or more ahead. 
         Far future: Centuries ahead. 
         Near future: Within a few decades ahead. 
@@ -314,10 +314,10 @@ def analyze_book(title: str , author: str, year: int, synopsis: str, review: str
 
     When answering, consider how the following synopsis, review, plot summary, and genres may provide relevant data and context for each question.
 
-    Book synopsis: {synopsis}
+    novel synopsis: {synopsis}
     Partial review: {review}
     Plot summary: {plot}
-    Genres the book fits in: {genres}
+    Genres the novel fits in: {genres}
     """
 
     # Call the OpenAI API with the crafted prompt
@@ -344,14 +344,14 @@ def analyze_book(title: str , author: str, year: int, synopsis: str, review: str
 @retry(stop=stop_after_attempt(5), wait=wait_fixed(5))
 def ask_to_AI(df: pd.DataFrame, output_file: str) -> pd.DataFrame:
     """
-    Sends book data to the prompt function, parses the returned answers, and merges everything together.
+    Sends novel data to the prompt function, parses the returned answers, and merges everything together.
 
     Args:
-        df (pandas.DataFrame): Dataframe with all books information.
+        df (pandas.DataFrame): Dataframe with all novels information.
         output_file (str): Output file name to save the progress.
 
     Returns:
-        df_processed (pandas.DataFrame): Dataframe with all original books information and 
+        df_processed (pandas.DataFrame): Dataframe with all original novels information and 
             processed answers about them from GPT-5.
     """
 
@@ -469,30 +469,30 @@ def ask_to_AI(df: pd.DataFrame, output_file: str) -> pd.DataFrame:
     # Load existing progress if the file exists
     if os.path.exists(output_file):
         df_processed = pd.read_csv(output_file, sep=';', encoding='utf-8-sig')
-        processed_books = set(df_processed['url goodreads'])
+        processed_novels = set(df_processed['url goodreads'])
     else:
         df_processed = pd.DataFrame()
-        processed_books = set()
-    for _, book in df.iterrows():
-        # Skip already processed books
-        if book['url goodreads'] in processed_books:
+        processed_novels = set()
+    for _, novel in df.iterrows():
+        # Skip already processed novels
+        if novel['url goodreads'] in processed_novels:
             continue
 
-        # Extract book details
-        title = book['title']
-        author = book['author']
-        year = int(book['year'])
-        decade = int(book['decade'])
-        #pages = book['pages']
-        rate = float(book['rate'])
-        ratings = int(book['ratings'])
-        series = book['series']
-        genres = book['genres']
-        synopsis = book['synopsis']
-        review = book['review']
-        url_g = book['url goodreads']
-        plot = book['plot']
-        url_w = book['url wikipedia']
+        # Extract novel details
+        title = novel['title']
+        author = novel['author']
+        year = int(novel['year'])
+        decade = int(novel['decade'])
+        #pages = novel['pages']
+        rate = float(novel['rate'])
+        ratings = int(novel['ratings'])
+        series = novel['series']
+        genres = novel['genres']
+        synopsis = novel['synopsis']
+        review = novel['review']
+        url_g = novel['url goodreads']
+        plot = novel['plot']
+        url_w = novel['url wikipedia']
 
         forbidden_titles = [] # Empty for now. Add titles here if you want to force "No plot available."
 
@@ -513,8 +513,8 @@ def ask_to_AI(df: pd.DataFrame, output_file: str) -> pd.DataFrame:
         number_of_answers = 28 # 28 answers
 
         try:
-            # Get the AI's answers for the book
-            AI_answers = analyze_book(title, author, year, synopsis, review, plot, genres)
+            # Get the AI's answers for the novel
+            AI_answers = analyze_novel(title, author, year, synopsis, review, plot, genres)
 
             # Split answers into a list of, hopefully, 28 items
             answers = []
@@ -566,40 +566,40 @@ def ask_to_AI(df: pd.DataFrame, output_file: str) -> pd.DataFrame:
                     else:
                         answers[i] = None
                         justifications[i] = None
-                        logging.warning(f"Invalid answer for question {i+1} in book: {title}")
+                        logging.warning(f"Invalid answer for question {i+1} in novel: {title}")
                 
                 # Test for coherence in follow-up answers
                 # Aliens----------------------------------------
                 if (answers[11] == "No") & ((answers[12] != "Not applicable") | (answers[10] == "Extraterrestrial")):
                     answers[12] = None
                     justifications[12] = None
-                    logging.warning(f"Incoherent alien answer for book: {title}\n")
+                    logging.warning(f"Incoherent alien answer for novel: {title}\n")
                 
                 if (answers[11] == "Somewhat") & (answers[12] == "Not applicable"):
                     answers[12] = None
                     justifications[12] = None
-                    logging.warning(f"Incoherent alien answer for book: {title}\n")
+                    logging.warning(f"Incoherent alien answer for novel: {title}\n")
                 
                 if (answers[11] == "Uncertain") & ((answers[12] != "Uncertain") | (answers[10] == "Extraterrestrial")) :
                     answers[12] = None
                     justifications[12] = None
-                    logging.warning(f"Incoherent alien answer for book: {title}\n")
+                    logging.warning(f"Incoherent alien answer for novel: {title}\n")
 
                 # Robots and AIs----------------------------------------
                 if (answers[13] == "No") & ((answers[14] != "Not applicable") | (answers[10] == "Synthetic")) :
                     answers[14] = None
                     justifications[14] = None
-                    logging.warning(f"Incoherent robot and AI answer for book: {title}\n")
+                    logging.warning(f"Incoherent robot and AI answer for novel: {title}\n")
                                                 
                 if (answers[13] == "Somewhat") & (answers[14] == "Not applicable"):
                     answers[14] = None
                     justifications[14] = None
-                    logging.warning(f"Incoherent robot and AI answer for book: {title}\n")
+                    logging.warning(f"Incoherent robot and AI answer for novel: {title}\n")
 
                 if (answers[13] == "Uncertain") & ((answers[14] != "Uncertain") | (answers[10] == "Synthetic")) :
                     answers[14] = None
                     justifications[14] = None
-                    logging.warning(f"Incoherent robot and AI answer for book: {title}\n")
+                    logging.warning(f"Incoherent robot and AI answer for novel: {title}\n")
 
                 # Protagonist----------------------------------------
                 if (answers[15] == "No") & ((answers[16] != "Not applicable") | (answers[17] != "Not applicable") | (answers[18] != "Not applicable")) :
@@ -609,7 +609,7 @@ def ask_to_AI(df: pd.DataFrame, output_file: str) -> pd.DataFrame:
                     justifications[16] = None
                     justifications[17] = None
                     justifications[18] = None
-                    logging.warning(f"Incoherent protagonist answer for book: {title}\n")
+                    logging.warning(f"Incoherent protagonist answer for novel: {title}\n")
 
                 if (answers[15] == "Somewhat") & ((answers[16] == "Not applicable") | (answers[17] == "Not applicable") | (answers[18] == "Not applicable")) :
                     answers[16] = None
@@ -618,7 +618,7 @@ def ask_to_AI(df: pd.DataFrame, output_file: str) -> pd.DataFrame:
                     justifications[16] = None
                     justifications[17] = None
                     justifications[18] = None
-                    logging.warning(f"Incoherent protagonist answer for book: {title}\n")
+                    logging.warning(f"Incoherent protagonist answer for novel: {title}\n")
 
                 if (answers[15] == "Uncertain") & ((answers[16] != "Uncertain") | (answers[17] != "Uncertain") | (answers[18] != "Uncertain")) :
                     answers[16] = None
@@ -627,55 +627,55 @@ def ask_to_AI(df: pd.DataFrame, output_file: str) -> pd.DataFrame:
                     justifications[16] = None
                     justifications[17] = None
                     justifications[18] = None
-                    logging.warning(f"Incoherent protagonist answer for book: {title}\n")
+                    logging.warning(f"Incoherent protagonist answer for novel: {title}\n")
 
                 # Virtual----------------------------------------
                 if (answers[19] == "No") & (answers[20] != "Not applicable") :
                     answers[20] = None
                     justifications[20] = None
-                    logging.warning(f"Incoherent virtual answer for book: {title}\n")
+                    logging.warning(f"Incoherent virtual answer for novel: {title}\n")
                 
                 if (answers[19] == "Somewhat") & (answers[20] == "Not applicable") :
                     answers[20] = None
                     justifications[20] = None
-                    logging.warning(f"Incoherent virtual answer for book: {title}\n")
+                    logging.warning(f"Incoherent virtual answer for novel: {title}\n")
 
                 if (answers[19] == "Uncertain") & (answers[20] != "Uncertain") :
                     answers[20] = None
                     justifications[20] = None
-                    logging.warning(f"Incoherent virtual answer for book: {title}\n")
+                    logging.warning(f"Incoherent virtual answer for novel: {title}\n")
                 
                 # Biotech----------------------------------------
                 if (answers[21] == "No") & (answers[22] != "Not applicable") :
                     answers[22] = None
                     justifications[22] = None
-                    logging.warning(f"Incoherent biotech answer for book: {title}\n")
+                    logging.warning(f"Incoherent biotech answer for novel: {title}\n")
 
                 if (answers[21] == "Somewhat") & (answers[22] == "Not applicable") :
                     answers[22] = None
                     justifications[22] = None
-                    logging.warning(f"Incoherent biotech answer for book: {title}\n")
+                    logging.warning(f"Incoherent biotech answer for novel: {title}\n")
 
                 if (answers[21] == "Uncertain") & (answers[22] != "Uncertain") :
                     answers[22] = None
                     justifications[22] = None
-                    logging.warning(f"Incoherent biotech answer for book: {title}\n")
+                    logging.warning(f"Incoherent biotech answer for novel: {title}\n")
 
                 # Transhuman----------------------------------------
                 if (answers[23] == "No") & (answers[24] != "Not applicable") :
                     answers[24] = None
                     justifications[24] = None
-                    logging.warning(f"Incoherent transhuman answer for book: {title}\n")
+                    logging.warning(f"Incoherent transhuman answer for novel: {title}\n")
 
                 if (answers[23] == "Somewhat") & (answers[24] == "Not applicable") :
                     answers[24] = None
                     justifications[24] = None
-                    logging.warning(f"Incoherent transhuman answer for book: {title}\n")
+                    logging.warning(f"Incoherent transhuman answer for novel: {title}\n")
 
                 if (answers[23] == "Uncertain") & (answers[24] != "Uncertain") :
                     answers[24] = None
                     justifications[24] = None
-                    logging.warning(f"Incoherent transhuman answer for book: {title}\n")
+                    logging.warning(f"Incoherent transhuman answer for novel: {title}\n")
 
             else:
                 # Something went wrong and better fill a row of None in each list
@@ -683,10 +683,10 @@ def ask_to_AI(df: pd.DataFrame, output_file: str) -> pd.DataFrame:
                     answers[i] = None
                     justifications[i] = None
 
-                logging.warning(f"Unexpected number of answers for book: {title}\nFound {len(answers)}/28 answers and {len(justifications)}/28 justifications.")
+                logging.warning(f"Unexpected number of answers for novel: {title}\nFound {len(answers)}/28 answers and {len(justifications)}/28 justifications.")
 
             #----------------------------------------
-            # One-row dataframe to save the progress in the present book/row
+            # One-row dataframe to save the progress in the present novel/row
             data = {
                 "title": [title],
                 "author": [author],
@@ -716,7 +716,7 @@ def ask_to_AI(df: pd.DataFrame, output_file: str) -> pd.DataFrame:
                 for i in range(number_of_answers):
                     data[question_columns[i]] = [None]
                     data[justification_columns[i]] = [None]
-                logging.warning(f"Filling None for all answers and justifications for book: {title}")
+                logging.warning(f"Filling None for all answers and justifications for novel: {title}")
 
             # Build DataFrame
             df_progress = pd.DataFrame(data)
@@ -813,14 +813,14 @@ def ask_to_AI(df: pd.DataFrame, output_file: str) -> pd.DataFrame:
             df_progress = df_progress.reindex(columns=column_order)
 
             #----------------------------------------
-            # Concatenate the one-row dataframe with the big dataframe with all anterior books/rows
+            # Concatenate the one-row dataframe with the big dataframe with all anterior novels/rows
             df_processed = pd.concat([df_processed, df_progress], ignore_index=True)
             df_processed.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig')
-            logging.info(f"Progress saved for book: {title}")
+            logging.info(f"Progress saved for novel: {title}")
 
         except Exception as e:
             # Log the full AI response that caused the error for debugging
-            logging.error(f"Failed to analyze book {title}. Error: {e}")
+            logging.error(f"Failed to analyze novel {title}. Error: {e}")
             logging.error(f"Problematic AI response: {AI_answers}")
             raise # Re-raise the exception to trigger a retry
 
@@ -835,21 +835,21 @@ def main():
 
     #------------------------------------------
     # Name of the input file
-    #input_file = './Data/Filtered/sci-fi_books_TEST_Wiki_small.csv'
-    #input_file = './Data/Filtered/sci-fi_books_TEST_Wiki.csv'
-    input_file = './Data/Filtered/sci-fi_books_TOP_Wiki.csv'
+    #input_file = './Data/Filtered/sci-fi_novels_TEST_Wiki_small.csv'
+    #input_file = './Data/Filtered/sci-fi_novels_TEST_Wiki.csv'
+    input_file = './Data/Filtered/sci-fi_novels_TOP_Wiki.csv'
 
     # Name of the output file
-    #output_file = './Data/Answers/sci-fi_books_AI_ANSWERS_TEST_small.csv'
-    #output_file = './Data/Answers/sci-fi_books_AI_ANSWERS_TEST.csv'
-    #output_file = './Data/Variability_in_Answers/sci-fi_books_AI_ANSWERS_TEST_01.csv'
-    output_file = './Data/Answers/sci-fi_books_AI_ANSWERS.csv'
+    #output_file = './Data/Answers/sci-fi_novels_AI_ANSWERS_TEST_small.csv'
+    #output_file = './Data/Answers/sci-fi_novels_AI_ANSWERS_TEST.csv'
+    #output_file = './Data/Variability_in_Answers/sci-fi_novels_AI_ANSWERS_TEST_01.csv'
+    output_file = './Data/Answers/sci-fi_novels_AI_ANSWERS.csv'
 
     #------------------------------------------
-    # Load book data to send to the AI
+    # Load novel data to send to the AI
     df = pd.read_csv(input_file, sep=';', encoding="utf-8-sig")
 
-    # Ask the AI about ALL the books
+    # Ask the AI about ALL the novels
     df_processed = ask_to_AI(df, output_file)
 
     # Retyping columns of the processed dataframe
@@ -871,13 +871,13 @@ def main():
     #------------------------------------------
     size_in = df.shape[0] # Number of rows
     size_out = df_processed.shape[0] # Number of rows
-    missing_books = size_in - size_out # Difference in number of rows
+    missing_novels = size_in - size_out # Difference in number of rows
 
     #------------------------------------------
     df_processed.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig')
     print(f"\nData saved to {output_file}")
 
-    return missing_books, df_processed # How many books were not processed right and the DataFrame
+    return missing_novels, df_processed # How many novels were not processed right and the DataFrame
 
 #----------------------------------------------------------------------------------
 # Execution
@@ -886,13 +886,13 @@ if __name__ == "__main__":
     # Record start time
     start = datetime.now()
 
-    missing_books = 1
+    missing_novels = 1
     max_retries = 20
     attempt = 1
 
-    while (missing_books != 0) and (attempt <= max_retries):
-        missing_books, df_processed = main()
-        print(f"Book(s) missing: {missing_books}.\nAttempts made: {attempt}.\n")
+    while (missing_novels != 0) and (attempt <= max_retries):
+        missing_novels, df_processed = main()
+        print(f"novel(s) missing: {missing_novels}.\nAttempts made: {attempt}.\n")
         attempt += 1
     
     print("\n", df_processed.info())

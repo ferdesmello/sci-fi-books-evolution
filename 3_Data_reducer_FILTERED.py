@@ -580,8 +580,8 @@ def main():
     print("\nFILTERED Dataframe")
     print(df_filtered.info())
 
-    df_filtered.to_csv('./Data/Filtered/sci-fi_books_FILTERED.csv', index=False, sep=';', encoding='utf-8-sig')
-    print(f"\nData saved to ./Data/Filtered/sci-fi_books_FILTERED.csv")
+    df_filtered.to_csv('./Data/Filtered/sci-fi_novels_FILTERED.csv', index=False, sep=';', encoding='utf-8-sig')
+    print(f"\nData saved to ./Data/Filtered/sci-fi_novels_FILTERED.csv")
 
 #----------------------------------------------------------------------------------
 # Execution

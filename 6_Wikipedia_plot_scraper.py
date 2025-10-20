@@ -1,6 +1,6 @@
 
 """
-This script scrapes plot data from book articles on Wikipedia using the data 
+This script scrapes plot data from novel articles on Wikipedia using the data 
 scraped from the Goodreads website.
 
 Modules:
@@ -76,7 +76,7 @@ def build_unwanted_terms(author: str) -> list[str]:
     terms = [
         ' series', 
         '(series)', 
-        '(book series)', 
+        '(novel series)', 
         ' novels', 
         '(novels)', 
         ' trilogy',
@@ -147,7 +147,7 @@ def choose_result(title: str, filtered_results: list) -> str:
     Choose the most appropriate result from the filtered list.
 
     Args:
-        title (str): Title of the book.
+        title (str): Title of the novel.
         filtered_results (list): List of filtered search results.
 
     Returns:
@@ -192,7 +192,7 @@ def validate_result(title: str, chosen_result: str, filtered_results: list) -> s
     Returns the best matching result or None if no validation passes.
 
     Args:
-        title (str): Title of the book.
+        title (str): Title of the novel.
         chosen_result (str): Chosen result from the filtered list.
         filtered_results (list): List of filtered search results.
 
@@ -299,7 +299,7 @@ def extract_plot(page) -> tuple[str, str]:
         'plot and storyline', 
         'synopsis', 
         'summary', 
-        'book plot',
+        'novel plot',
         'setting and plot', 
         'setting and synopsis', 
         'story and significance',
@@ -366,16 +366,16 @@ def extract_plot(page) -> tuple[str, str]:
     return header, plot_text[:20000] # Truncate if very long
 
 #----------------------------------------------------------------------------------
-LOG_FILE = Path("./Data/Filtered/wikipedia_failed_books.csv")
+LOG_FILE = Path("./Data/Filtered/wikipedia_failed_novels.csv")
 
-def log_failed_book(result: dict, title: str, author: str, year: int):
+def log_failed_novel(result: dict, title: str, author: str, year: int):
 
     """
     Append failed cases to a CSV log file.
     
     Args:
-        result (dict): Result dictionary from get_book_summary function.
-        title (str): Title of the book.
+        result (dict): Result dictionary from get_novel_summary function.
+        title (str): Title of the novel.
         author (str): Name of the author as given.
         year (int): Year of publication.
 
@@ -402,13 +402,13 @@ def log_failed_book(result: dict, title: str, author: str, year: int):
     retry=retry_if_exception_type((requests.exceptions.RequestException, 
                                    wikipedia.exceptions.WikipediaException))
 )
-def get_book_summary(title: str, author: str, year: int) -> Dict[str, Any]:
+def get_novel_summary(title: str, author: str, year: int) -> Dict[str, Any]:
 
     """
-    Fetches book plot/summary text from Wikipedia.
+    Fetches novel plot/summary text from Wikipedia.
 
     Args:
-        title (str): Title of the book.
+        title (str): Title of the novel.
         author (str): Name of the author as given.
         year (int): Year of publication.
 
@@ -495,15 +495,15 @@ def main():
     """
     #------------------------------------------
     # Read the CSV files
-    input_file_TEST = './Data/Filtered/sci-fi_books_TEST.csv'
-    #input_file_TEST = './Data/Filtered/sci-fi_books_TEST_small.csv'
+    input_file_TEST = './Data/Filtered/sci-fi_novels_TEST.csv'
+    #input_file_TEST = './Data/Filtered/sci-fi_novels_TEST_small.csv'
 
     df_TEST = pd.read_csv(input_file_TEST, sep = ';', encoding="utf-8-sig")
     df_TEST['plot'] = df_TEST['plot'].astype(object)
     df_TEST['url wikipedia'] = df_TEST['url wikipedia'].astype(object)
 
     #----------------------
-    input_file = './Data/Filtered/sci-fi_books_TOP.csv'
+    input_file = './Data/Filtered/sci-fi_novels_TOP.csv'
     #input_file = input_file_TEST
 
     df_TOP = pd.read_csv(input_file, sep = ';', encoding="utf-8-sig")
@@ -511,47 +511,47 @@ def main():
     df_TOP['url wikipedia'] = df_TOP['url wikipedia'].astype(object)
 
     #----------------------
-    output_file_TEST = './Data/Filtered/sci-fi_books_TEST_Wiki.csv'
-    output_file = './Data/Filtered/sci-fi_books_TOP_Wiki.csv'
+    output_file_TEST = './Data/Filtered/sci-fi_novels_TEST_Wiki.csv'
+    output_file = './Data/Filtered/sci-fi_novels_TOP_Wiki.csv'
 
     #----------------------------------------
     # Load existing progress if the file exists
     if os.path.exists(output_file):
         df_processed = pd.read_csv(output_file, sep=';', encoding='utf-8-sig')
-        processed_books = set(df_processed['url goodreads'])
+        processed_novels = set(df_processed['url goodreads'])
     else:
         df_processed = pd.DataFrame()
-        processed_books = set()
+        processed_novels = set()
 
     #------------------------------------------
-    counter_books = 0
+    counter_novels = 0
     counter_plots = 0
 
     # Add a new column for the plot text
-    for _, book in df_TOP.iterrows():
+    for _, novel in df_TOP.iterrows():
 
-        # Skip already processed books
-        if book['url goodreads'] in processed_books:
+        # Skip already processed novels
+        if novel['url goodreads'] in processed_novels:
             continue
 
-        # Extract book details
-        title = book['title']
-        author = book['author']
-        year = int(book['year'])
-        decade = int(book['decade'])
-        rate = float(book['rate'])
-        ratings = int(book['ratings'])
-        series = book['series']
-        genres = book['genres']
-        synopsis = book['synopsis']
-        review = book['review']
-        url_g = book['url goodreads']
+        # Extract novel details
+        title = novel['title']
+        author = novel['author']
+        year = int(novel['year'])
+        decade = int(novel['decade'])
+        rate = float(novel['rate'])
+        ratings = int(novel['ratings'])
+        series = novel['series']
+        genres = novel['genres']
+        synopsis = novel['synopsis']
+        review = novel['review']
+        url_g = novel['url goodreads']
 
         # Query Wikipedia
-        returned_dict = get_book_summary(title, author, year)
+        returned_dict = get_novel_summary(title, author, year)
 
         if not returned_dict["success"]:
-            log_failed_book(returned_dict, title, author, year)
+            log_failed_novel(returned_dict, title, author, year)
 
         counter_plot = returned_dict.get('counter_plot')
         returned_title = returned_dict.get('page_title')
@@ -565,7 +565,7 @@ def main():
         print()
 
         #----------------------------------------
-        # One-row dataframe to save the progress in the present book/row
+        # One-row dataframe to save the progress in the present novel/row
         df_progress = pd.DataFrame({
             'title': [title],
             'author': [author],
@@ -582,14 +582,14 @@ def main():
             'url wikipedia': [returned_url]
         })
         
-        # Concatenate the one-row dataframe with the big dataframe with all anterior books/rows
+        # Concatenate the one-row dataframe with the big dataframe with all anterior novels/rows
         df_processed = pd.concat([df_processed, df_progress], ignore_index=True)
         df_processed.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig')
 
-        counter_books += 1
+        counter_novels += 1
         counter_plots = counter_plots + counter_plot
     
-    print(f"Analyzed {counter_books} books and added {counter_plots} plots to the file.")
+    print(f"Analyzed {counter_novels} novels and added {counter_plots} plots to the file.")
 
     #----------------------------------------------------------------------------------
     # Add Wikipedia data to the test dataframe
@@ -643,11 +643,11 @@ def main():
 
     #------------------------------------------
     # Final numbers
-    total_books = len(df_processed)
+    total_novels = len(df_processed)
     total_Wiki_url = df_processed['url wikipedia'].apply(lambda x: 1 if pd.notna(x) else 0).sum() 
     total_plots = df_processed['plot'].apply(lambda x: 1 if pd.notna(x) and x != "No plot available" else 0).sum()
 
-    print(f"\nTotal number of books: {total_books}")
+    print(f"\nTotal number of novels: {total_novels}")
     print(f"Total number of Wikipedia URLs: {total_Wiki_url}")
     print(f"Total number of plots: {total_plots}")
 
