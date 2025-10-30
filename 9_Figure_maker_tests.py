@@ -1019,8 +1019,8 @@ figure_maker (7,
               "post apocalyptic and mood")
 
 #---------------------------------------------------------------------------------------------------
-# Figure 8 - Cramer's matrix questions
-print("  Making Cramer's matrix questions...")
+# Figure 8 - Questions Cramer's V heatmap
+print("  Making questions Cramer's V heatmap...")
 
 def cramers_v(series_x, series_y):
     mask = series_x.notna() & series_y.notna()
@@ -1080,14 +1080,14 @@ for i in range(mat_df.shape[0]):
             ax.text(j, i, f"{data[i,j]:.2f}", ha='center', va='center', fontsize=6)
 
 plt.tight_layout()
-plt.savefig("./Figures/00 cramers_v_heatmap.png", bbox_inches = 'tight', dpi=300)
-#plt.savefig("./Figures/00 cramers_v_heatmap.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/00 cramers v heatmap questions.png", bbox_inches = 'tight', dpi=300)
+#plt.savefig("./Figures/00 cramers v heatmap questions.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/00 cramers_v_heatmap.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/00 cramers v heatmap questions.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #---------------------------------------------------------------------------------------------------
-# Figure 9 - Cramer's matrix questions
-print("  Making Cramer's matrix alternatives...")
+# Figure 9 - Alternatives Cramer's V heatmap big
+print("  Making alternatives Cramer's V heatmap big...")
 
 # --- Step 1: one-hot encode all answers ---
 encoded = pd.get_dummies(df_top_AI[column_order], prefix=column_order, dummy_na=False)
@@ -1134,10 +1134,10 @@ ax.set_xticklabels(mat_df.columns, rotation=90, fontsize=6)
 ax.set_yticklabels(mat_df.index, fontsize=6)
 
 plt.tight_layout()
-plt.savefig("./Figures/00 heatmap big.png", bbox_inches = 'tight', dpi=300)
-#plt.savefig("./Figures/00 heatmap big.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./Figures/00 cramers v heatmap alternatives.png", bbox_inches = 'tight', dpi=300)
+#plt.savefig("./Figures/00 cramers v heatmap alternatives.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/00 heatmap big.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./Figures/00 cramers v heatmap alternatives.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 
 #---------------------------------------------------------------------------------------------------
 print("All done.")
