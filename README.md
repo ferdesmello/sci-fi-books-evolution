@@ -56,7 +56,7 @@ Older results and some code for GPT-4o and Gemini 2.0 Flash are stored in separa
 
 ### 4. Plotting the results
 
-**9_Figure_maker.py** reads the **sci-fi_books_AI_ANSWERS.csv** and **sci-fi_books_AI_ANSWERS_GENDER.csv** files, and the files in the **Data/Variability_in_Answers** folder, and makes figures from them, saving all of them in the **Figures** folder.
+Figure making is divided in three parts, one for the sample (**9_Figure_maker_novel.py**), one for the answers to the questions (**9_Figure_maker_questions.py**), and one for some tests (**9_Figure_maker_tests.py**). They all read from **sci-fi_books_AI_ANSWERS.csv**,  **sci-fi_books_AI_ANSWERS_GENDER.csv**, and the files in the **Data/Variability_in_Answers** folder, and make figures from them, saving all of them in the **Figures** folder.
 
 ## Example of a figure
 
