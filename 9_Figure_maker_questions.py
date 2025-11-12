@@ -221,7 +221,7 @@ def figure_maker (number: int,
 # figures for the questions/answers
 #---------------------------------------------------------------------------------------------------
 # Figure 7 - 1 accuracy
-print("  Making 1 accuracy...")
+print("1 accuracy...")
 
 # Desired order of the categories
 category_order = ['Very low',
@@ -251,7 +251,7 @@ figure_maker (7, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 8 - 2 discipline
-print("  Making 2 discipline...")
+print("2 discipline...")
 
 # Desired order of the categories
 category_order = ['Soft sciences',
@@ -281,7 +281,7 @@ figure_maker (8, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 9 - 3 light heavy
-print("  Making 3 light heavy...")
+print("3 light heavy...")
 
 # Desired order of the categories
 category_order = ['Very heavy',
@@ -311,7 +311,7 @@ figure_maker (9, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 10 - 4 time
-print("  Making 4 time...")
+print("4 time...")
 
 # Desired order of the categories
 category_order = ['Distant past',
@@ -347,7 +347,7 @@ figure_maker (10, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 11 - 5 mood
-print("  Making 5 mood...")
+print("5 mood...")
 
 # Desired order of the categories
 category_order = ['Very pessimistic',
@@ -377,7 +377,7 @@ figure_maker (11, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 12 - 6 ending
-print("  Making 6 ending...")
+print("6 ending...")
 
 # Desired order of the categories
 category_order = ['Very negative',
@@ -407,7 +407,7 @@ figure_maker (12, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 13 - 7 social political
-print("  Making 7 social political...")
+print("7 social political...")
 
 # Desired order of the categories
 category_order = ['Dystopic',
@@ -437,7 +437,7 @@ figure_maker (13, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 14 - 8 politically unified
-print("  Making 8 politically unified...")
+print("8 politically unified...")
 
 # Desired order of the categories
 category_order = ['Yes',
@@ -461,7 +461,7 @@ figure_maker (14, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 15 - 9 on Earth
-print("  Making 9 on Earth...")
+print("9 on Earth...")
 
 # Desired order of the categories
 category_order = ['Yes',
@@ -485,7 +485,7 @@ figure_maker (15, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 16 - 10 post apocalyptic
-print("  Making 10 post apocalyptic...")
+print("10 post apocalyptic...")
 
 # Desired order of the categories
 category_order = ['Yes',
@@ -509,7 +509,7 @@ figure_maker (16, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 17 - 11 conflict
-print("  Making 11 conflict...")
+print("11 conflict...")
 
 # Desired order of the categories
 category_order = ['Internal',
@@ -545,7 +545,7 @@ figure_maker (17, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 18 - 12 aliens
-print("  Making 12 aliens...")
+print("12 aliens...")
 
 # Desired order of the categories
 category_order = ['Yes',
@@ -569,7 +569,7 @@ figure_maker (18, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 19 - 13a aliens are
-print("  Making 13a aliens are...")
+print("13a aliens are...")
 
 # Desired order of the categories
 category_order = ['Bad', 
@@ -603,7 +603,7 @@ figure_maker (19, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 20 - 13b aliens are
-print("    Making 13b aliens are...")
+print("  13b aliens are...")
 
 # Desired order of the categories
 category_order = ['Bad', 
@@ -638,7 +638,7 @@ figure_maker (20, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 21 - 4 time
-print("  14 robots and AI...")
+print("14 robots and AI...")
 
 # Desired order of the categories
 category_order = ['Yes',
@@ -662,7 +662,7 @@ figure_maker (21, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 22 - 15a robots and AI are
-print("  Making 15a robots and AI are...")
+print("15a robots and AI are...")
 
 # Desired order of the categories
 category_order = ['Bad', 
@@ -696,7 +696,7 @@ figure_maker (22, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 23 - 15b robots and AI are
-print("    Making 15b robots and AI are...")
+print("  15b robots and AI are...")
 
 # Desired order of the categories
 category_order = ['Bad', 
@@ -731,7 +731,7 @@ figure_maker (23, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 24 - 16 protagonist
-print("  Making 16 protagonist...")
+print("16 protagonist...")
 
 # Desired order of the categories
 category_order = ['Yes',
@@ -755,7 +755,7 @@ figure_maker (24, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 25 - 17a protagonist nature
-print("  Making 17a protagonist nature...")
+print("17a protagonist nature...")
 
 # Desired order of the categories
 category_order = ['Human', 
@@ -781,7 +781,7 @@ figure_maker (25, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 26 - 17b protagonist nature
-print("  Making 17b protagonist nature...")
+print("  17b protagonist nature...")
 
 # Desired order of the categories
 category_order = ['Human', 
@@ -806,7 +806,7 @@ figure_maker (26, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 27 - 18a protagonist gender
-print("  Making 18a protagonist gender...")
+print("  18a protagonist gender...")
 
 # Desired order of the categories
 category_order = ['Male', 
@@ -834,7 +834,7 @@ figure_maker (27, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 28 - 18ba protagonist gender
-print("    Making 18b protagonist gender...")
+print("  18b protagonist gender...")
 
 # Desired order of the categories
 category_order = ['Male', 
@@ -863,7 +863,7 @@ figure_maker (28, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 29 - 18c protagonist gender accuracy
-print("    Making 18c protagonist gender accuracy...")
+print("  18c protagonist gender accuracy...")
 
 # Desired order of the categories
 category_order = ['Male', 
@@ -892,12 +892,12 @@ figure_maker (29, # number
               df_top_AI_masked, # df_top
               category_order, # category_order
               custom_colors, # custom_colors
-              "What is the gender of the single protagonist or main character \nfor (very) high accuracy sci-fi?", # title
+              "What is the gender of the single protagonist or main character \nfor (very) highly accurate sci-fi?", # title
               "18c protagonist gender accuracy") # printing_name and label
 
 #---------------------------------------------------------------------------------------------------
 # Figure 30 - 18d protagonist gender discipline
-print("    Making 18d protagonist gender discipline...")
+print("  18d protagonist gender discipline...")
 
 # Desired order of the categories
 category_order = ['Male', 
@@ -926,12 +926,12 @@ figure_maker (30, # number
               df_top_AI_masked, # df_top
               category_order, # category_order
               custom_colors, # custom_colors
-              "What is the gender of the single protagonist or main character \nfor (leaning) hard discipline sci-fi?", # title
+              "What is the gender of the single protagonist or main character \nfor (leaning) hard sciences sci-fi?", # title
               "18d protagonist gender discipline") # printing_name and label
 
 #---------------------------------------------------------------------------------------------------
 # Figure 31 - 19a protagonist is
-print("  Making 19a protagonist is...")
+print("  19a protagonist is...")
 
 # Desired order of the categories
 category_order = ['Bad', 
@@ -965,7 +965,7 @@ figure_maker (31, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 32 - 19b protagonist is
-print("  Making 19b protagonist is...")
+print("  19b protagonist is...")
 
 # Desired order of the categories
 category_order = ['Bad', 
@@ -1000,7 +1000,7 @@ figure_maker (32, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 33 - 20 virtual
-print("  Making 20 virtual...")
+print("20 virtual...")
 
 # Desired order of the categories
 category_order = ['Yes',
@@ -1024,7 +1024,7 @@ figure_maker (33, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 34 - 21a virtual is
-print("  Making 21a virtual is...")
+print("21a virtual is...")
 
 # Desired order of the categories
 category_order = ['Bad', 
@@ -1058,7 +1058,7 @@ figure_maker (34, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 35 - 21b virtual is
-print("    Making 21b virtual is...")
+print("  21b virtual is...")
 
 # Desired order of the categories
 category_order = ['Bad', 
@@ -1093,7 +1093,7 @@ figure_maker (35, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 36 - 22 biotech
-print("  Making 22 biotech...")
+print("22 biotech...")
 
 # Desired order of the categories
 category_order = ['Yes',
@@ -1117,7 +1117,7 @@ figure_maker (36, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 37 - 23a biotech is
-print("  Making 23a biotech is...")
+print("23a biotech is...")
 
 # Desired order of the categories
 category_order = ['Bad', 
@@ -1151,7 +1151,7 @@ figure_maker (37, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 38 - 23b biotech is
-print("    Making 23b biotech is...")
+print("  23b biotech is...")
 
 # Desired order of the categories
 category_order = ['Bad', 
@@ -1186,7 +1186,7 @@ figure_maker (38, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 39 - 24 transhuman
-print("  Making 24 transhuman...")
+print("24 transhuman...")
 
 # Desired order of the categories
 category_order = ['Yes',
@@ -1210,7 +1210,7 @@ figure_maker (39, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 40 - 25a transhuman is
-print("  Making 25a transhuman is...")
+print("25a transhuman is...")
 
 # Desired order of the categories
 category_order = ['Bad', 
@@ -1244,7 +1244,7 @@ figure_maker (40, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 41 - 25b transhuman is
-print("    Making 25b transhuman is...")
+print("  25b transhuman is...")
 
 # Desired order of the categories
 category_order = ['Bad', 
@@ -1279,7 +1279,7 @@ figure_maker (41, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 42 - 26 tech and science
-print("  Making 26 tech and science...")
+print("26 tech and science...")
 
 # Desired order of the categories
 category_order = ['Bad', 
@@ -1311,7 +1311,7 @@ figure_maker (42, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 43 - 27 social issues
-print("  Making 27 social issues...")
+print("27 social issues...")
 
 # Desired order of the categories
 category_order = ['Core', 
@@ -1339,7 +1339,7 @@ figure_maker (43, # number
 
 #---------------------------------------------------------------------------------------------------
 # Figure 44 - 28 enviromental
-print("  Making 28 enviromental...")
+print("28 enviromental...")
 
 # Desired order of the categories
 category_order = ['Core', 

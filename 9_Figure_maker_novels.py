@@ -631,7 +631,7 @@ figure_maker (7, # number
               df_top_AI_masked, # df_top
               category_order, # category_order
               custom_colors, # custom_colors
-              "What is the gender of the author for (very) high accuracy sci-fi?", # title
+              "What is the gender of the author for (very) highly accurate sci-fi?", # title
               "00 author gender accuracy") # printing_name and label
 
 #---------------------------------------------------------------------------------------------------
