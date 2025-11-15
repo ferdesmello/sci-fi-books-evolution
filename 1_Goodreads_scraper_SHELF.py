@@ -300,8 +300,8 @@ def main():
     Calls the main scraping function and saves the data.
     """
 
-    folder_path = './Data/Saved_pages'
-    csv_path = './Data/Brute/sci-fi_books_SHELF.csv'
+    folder_path = './data/saved_pages'
+    csv_path = './data/brute/sci-fi_books_SHELF.csv'
 
     # Chose the right columns and their order
     column_order = [

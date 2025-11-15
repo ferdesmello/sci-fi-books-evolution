@@ -18,10 +18,10 @@ from typing import List
 print("Reading and processing tha data...")
 
 # Read the data
-df_filtered = pd.read_csv("./Data/Filtered/sci-fi_novels_FILTERED.csv", sep=";", encoding="utf-8-sig")
-df_top = pd.read_csv("./Data/Filtered/sci-fi_novels_TOP_Wiki.csv", sep=";", encoding="utf-8-sig")
-df_top_AI = pd.read_csv("./Data/Answers/sci-fi_novels_AI_ANSWERS.csv", sep=";", encoding="utf-8-sig")
-df_top_AI_gender = pd.read_csv("./Data/Answers/sci-fi_novels_AI_ANSWERS_GENDER.csv", sep=";", encoding="utf-8-sig")
+df_filtered = pd.read_csv("./data/filtered/sci-fi_novels_FILTERED.csv", sep=";", encoding="utf-8-sig")
+df_top = pd.read_csv("./data/filtered/sci-fi_novels_TOP_Wiki.csv", sep=";", encoding="utf-8-sig")
+df_top_AI = pd.read_csv("./data/answers/sci-fi_novels_AI_ANSWERS.csv", sep=";", encoding="utf-8-sig")
+df_top_AI_gender = pd.read_csv("./data/answers/sci-fi_novels_AI_ANSWERS_GENDER.csv", sep=";", encoding="utf-8-sig")
 
 #print(df_top_AI.info())
 #print(df.head())
@@ -207,10 +207,10 @@ def figure_maker (number: int,
     ax1.spines['bottom'].set_color(custom_dark_gray)
 
     # Save image-------------------------------------------
-    plt.savefig(f"./Figures/{printing_name}.png", bbox_inches = 'tight')
-    #plt.savefig(f"./Figures/{printing_name}.eps", transparent = True, bbox_inches = 'tight')
+    plt.savefig(f"./figures/{printing_name}.png", bbox_inches = 'tight')
+    #plt.savefig(f"./figures/{printing_name}.eps", transparent = True, bbox_inches = 'tight')
     # Transparence will be lost in .eps, save in .svg for transparences
-    #plt.savefig(f"./Figures/{printing_name}.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+    #plt.savefig(f"./figures/{printing_name}.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
     plt.close(figure)
 
 #---------------------------------------------------------------------------------------------------

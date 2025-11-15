@@ -835,15 +835,15 @@ def main():
 
     #------------------------------------------
     # Name of the input file
-    #input_file = './Data/Filtered/sci-fi_novels_TEST_Wiki_small.csv'
-    #input_file = './Data/Filtered/sci-fi_novels_TEST_Wiki.csv'
-    input_file = './Data/Filtered/sci-fi_novels_TOP_Wiki.csv'
+    #input_file = './data/filtered/sci-fi_novels_TEST_Wiki_small.csv'
+    #input_file = './data/filtered/sci-fi_novels_TEST_Wiki.csv'
+    input_file = './data/filtered/sci-fi_novels_TOP_Wiki.csv'
 
     # Name of the output file
-    #output_file = './Data/Answers/sci-fi_novels_AI_ANSWERS_TEST_small.csv'
-    #output_file = './Data/Answers/sci-fi_novels_AI_ANSWERS_TEST.csv'
-    #output_file = './Data/Variability_in_Answers/sci-fi_novels_AI_ANSWERS_TEST_01.csv'
-    output_file = './Data/Answers/sci-fi_novels_AI_ANSWERS.csv'
+    #output_file = './data/answers/sci-fi_novels_AI_ANSWERS_TEST_small.csv'
+    #output_file = './data/answers/sci-fi_novels_AI_ANSWERS_TEST.csv'
+    #output_file = './data/variability_in_answers/sci-fi_novels_AI_ANSWERS_TEST_01.csv'
+    output_file = './data/answers/sci-fi_novels_AI_ANSWERS.csv'
 
     #------------------------------------------
     # Load novel data to send to the AI

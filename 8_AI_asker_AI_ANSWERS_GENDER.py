@@ -93,10 +93,10 @@ def main():
     """
     
     # Name of the input file
-    input_file = './Data/Filtered/sci-fi_novels_TOP.csv'
+    input_file = './data/filtered/sci-fi_novels_TOP.csv'
 
     # Name of the output file
-    output_file = './Data/Answers/sci-fi_novels_AI_ANSWERS_GENDER.csv'
+    output_file = './data/answers/sci-fi_novels_AI_ANSWERS_GENDER.csv'
 
     #----------------------------------------------------------------------------------
     # Load novel data to send to the AI

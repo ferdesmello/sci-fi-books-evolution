@@ -57,8 +57,8 @@ def load_progress() -> Dict[str, Dict[str, Any]]:
         Returns: {'urls': {}} or {'urls': {'http://example.com': {...}}}
     """
 
-    if os.path.exists('./Data/Brute/scraping_progress.json'):
-        with open('./Data/Brute/scraping_progress.json', 'r') as f:
+    if os.path.exists('./data/brute/scraping_progress.json'):
+        with open('./data/brute/scraping_progress.json', 'r') as f:
             return json.load(f)
     return {'urls': {}}
 
@@ -72,10 +72,10 @@ def save_progress(progress: Dict[str, Dict[str, Any]]):
         Typically contains information about scraped URLs and their status.
 
     Note:
-        Overwrites the existing file at './Data/Brute/scraping_progress.json'
+        Overwrites the existing file at './data/brute/scraping_progress.json'
     """
 
-    with open('./Data/Brute/scraping_progress.json', 'w') as f:
+    with open('./data/brute/scraping_progress.json', 'w') as f:
         json.dump(progress, f)
 
 #----------------------------------------------------------------------------------
@@ -435,15 +435,15 @@ def main():
     ]
     df = df.reindex(columns=column_order)
     
-    df.to_csv('./Data/Brute/sci-fi_books_PARTIAL_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
+    df.to_csv('./data/brute/sci-fi_books_PARTIAL_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
     
-    logging.info(f"Scraped {len(all_books)} books. Data saved to ./Data/Brute/sci-fi_books_PARTIAL_LISTS.csv")
+    logging.info(f"Scraped {len(all_books)} books. Data saved to ./data/brute/sci-fi_books_PARTIAL_LISTS.csv")
 
     #----------------------------------------------------------------------------------
     # Reading the complete json file and saving it as a CSV file
 
     # Step 1: Load the JSON file into a Python object
-    with open('./Data/Brute/scraping_progress.json', 'r') as f:
+    with open('./data/brute/scraping_progress.json', 'r') as f:
         data = json.load(f) # Load JSON into a dictionary
 
     # Step 2: Extract the "books" data from within the "urls" layer
@@ -469,9 +469,9 @@ def main():
 
     #--------------------------------------------
     # Save the flattened and final DataFrame to a CSV file
-    df_books.to_csv('./Data/Brute/sci-fi_books_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
+    df_books.to_csv('./data/brute/sci-fi_books_LISTS.csv', index=False, sep=';', encoding='utf-8-sig')
 
-    logging.info(f"Data saved to ./Data/Brute/sci-fi_books_LISTS.csv")
+    logging.info(f"Data saved to ./data/brute/sci-fi_books_LISTS.csv")
 
 #----------------------------------------------------------------------------------
 # Execution

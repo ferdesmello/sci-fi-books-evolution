@@ -366,7 +366,7 @@ def extract_plot(page) -> tuple[str, str]:
     return header, plot_text[:20000] # Truncate if very long
 
 #----------------------------------------------------------------------------------
-LOG_FILE = Path("./Data/Filtered/wikipedia_failed_novels.csv")
+LOG_FILE = Path("./data/filtered/wikipedia_failed_novels.csv")
 
 def log_failed_novel(result: dict, title: str, author: str, year: int):
 
@@ -495,15 +495,15 @@ def main():
     """
     #------------------------------------------
     # Read the CSV files
-    input_file_TEST = './Data/Filtered/sci-fi_novels_TEST.csv'
-    #input_file_TEST = './Data/Filtered/sci-fi_novels_TEST_small.csv'
+    input_file_TEST = './data/filtered/sci-fi_novels_TEST.csv'
+    #input_file_TEST = './data/filtered/sci-fi_novels_TEST_small.csv'
 
     df_TEST = pd.read_csv(input_file_TEST, sep = ';', encoding="utf-8-sig")
     df_TEST['plot'] = df_TEST['plot'].astype(object)
     df_TEST['url wikipedia'] = df_TEST['url wikipedia'].astype(object)
 
     #----------------------
-    input_file = './Data/Filtered/sci-fi_novels_TOP.csv'
+    input_file = './data/filtered/sci-fi_novels_TOP.csv'
     #input_file = input_file_TEST
 
     df_TOP = pd.read_csv(input_file, sep = ';', encoding="utf-8-sig")
@@ -511,8 +511,8 @@ def main():
     df_TOP['url wikipedia'] = df_TOP['url wikipedia'].astype(object)
 
     #----------------------
-    output_file_TEST = './Data/Filtered/sci-fi_novels_TEST_Wiki.csv'
-    output_file = './Data/Filtered/sci-fi_novels_TOP_Wiki.csv'
+    output_file_TEST = './data/filtered/sci-fi_novels_TEST_Wiki.csv'
+    output_file = './data/filtered/sci-fi_novels_TOP_Wiki.csv'
 
     #----------------------------------------
     # Load existing progress if the file exists

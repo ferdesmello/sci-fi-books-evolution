@@ -22,10 +22,10 @@ from typing import List
 print("Reading and processing tha data...")
 
 # Read the data
-df_filtered = pd.read_csv("./Data/Filtered/sci-fi_novels_FILTERED.csv", sep=";", encoding="utf-8-sig")
-df_top = pd.read_csv("./Data/Filtered/sci-fi_novels_TOP_Wiki.csv", sep=";", encoding="utf-8-sig")
-df_top_AI = pd.read_csv("./Data/Answers/sci-fi_novels_AI_ANSWERS.csv", sep=";", encoding="utf-8-sig")
-df_top_AI_gender = pd.read_csv("./Data/Answers/sci-fi_novels_AI_ANSWERS_GENDER.csv", sep=";", encoding="utf-8-sig")
+df_filtered = pd.read_csv("./data/filtered/sci-fi_novels_FILTERED.csv", sep=";", encoding="utf-8-sig")
+df_top = pd.read_csv("./data/filtered/sci-fi_novels_TOP_Wiki.csv", sep=";", encoding="utf-8-sig")
+df_top_AI = pd.read_csv("./data/answers/sci-fi_novels_AI_ANSWERS.csv", sep=";", encoding="utf-8-sig")
+df_top_AI_gender = pd.read_csv("./data/answers/sci-fi_novels_AI_ANSWERS_GENDER.csv", sep=";", encoding="utf-8-sig")
 
 #---------------------------------------------------------------------------------------------------
 # Exclude novels of before 1860 (allmost none)
@@ -254,10 +254,10 @@ all_decades = np.arange(df_all['decade'].min(), df_all['decade'].max() + 10, 10)
 plt.xticks(all_decades, rotation=90)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/00 Quantities.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/00 Quantities.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./figures/00 Quantities.png", bbox_inches = 'tight')
+#plt.savefig("./figures/00 Quantities.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/00 Quantities.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./figures/00 Quantities.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 plt.close(figure_1)
 
 #---------------------------------------------------------------------------------------------------
@@ -377,10 +377,10 @@ ax2.spines['left'].set_visible(False)
 ax2.spines['bottom'].set_color(custom_dark_gray)
 
 # Save image-------------------------------------------
-plt.savefig("./Figures/00 Rates and Ratings.png", bbox_inches = 'tight')
-#plt.savefig("./Figures/00 Rates and Ratings.eps", transparent = True, bbox_inches = 'tight')
+plt.savefig("./figures/00 Rates and Ratings.png", bbox_inches = 'tight')
+#plt.savefig("./figures/00 Rates and Ratings.eps", transparent = True, bbox_inches = 'tight')
 # Transparence will be lost in .eps, save in .svg for transparences
-#plt.savefig("./Figures/00 Rates and Ratings.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+#plt.savefig("./figures/00 Rates and Ratings.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
 plt.close(figure_2)
 
 #---------------------------------------------------------------------------------------------------
@@ -500,10 +500,10 @@ def figure_maker (number: int,
     ax1.spines['bottom'].set_color(custom_dark_gray)
 
     # Save image-------------------------------------------
-    plt.savefig(f"./Figures/{printing_name}.png", bbox_inches = 'tight')
-    #plt.savefig(f"./Figures/{printing_name}.eps", transparent = True, bbox_inches = 'tight')
+    plt.savefig(f"./figures/{printing_name}.png", bbox_inches = 'tight')
+    #plt.savefig(f"./figures/{printing_name}.eps", transparent = True, bbox_inches = 'tight')
     # Transparence will be lost in .eps, save in .svg for transparences
-    #plt.savefig(f"./Figures/{printing_name}.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
+    #plt.savefig(f"./figures/{printing_name}.svg", format = 'svg', transparent = True, bbox_inches = 'tight')
     plt.close(figure)
 
 #---------------------------------------------------------------------------------------------------
