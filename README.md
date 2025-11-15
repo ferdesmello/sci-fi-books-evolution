@@ -62,4 +62,4 @@ Figure making is divided in three parts, one for the sample (**9_Figure_maker_no
 
 The figure below is one example of the output.
 
-![A final plot as an example.](./Figures/04%20time.png "When does most of the story take place in relation to the year the book was published? Distant past: millennia or more before; Far past: centuries before; Near past: within a few decades before; Present: within a few years; Near future: within a few decades ahead; Far future: centuries ahead; Distant future: millennia or more ahead; Multiple timelines: distinct time periods without a single dominant timeframe; Uncertain: Not enough information to say, unclear.")
+![A final plot as an example.](./figures/04%20time.png "When does most of the story take place in relation to the year the book was published? Distant past: millennia or more before; Far past: centuries before; Near past: within a few decades before; Present: within a few years; Near future: within a few decades ahead; Far future: centuries ahead; Distant future: millennia or more ahead; Multiple timelines: distinct time periods without a single dominant timeframe; Uncertain: Not enough information to say, unclear.")
